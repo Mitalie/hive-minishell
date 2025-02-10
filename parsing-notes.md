@@ -18,16 +18,37 @@
 
 Special characters generally lose their meaning within quotes.
 However variable expansion still happens within double quotes, and expansion could produce one or multiple fields depending on whether it happens in quotes or not.
-Shell Command Language described in POSIX specifies that quotes are preserved within words until syntax analysis, expansions, and field splitting have been performed.
+Shell Command Language described in POSIX specifies that quotes and many special characters are preserved within words and processed later, after syntax analysis.
+
+We thought it might be simpler to recognize all special characters in the tokenizer and produce corresponding tokens, instead of preserving them as characters within words until later steps.
+It turns out interactions between various features, particularly expansion and filename wildcards, require additional complexity to handle with this approach and defeat the simplicity benefit, so we go with the approach described in POSIX.
+
+<details>
+<summary>Analysis of the alternative approach</summary>
 
 Instead of preserving quotes, it might be simpler to recognize and remove all special symbols in the tokenizer.
-The tokenizer would output plain fragment and expansion tokens which can be merged after performing expansion.
-Expansion tokens would have a quoted and unquoted variant to control splitting.
-Merge flag controls whether word fragment or expanded fragment should be merged into the preceding fragment or not.
+The tokenizer would output plain fragment and expansion tokens which can be processed in a single pass.
+Merge flag controls whether each fragment should be appended to the preceding field or start a new one.
+Expansion tokens have a quoted and unquoted variant to disable or enable splitting into multiple plain fragments.
 Filename wildcards are also put in their own token type to trigger filename generation.
 
-POSIX shell (and Bash) process filename wildcards resulting from expansion, so with this approach we'll need to perform a simplified tokenization on results of unquoted expansion.
+Most special characters are not parsed in heredoc delimiter, but quotes are removed and the delimiter is flagged either quoted or unquoted.
+Either the tokenizer needs to recognize the delimiter and output it as a parameter on the HEREDOC token, or we need to later reconstruct the original input (including special characters) from the various tokens that were produced.
+
+POSIX shell (and Bash) process filename wildcards resulting from expansion, so with this approach we'll need to perform another simplified tokenization round on results of unquoted expansion.
 This expansion can only produce plain fragments or filename wildcards - quotes or dollar signs inside variables don't trigger recursive processing.
+
+Fields resulting from variable expansion can be merged into filename wildcards.
+Therefore we can't assume all filename tokens are fully formed from tokenizer.
+A later filename token can absorb preceding text tokens with inputs like `$var*`, and a filename token can't be processed right away if following tokens can merge with it, such as with `*$var`.
+
+Merged fragments might also include literal `*` that should NOT be interpreted as special characters for the wildcard pattern.
+Filename generator needs to know each special character's status as literal or wildcard.
+Because we no longer have quotes at this stage, we need to keep active wildcard characters in their own tokens instead of merging with text, and pass token sequences to filename generator.
+Without merging we still need to keep track where each pattern ends, and we'll have to scan ahead to see if there are wildcards or not, or pass every token through filename generator.
+
+The resulting complexity from these caveats makes the original POSIX approach seem more attractive.
+</details>
 
 ## Processing steps
 
@@ -51,19 +72,6 @@ This expansion can only produce plain fragments or filename wildcards - quotes o
     * Filename generation (produces new plain fragments)
     * Fragment merging
 4. Execution according to syntax tree (including redirections)
-
-### (temp) problems
-
-* Heredoc delimiter is not expanded, but quotes are removed and the delimiter is flagged either quoted or unquoted.
-  We could defend not having quoted mode and take the delimiter entirely unexpanded, but it still needs either parameterizing the HEREDOC token rather than emitting operator + word, or reconstructing the original input in case the delimiter got parsed into multiple tokens.
-* Fields resulting from variable expansion can be merged into filename wildcards.
-  Therefore we can't assume all filename tokens are fully formed from tokenizer.
-  Filename fragments also need a merge flag to support `$var*`, and a merge-flagged variable token after a filename token needs to be expanded before filename generation to support `*$var`.
-  Merged fragments might also include literal `*` that should NOT be interpreted as special characters for the wildcard pattern.
-  * We could flag unfinished word fragments instead of appending fragments.
-    Then we'd need to buffer text while merging as it could end up merging into a wildcard, but this might not be a big hurdle.
-  * Filename generator needs to know each special character's quote status.
-    Maybe the generator can take in a sequence of tokens instead of a pattern as string, and special characters would have individual tokens like operators instepipelinead of text tokens flagged for filename generation.
 
 ## Tokens
 

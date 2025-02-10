@@ -13,6 +13,7 @@
 * Heredoc (`<<`)
 * Pipeline (`|`)
 * (bonus) Command list operators (`&&` `||`)
+* (bonus) Grouping operators (`(` `)`)
 * (bonus) Simple filename wildcard (`*`)
 
 Special characters generally lose their meaning within quotes.
@@ -50,3 +51,33 @@ This expansion can only produce plain fragments or filename wildcards - quotes o
     * Filename generation (produces new plain fragments)
     * Fragment merging
 4. Execution according to syntax tree (including redirections)
+
+## Tokens
+
+```
+WORD        (content)
+REDIR_IN
+REDIR_OUT
+REDIR_APP
+HEREDOC
+PIPE
+LIST_AND
+LIST_OR
+GROUP_START
+GROUP_END
+```
+
+## Grammar
+
+```
+list = pipeline | group | and | or
+group = GROUP_START list GROUP_END
+and = list LIST_AND list_entry
+or = list LIST_OR list_entry
+list_entry = pipeline | group
+pipeline = command pipeline_tail*
+pipeline_tail = PIPE command
+simple_command = command_word+
+simple_command_word = redirect | word
+redirect = redirect_op word
+```

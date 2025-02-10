@@ -35,7 +35,7 @@ This expansion can only produce plain fragments or filename wildcards - quotes o
 
 1. Tokenizer: break the input into words and operators.
 2. Syntax analyzer: recognize logical meaning of tokens and build a syntax tree
-3. Word processing: for each word, perform following steps
+3. Word processing: for each word, perform following steps (if applicable in that word's context)
     1. Variable expansion
     2. Field splitting
     3. (bonus) Filename generation
@@ -51,6 +51,19 @@ This expansion can only produce plain fragments or filename wildcards - quotes o
     * Filename generation (produces new plain fragments)
     * Fragment merging
 4. Execution according to syntax tree (including redirections)
+
+### (temp) problems
+
+* Heredoc delimiter is not expanded, but quotes are removed and the delimiter is flagged either quoted or unquoted.
+  We could defend not having quoted mode and take the delimiter entirely unexpanded, but it still needs either parameterizing the HEREDOC token rather than emitting operator + word, or reconstructing the original input in case the delimiter got parsed into multiple tokens.
+* Fields resulting from variable expansion can be merged into filename wildcards.
+  Therefore we can't assume all filename tokens are fully formed from tokenizer.
+  Filename fragments also need a merge flag to support `$var*`, and a merge-flagged variable token after a filename token needs to be expanded before filename generation to support `*$var`.
+  Merged fragments might also include literal `*` that should NOT be interpreted as special characters for the wildcard pattern.
+  * We could flag unfinished word fragments instead of appending fragments.
+    Then we'd need to buffer text while merging as it could end up merging into a wildcard, but this might not be a big hurdle.
+  * Filename generator needs to know each special character's quote status.
+    Maybe the generator can take in a sequence of tokens instead of a pattern as string, and special characters would have individual tokens like operators instepipelinead of text tokens flagged for filename generation.
 
 ## Tokens
 

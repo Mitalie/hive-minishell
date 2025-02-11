@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/02/11 15:55:03 by amakinen         ###   ########.fr        #
+#    Updated: 2025/02/11 17:03:07 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,22 @@ SRCS := $(addprefix $(SRCDIR)/,\
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 BINS := $(NAME)
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) libft/libft.a
+
+# libft
+INCDIRS += libft
+# - Use recursive make for any targets with libft/ prefix
+libft/%:
+	+make -C libft $*
+# - This Makefile doesn't know whether libft.a needs updating so use a phony
+#   target to ensure we always call recursive make. Don't set libft.a directly
+#   as phony because that would disable timestamp checks and always relink.
+.PHONY: .phony
+libft/libft.a: .phony
+# - Always call libft clean targets with top level clean targets
+.PHONY: libft/clean libft/fclean
+clean: libft/clean
+fclean: libft/fclean
 
 # Generic utility targets
 .DEFAULT_GOAL := all

@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/02/11 17:03:07 by amakinen         ###   ########.fr        #
+#    Updated: 2025/02/11 17:06:22 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,14 +44,16 @@ fclean: libft/fclean
 # Generic utility targets
 .DEFAULT_GOAL := all
 
-.PHONY: all clean fclean re
+.PHONY: all clean .clean fclean .fclean re
 
 all: $(NAME)
 
-clean:
+clean: .clean
+.clean:
 	rm -rf $(OBJDIR)
 
-fclean: clean
+fclean: .fclean
+.fclean: .clean
 	rm -f $(BINS)
 
 re: fclean all

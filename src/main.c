@@ -6,13 +6,18 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/11 16:52:28 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/02/11 17:10:15 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
+
 int	main(int argc, char **argv)
 {
-	(void)argc;
-	(void)argv;
+	int	i;
+
+	i = 0;
+	while (i < argc)
+		ft_putendl_fd(argv[i++], 1);
 	return (0);
 }

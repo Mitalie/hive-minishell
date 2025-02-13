@@ -99,3 +99,23 @@ This grammar describes all valid minishell command lines, and can be parsed with
 Left-side of each `=` names a "non-terminal symbol" and right side describes what other symbols that symbol can be composed of.
 `|` means alternative options, `*` means zero or more repetitions, `+` means one or more repetitions, and capitalized words are "terminal symbols" which are not composed of anything else and correspond to tokens produced by the tokenizer.
 The variable repetitions can be considered special alternatives - the repetition either continues or terminates.
+
+### Top-down parsing
+
+A top-down parser starts with just the initial symbol (here `command`) and replaces it with the symbols it must be composed of according to the grammar.
+Any terminal symbols produced must match the input tokens, while any non-terminal symbols produced are processed recursively.
+If terminal symbols don't match the input or there is more input remaining, the input is rejected.
+Any alternatives in the grammar produce ambiguity.
+The parser must choose one of the alternatives to proceed, but rejecting one alternative doesn't necessarily mean the input is incorrect.
+The parser must instead backtrack and try other alternatives.
+
+Backtracking requires storing information about previous choices made so that other alternatives can be attempted.
+For complex input, the parser can do a lot of unnecessary work exploring an alternative that will be ultimately rejected.
+However this particular grammar allows unambiguosly determining the correct alternative by looking at just the next token:
+* For `list`, `list_cont` begins with `list_op` where only `AND` and `OR` are valid. Otherwise repetition ends.
+* For `list_entry`, `GROUP_START` selects `group`, otherwise assume `pipeline`.
+  * Further, `pipeline` starts with a `simple_command`, which must eventually start with either a redirection operator or `WORD`. Any other token could trigger an error here.
+* For `pipeline`, `pipeline_cont` alway begins with `PIPE`, otherwiser repetition ends.
+* For `simple_command`, `command_word` must be either `redirect` which begins with one of the redirection operators, or `param` which only accepts `WORD`.
+
+Therefore there is no need to do actual backtracking - if there is no choice for the current position or the token doesn't match any of the alternatives, the parser can reject the input and report an error immediately.

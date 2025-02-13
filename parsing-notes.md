@@ -119,3 +119,82 @@ However this particular grammar allows unambiguosly determining the correct alte
 * For `simple_command`, `command_word` must be either `redirect` which begins with one of the redirection operators, or `param` which only accepts `WORD`.
 
 Therefore there is no need to do actual backtracking - if there is no choice for the current position or the token doesn't match any of the alternatives, the parser can reject the input and report an error immediately.
+
+## Abstract syntax tree
+
+The parser must build an abstract syntax tree, which stores all the necessary information for execution.
+Not all of the grammar symbols need to produce distinct tree nodes if they contain no meaningful information or their information can be stored otherwise, e.g. in the parent node.
+Variable repetitions can be stored as linked lists. We can avoid allocating separate `t_list` nodes by including a `next` pointer in the repeatable nodes.
+
+```c
+struct  s_ast_command_arg
+{
+    char                        *word;
+    struct s_ast_command_arg    *next;
+}
+
+// no node for redirect_op, store the variant in redirect node
+enum    e_ast_redirect_op
+{
+    AST_REDIR_IN,
+    AST_REDIR_OUT,
+    AST_REDIR_APP,
+    AST_HEREDOC,
+}
+
+struct  s_ast_redirect
+{
+    enum e_ast_redirect_op  op;
+    char                    *word;
+    struct s_ast_redirect   *next;
+}
+
+// no node for command_word, simple_command separates it into arg and redir
+//   which each link to next of the type
+
+struct  s_ast_simple_command
+{
+    struct s_ast_command_arg    *args;
+    struct s_ast_redirect       *redirs;
+    struct s_ast_simple_command *next;
+}
+
+// no node for pipeline_cont, simple_command links to next
+// no node for pipeline, link directly to simple_commmand
+
+// no node for list_op, store the variant in preceding list_entry node
+enum    e_ast_list_op
+{
+    AST_LIST_AND,
+    AST_LIST_OR,
+}
+
+// no node for list_cont, list_entry links to next and stores the op
+// no node for group, link directly to inner list
+
+// list_entry must distinguish inner variant
+enum    e_ast_list_entry_type
+{
+    AST_LIST_GROUP,
+    AST_LIST_PIPELINE,
+}
+
+struct  s_ast_list_entry
+{
+    enum e_ast_list_entry_type      type;
+    union
+    {
+        struct s_ast_list_entry     *group;
+        struct s_ast_simple_command *pipeline;
+    };
+    enum e_ast_list_op              next_op;
+    struct s_ast_list_entry         *next;
+}
+
+// no node for command, link directly to top-level list
+```
+
+### Recursive descent parser
+
+Top-down parsing can be implemented as a recursive descent parser: a function is created for each non-terminal symbol.
+The function adds its symbol to the tree, peeks at the next token if it needs to determine correct alternative, consumes tokens for any terminal children, and calls the corresponding function for any non-terminal children.

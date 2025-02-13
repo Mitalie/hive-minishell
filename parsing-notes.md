@@ -52,8 +52,6 @@ The resulting complexity from these caveats makes the original POSIX approach se
 
 ## Processing steps
 
-### POSIX shell
-
 1. Tokenizer: break the input into words and operators.
 2. Syntax analyzer: recognize logical meaning of tokens and build a syntax tree
 3. Word processing: for each word, perform following steps (if applicable in that word's context)
@@ -61,16 +59,6 @@ The resulting complexity from these caveats makes the original POSIX approach se
     2. Field splitting
     3. (bonus) Filename generation
     4. Quote removal
-4. Execution according to syntax tree (including redirections)
-
-### Our alternative approach
-
-1. Tokenizer: break the input into fragments and operators.
-2. Syntax analyzer: recognize logical meaning of tokens and build a syntax tree
-3. Fragment processing: for each fragment, perform one action depending on fragment type
-    * Variable expansion (produces new plain or filename fragments)
-    * Filename generation (produces new plain fragments)
-    * Fragment merging
 4. Execution according to syntax tree (including redirections)
 
 ## Tokens

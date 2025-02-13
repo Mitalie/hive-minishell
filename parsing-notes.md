@@ -70,23 +70,32 @@ REDIR_OUT
 REDIR_APP
 HEREDOC
 PIPE
-LIST_AND
-LIST_OR
+AND
+OR
 GROUP_START
 GROUP_END
+END
 ```
 
 ## Grammar
 
 ```
-list = pipeline | group | and | or
+command = list END
+list = list_entry list_cont*
+list_entry = group | pipeline
 group = GROUP_START list GROUP_END
-and = list LIST_AND list_entry
-or = list LIST_OR list_entry
-list_entry = pipeline | group
-pipeline = command pipeline_tail*
-pipeline_tail = PIPE command
+list_cont = list_op list_entry
+list_op = AND | OR
+pipeline = simple_command pipeline_cont*
+pipeline_cont = PIPE simple_command
 simple_command = command_word+
-simple_command_word = redirect | word
-redirect = redirect_op word
+command_word = redirect | command_arg
+redirect = redirect_op WORD
+redirect_op = REDIR_IN | REDIR_OUT | REDIR_APP | HEREDOC
+command_arg = WORD
 ```
+
+This grammar describes all valid minishell command lines, and can be parsed with a recursive descent parser.
+Left-side of each `=` names a "non-terminal symbol" and right side describes what other symbols that symbol can be composed of.
+`|` means alternative options, `*` means zero or more repetitions, `+` means one or more repetitions, and capitalized words are "terminal symbols" which are not composed of anything else and correspond to tokens produced by the tokenizer.
+The variable repetitions can be considered special alternatives - the repetition either continues or terminates.

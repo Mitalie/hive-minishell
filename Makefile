@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/02/11 17:06:22 by amakinen         ###   ########.fr        #
+#    Updated: 2025/02/18 18:07:26 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ $(NAME): $(OBJS) libft/libft.a
 # libft
 INCDIRS += libft
 # - Use recursive make for any targets with libft/ prefix
-libft/%:
+libft/libft.a libft/clean libft/fclean: libft/%:
 	+make -C libft $*
 # - This Makefile doesn't know whether libft.a needs updating so use a phony
 #   target to ensure we always call recursive make. Don't set libft.a directly

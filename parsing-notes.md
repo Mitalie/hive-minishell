@@ -81,23 +81,21 @@ END
 
 ```
 command = list END
-list = list_entry list_cont*
+list = list_entry (list_op list_entry)*
 list_entry = group | pipeline
 group = GROUP_START list GROUP_END
-list_cont = list_op list_entry
 list_op = AND | OR
-pipeline = simple_command pipeline_cont*
-pipeline_cont = PIPE simple_command
-simple_command = command_word+
-command_word = redirect | command_arg
+pipeline = simple_command (PIPE simple_command)*
+simple_command = command_elem command_elem*
+command_elem = command_word | redirect
+command_word = WORD
 redirect = redirect_op WORD
 redirect_op = REDIR_IN | REDIR_OUT | REDIR_APP | HEREDOC
-command_arg = WORD
 ```
 
 This grammar describes all valid minishell command lines, and can be parsed with a recursive descent parser.
 Left-side of each `=` names a "non-terminal symbol" and right side describes what other symbols that symbol can be composed of.
-`|` means alternative options, `*` means zero or more repetitions, `+` means one or more repetitions, and capitalized words are "terminal symbols" which are not composed of anything else and correspond to tokens produced by the tokenizer.
+`|` means alternative options, `*` means zero or more repetitions, `( )` group a sequence of tokens for repetition, and capitalized words are "terminal symbols" which are not composed of anything else and correspond to tokens produced by the tokenizer.
 The variable repetitions can be considered special alternatives - the repetition either continues or terminates.
 
 ### Top-down parsing
@@ -112,11 +110,11 @@ The parser must instead backtrack and try other alternatives.
 Backtracking requires storing information about previous choices made so that other alternatives can be attempted.
 For complex input, the parser can do a lot of unnecessary work exploring an alternative that will be ultimately rejected.
 However this particular grammar allows unambiguosly determining the correct alternative by looking at just the next token:
-* For `list`, `list_cont` begins with `list_op` where only `AND` and `OR` are valid. Otherwise repetition ends.
+* For `list`, repetition begins with `list_op` where only `AND` and `OR` are valid. Otherwise repetition ends.
 * For `list_entry`, `GROUP_START` selects `group`, otherwise assume `pipeline`.
-  * Further, `pipeline` starts with a `simple_command`, which must eventually start with either a redirection operator or `WORD`. Any other token could trigger an error here.
-* For `pipeline`, `pipeline_cont` alway begins with `PIPE`, otherwiser repetition ends.
-* For `simple_command`, `command_word` must be either `redirect` which begins with one of the redirection operators, or `param` which only accepts `WORD`.
+  * Further, `pipeline` starts with a `simple_command`, which must eventually start with either `WORD` or a redirection operator. Any other token could trigger an error here.
+* For `pipeline`, repetition alway begins with `PIPE`, otherwise repetition ends.
+* For `simple_command`, `command_elem` must be either `command_word` which only accepts `WORD`, or `redirect` which begins with one of the redirection operators.
 
 Therefore there is no need to do actual backtracking - if there is no choice for the current position or the token doesn't match any of the alternatives, the parser can reject the input and report an error immediately.
 
@@ -124,15 +122,9 @@ Therefore there is no need to do actual backtracking - if there is no choice for
 
 The parser must build an abstract syntax tree, which stores all the necessary information for execution.
 Not all of the grammar symbols need to produce distinct tree nodes if they contain no meaningful information or their information can be stored otherwise, e.g. in the parent node.
-Variable repetitions can be stored as linked lists. We can avoid allocating separate `t_list` nodes by including a `next` pointer in the repeatable nodes.
+Variable repetitions are stored as linked lists. We avoid allocating separate `t_list` nodes by including a `next` pointer in the repeatable nodes.
 
 ```c
-struct  s_ast_command_arg
-{
-    char                        *word;
-    struct s_ast_command_arg    *next;
-}
-
 // no node for redirect_op, store the variant in redirect node
 enum    e_ast_redirect_op
 {
@@ -149,18 +141,23 @@ struct  s_ast_redirect
     struct s_ast_redirect   *next;
 }
 
-// no node for command_word, simple_command separates it into arg and redir
-//   which each link to next of the type
+struct  s_ast_command_word
+{
+    char                        *word;
+    struct s_ast_command_word   *next;
+}
+
+// no node for command_elem, simple_command stores command_word and redirect
+//  nodes directly in separate linked lists
 
 struct  s_ast_simple_command
 {
-    struct s_ast_command_arg    *args;
+    struct s_ast_command_word   *args;
     struct s_ast_redirect       *redirs;
     struct s_ast_simple_command *next;
 }
 
-// no node for pipeline_cont, simple_command links to next
-// no node for pipeline, link directly to simple_commmand
+// no node for pipeline, link directly to first simple_commmand node
 
 // no node for list_op, store the variant in preceding list_entry node
 enum    e_ast_list_op
@@ -169,8 +166,7 @@ enum    e_ast_list_op
     AST_LIST_OR,
 }
 
-// no node for list_cont, list_entry links to next and stores the op
-// no node for group, link directly to inner list
+// no node for group, link directly to first list_entry node of inner list
 
 // list_entry must distinguish inner variant
 enum    e_ast_list_entry_type
@@ -191,7 +187,9 @@ struct  s_ast_list_entry
     struct s_ast_list_entry         *next;
 }
 
-// no node for command, link directly to top-level list
+// no node for list, link directly to first list_entry node
+
+// no node for command, link directly to first list_entry node of top-level list
 ```
 
 ### Recursive descent parser

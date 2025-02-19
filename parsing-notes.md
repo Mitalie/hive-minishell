@@ -153,6 +153,8 @@ The parser must build an abstract syntax tree, which stores all the necessary in
 Not all of the grammar symbols need to produce distinct tree nodes if they contain no meaningful information or their information can be stored otherwise, e.g. in the parent node.
 Variable repetitions are stored as linked lists. We avoid allocating separate `t_list` nodes by including a `next` pointer in the repeatable nodes.
 
+AST nodes use the following structures:
+
 ```c
 // no node for redirect_op, store the variant in redirect node
 enum    e_ast_redirect_op
@@ -225,3 +227,6 @@ struct  s_ast_list_entry
 
 Top-down parsing can be implemented as a recursive descent parser: a function is created for each non-terminal symbol.
 The function adds its symbol to the tree, peeks at the next token if it needs to determine correct alternative, consumes tokens for any terminal children, and calls the corresponding function for any non-terminal children.
+
+The exact calling interface of parser is TBD, but top level parser entry point should either return the complete AST or report an error.
+All nodes shall be dynamically allocated, and must be freed when not needed anymore. Same applies to the word strings (received from parser) in redirect and command_word nodes.

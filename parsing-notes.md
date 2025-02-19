@@ -77,6 +77,35 @@ GROUP_END
 END
 ```
 
+Tokens output by the tokenizer use the following structure:
+
+```c
+enum    e_token
+{
+    TOK_WORD,
+    TOK_REDIR_IN,
+    TOK_REDIR_OUT,
+    TOK_REDIR_APP,
+    TOK_HEREDOC,
+    TOK_PIPE,
+    TOK_AND,
+    TOK_OR,
+    TOK_GROUP_START,
+    TOK_GROUP_END,
+    TOK_END,
+}
+
+struct s_token
+{
+    enum e_token    type;
+    char            *word_content;
+}
+```
+
+The exact calling interface of tokenizer is TBD, but we envision something like `get_next_token` which the parser can call to receive one more token when it has processed the previous one.
+The parser doesn't need to keep the token struct around for long, so dynamic allocation of the struct is unnecessary and makes the interface clumsier; we should either return `s_token` by value, or take a dest pointer.
+The `word_content` strings shall be dynamically allocated by the tokenizer, and must be freed when not needed anymore.
+
 ## Grammar
 
 ```

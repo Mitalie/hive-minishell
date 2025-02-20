@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/20 20:11:23 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/02/20 20:19:11 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,11 +89,30 @@ static bool	tok_is_operator(t_tokenizer_state *state, enum e_token *op_type)
 	return (false);
 }
 
-t_token	tokenizer_get_next(t_tokenizer_state *state)
+static char	*tok_build_word(t_tokenizer_state *state)
 {
 	char			*word_start;
 	size_t			word_len;
 	char			*word;
+
+	word_start = state->line_pos;
+	while (1)
+	{
+		tok_consume_char_or_quoted(state);
+		if (*state->line_pos == '\0' || tok_isblank(*state->line_pos))
+			break ;
+		if (tok_is_operator(state, NULL))
+			break ;
+	}
+	word_len = state->line_pos - word_start;
+	word = malloc(word_len + 1);
+	ft_memcpy(word, word_start, word_len);
+	word[word_len] = '\0';
+	return (word);
+}
+
+t_token	tokenizer_get_next(t_tokenizer_state *state)
+{
 	enum e_token	op_type;
 
 	// read new line if no line or current line consumed
@@ -104,26 +123,9 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 		state->line = readline("test prompt");
 		state->line_pos = state->line;
 	}
-	// skip blanks
 	while (tok_isblank(*state->line_pos))
 		state->line_pos++;
 	if (tok_is_operator(state, &op_type))
 		return ((t_token){op_type, NULL});
-	// not op so it's word
-	word_start = state->line_pos;
-	while (1)
-	{
-		tok_consume_char_or_quoted(state);
-		// end if next is eol or blank or op
-		if (*state->line_pos == '\0' || tok_isblank(*state->line_pos))
-			break ;
-		if (tok_is_operator(state, NULL))
-			break ;
-		// else keep going with the next char
-	}
-	word_len = state->line_pos - word_start;
-	word = malloc(word_len + 1);
-	ft_memcpy(word, word_start, word_len);
-	word[word_len] = '\0';
-	return ((t_token){TOK_WORD, word});
+	return ((t_token){TOK_WORD, tok_build_word(state)});
 }

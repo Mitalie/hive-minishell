@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/20 20:19:11 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/02/20 20:21:28 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ const t_operator_def	g_ops[] = {
 {"||", TOK_OR},
 {"(", TOK_GROUP_START},
 {")", TOK_GROUP_END},
-{"\n", TOK_END},
 };
 
 static bool	tok_isblank(char c)
@@ -115,17 +114,21 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 {
 	enum e_token	op_type;
 
-	// read new line if no line or current line consumed
-	// TODO: free line before return if consumed
-	if (!state->line || *state->line_pos == '\0')
+	if (!state->line)
 	{
-		free(state->line);
 		state->line = readline("test prompt");
 		state->line_pos = state->line;
+	}
+	if (*state->line_pos == '\0')
+	{
+		free(state->line);
+		state->line = NULL;
+		return ((t_token){TOK_END, NULL});
 	}
 	while (tok_isblank(*state->line_pos))
 		state->line_pos++;
 	if (tok_is_operator(state, &op_type))
 		return ((t_token){op_type, NULL});
-	return ((t_token){TOK_WORD, tok_build_word(state)});
+	else
+		return ((t_token){TOK_WORD, tok_build_word(state)});
 }

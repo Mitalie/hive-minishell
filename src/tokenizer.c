@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/20 19:58:35 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/02/20 20:11:23 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,39 @@ static void	tok_consume_char_or_quoted(t_tokenizer_state *state)
 	}
 }
 
+/*
+	Check if current and following character match an operator. If op_type is
+	not null, write the token type to the location it points to and consume
+	the characters making up the operator.
+*/
+static bool	tok_is_operator(t_tokenizer_state *state, enum e_token *op_type)
+{
+	size_t	i;
+	size_t	op_len;
+
+	i = sizeof g_ops / sizeof g_ops[0];
+	while (i--)
+	{
+		op_len = ft_strlen(g_ops[i].str);
+		if (ft_strncmp(state->line_pos, g_ops[i].str, op_len) == 0)
+		{
+			if (op_type)
+			{
+				*op_type = g_ops[i].type;
+				state->line_pos += op_len;
+			}
+			return (true);
+		}
+	}
+	return (false);
+}
+
 t_token	tokenizer_get_next(t_tokenizer_state *state)
 {
-	char	*word_start;
-	int		i;
-	size_t	word_len;
-	char	*word;
+	char			*word_start;
+	size_t			word_len;
+	char			*word;
+	enum e_token	op_type;
 
 	// read new line if no line or current line consumed
 	// TODO: free line before return if consumed
@@ -80,11 +107,8 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 	// skip blanks
 	while (tok_isblank(*state->line_pos))
 		state->line_pos++;
-	// check for operators
-	i = sizeof g_ops / sizeof g_ops[0];
-	while (i--)
-		if (ft_strncmp(state->line_pos, g_ops[i].str, ft_strlen(g_ops[i].str)) == 0)
-			return ((t_token){g_ops[i].type, NULL});
+	if (tok_is_operator(state, &op_type))
+		return ((t_token){op_type, NULL});
 	// not op so it's word
 	word_start = state->line_pos;
 	while (1)
@@ -93,10 +117,8 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 		// end if next is eol or blank or op
 		if (*state->line_pos == '\0' || tok_isblank(*state->line_pos))
 			break ;
-		i = sizeof g_ops / sizeof g_ops[0];
-		while (i--)
-			if (ft_strncmp(state->line_pos, g_ops[i].str, ft_strlen(g_ops[i].str)) == 0)
-				break ;
+		if (tok_is_operator(state, NULL))
+			break ;
 		// else keep going with the next char
 	}
 	word_len = state->line_pos - word_start;

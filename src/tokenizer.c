@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/19 18:29:38 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/02/20 19:58:35 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,27 @@ static bool	tok_isblank(char c)
 	return (false);
 }
 
+/*
+	Consume current character, and if it began a quotation, consume until end
+	of the quotation (including the closing quote).
+
+	TODO: End of line in quotes? Unbalanced quotes don't need to be supported,
+	but this runs off the end of the line and segfaults. Shoud either pass on
+	the unbalanced quotes within the word, or report error somehow.
+*/
+static void	tok_consume_char_or_quoted(t_tokenizer_state *state)
+{
+	char	maybe_quote;
+
+	maybe_quote = *state->line_pos++;
+	if (maybe_quote == '"' || maybe_quote == '\'')
+	{
+		while (*state->line_pos != maybe_quote)
+			state->line_pos++;
+		state->line_pos++;
+	}
+}
+
 t_token	tokenizer_get_next(t_tokenizer_state *state)
 {
 	char	*word_start;
@@ -68,16 +89,7 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 	word_start = state->line_pos;
 	while (1)
 	{
-		// if char is quote, keep going until matching end
-		// TODO: handle end of line in quotes
-		if (*state->line_pos == '"')
-			while (*state->line_pos != '"')
-				state->line_pos++;
-		if (*state->line_pos == '\'')
-			while (*state->line_pos != '\'')
-				state->line_pos++;
-		// accept this char, move onto next
-		state->line_pos++;
+		tok_consume_char_or_quoted(state);
 		// end if next is eol or blank or op
 		if (*state->line_pos == '\0' || tok_isblank(*state->line_pos))
 			break ;

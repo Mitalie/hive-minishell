@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 16:42:39 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/26 16:42:50 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/02/26 16:56:15 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,9 @@ int	main(void)
 	t_tokenizer_state	ts;
 
 	ts.line = NULL;
+	ts.eof_reached = false;
 	token = tokenizer_get_next(&ts);
-	while (token.type != TOK_END)
+	while (!ts.eof_reached)
 	{
 		debug_print_token(token);
 		free(token.word_content);

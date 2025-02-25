@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/02/18 18:07:26 by amakinen         ###   ########.fr        #
+#    Updated: 2025/02/25 19:31:19 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,22 @@ SRCS := $(addprefix $(SRCDIR)/,\
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 BINS := $(NAME)
 $(NAME): $(OBJS) libft/libft.a
+
+# Tests
+TESTDIR := test
+TESTS := $(addprefix $(TESTDIR)/,\
+)
+TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
+# - Remove main.o from OBJS as each test comes with its own main
+$(TESTS): %: $(OBJDIR)/%.o $(filter-out $(OBJDIR)/main.o,$(OBJS)) libft/libft.a
+# - Add tests to OBJS and BINS so static pattern rules with recipes apply. Does
+#   not affect OBJS in dependency lists above this line because it is a simply
+#   expanded variable, already expanded in there before this assignment.
+OBJS += $(TESTS:%=$(OBJDIR)/%.o)
+BINS += $(TESTS)
+.PHONY: tests
+tests: $(TESTS)
+all: tests
 
 # libft
 INCDIRS += libft

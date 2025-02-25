@@ -1,21 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute.h                                          :+:      :+:    :+:   */
+/*   pipeline_internal.h                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/25 17:28:43 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/25 17:48:26 by amakinen         ###   ########.fr       */
+/*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
+/*   Updated: 2025/02/25 17:30:11 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXECUTE_H
-# define EXECUTE_H
+#ifndef PIPELINE_INTERNAL_H
+# define PIPELINE_INTERNAL_H
 
-struct	s_ast_simple_command;
+struct	s_pipeline_fds
+{
+	int	in;
+	int	next_in;
+	int	out;
+};
 
-void	execute_simple_command(struct s_ast_simple_command *command);
-void	execute_pipeline(struct s_ast_simple_command *pipeline_head);
+# define NO_PIPE -1
 
 #endif

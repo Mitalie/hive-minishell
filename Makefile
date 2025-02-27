@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/02/25 19:31:19 by amakinen         ###   ########.fr        #
+#    Updated: 2025/02/26 16:54:35 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,19 +20,23 @@ INCDIRS := include
 # Project files and targets
 SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
+	tokenizer.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 BINS := $(NAME)
 $(NAME): $(OBJS) libft/libft.a
+$(NAME): tgt_LDLIBS := -lreadline
 
 # Tests
 TESTDIR := test
 TESTS := $(addprefix $(TESTDIR)/,\
+	tokenizer \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main
 $(TESTS): %: $(OBJDIR)/%.o $(filter-out $(OBJDIR)/main.o,$(OBJS)) libft/libft.a
+$(TESTS): tgt_LDLIBS := -lreadline
 # - Add tests to OBJS and BINS so static pattern rules with recipes apply. Does
 #   not affect OBJS in dependency lists above this line because it is a simply
 #   expanded variable, already expanded in there before this assignment.

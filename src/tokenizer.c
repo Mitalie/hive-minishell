@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/20 20:42:12 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/03/03 21:25:17 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <readline/readline.h>
 
 #include "libft.h"
+
+#include "util.h"
 
 // processed from end to start
 // op that is prefix of another op must be listed first (processed last)
@@ -32,13 +34,6 @@ const t_operator_def	g_ops[] = {
 {"(", TOK_GROUP_START},
 {")", TOK_GROUP_END},
 };
-
-static bool	tok_isblank(char c)
-{
-	if (c == ' ' || c == '\t')
-		return (true);
-	return (false);
-}
 
 /*
 	Consume current character, and if it began a quotation, consume until end
@@ -98,7 +93,7 @@ static char	*tok_build_word(t_tokenizer_state *state)
 	while (1)
 	{
 		tok_consume_char_or_quoted(state);
-		if (*state->line_pos == '\0' || tok_isblank(*state->line_pos))
+		if (*state->line_pos == '\0' || util_isblank(*state->line_pos))
 			break ;
 		if (tok_is_operator(state, NULL))
 			break ;
@@ -126,7 +121,7 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 		state->line = NULL;
 		return ((t_token){TOK_END, NULL});
 	}
-	while (tok_isblank(*state->line_pos))
+	while (util_isblank(*state->line_pos))
 		state->line_pos++;
 	if (tok_is_operator(state, &op_type))
 		return ((t_token){op_type, NULL});

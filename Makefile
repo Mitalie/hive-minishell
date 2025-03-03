@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
+#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/04 21:07:09 by josmanov         ###   ########.fr        #
+#    Updated: 2025/04/11 19:24:55 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/simple_command.c \
 	execute/pipeline.c \
 	execute/list.c \
+	util/util_char.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

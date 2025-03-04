@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/03/03 21:26:21 by amakinen         ###   ########.fr        #
+#    Updated: 2025/03/04 17:56:41 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
 	tokenizer.c \
 	util/util_char.c \
+	word/word_expand.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -33,6 +34,7 @@ $(NAME): tgt_LDLIBS := -lreadline
 TESTDIR := test
 TESTS := $(addprefix $(TESTDIR)/,\
 	tokenizer \
+	wordexp \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

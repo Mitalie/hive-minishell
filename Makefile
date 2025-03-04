@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/03/04 17:56:41 by amakinen         ###   ########.fr        #
+#    Updated: 2025/03/04 21:15:42 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,8 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	tokenizer.c \
 	util/util_char.c \
 	word/word_expand.c \
+	word/word_filename.c \
+	word/word_unquote.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

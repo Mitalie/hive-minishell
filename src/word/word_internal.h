@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:55:13 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/03 21:31:35 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/03/04 19:34:45 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,8 @@ struct	s_word_expand_state
 	bool				field_has_unquoted_wildcard;
 	bool				write;
 };
+
+void	word_unquote(char *str);
+void	word_filename(struct s_word_field **field);
 
 #endif

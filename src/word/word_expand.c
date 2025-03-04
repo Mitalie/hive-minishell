@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/04 18:47:52 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/03/04 21:33:23 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,8 +161,9 @@ static char	*word_expand_get_var(struct s_word_expand_state *state)
 	On write pass, passes the completed field to filename generation and quote
 	removal, and then updates field_curr to the next list node.
 
-	TODO: filename generation
-	TODO: quote removal
+	TODO: fix filename generation - this modifies field_curr ptr but not the
+		->next or field_first ptr that reaches it. Make field_curr a double ptr
+		or store another ptr for this?
 	TODO: handle malloc error
 */
 static void	word_expand_end_field(struct s_word_expand_state *state)
@@ -172,6 +173,10 @@ static void	word_expand_end_field(struct s_word_expand_state *state)
 	if (state->write)
 	{
 		state->field_curr->value[state->field_pos] = '\0';
+		if (state->field_has_unquoted_wildcard)
+			word_filename(&state->field_curr);
+		else
+			word_unquote(state->field_curr->value);
 		state->field_curr = state->field_curr->next;
 		state->field_pos = 0;
 		state->field_has_unquoted_wildcard = false;

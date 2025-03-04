@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/11 19:24:55 by amakinen         ###   ########.fr        #
+#    Updated: 2025/04/11 19:27:45 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/pipeline.c \
 	execute/list.c \
 	util/util_char.c \
+	word/word.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -49,6 +50,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	simple_command \
 	pipeline \
 	list \
+	wordexp \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

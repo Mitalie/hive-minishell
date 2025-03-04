@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/03 21:31:43 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/03/04 18:18:25 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,9 @@ static void	word_expand_var(struct s_word_expand_state *state, bool unquoted)
 /*
 	Read variable name from word and return a pointer to the corresponding
 	environment value as returned by getenv. Decrements field_pos to remove
-	the $ character from output.
+	the $ character from output, but only if it introduced a valid expansion.
+
+	TODO: handle `$?` (exit status special parameter)
 */
 static char	*word_expand_get_var(struct s_word_expand_state *state)
 {
@@ -136,10 +138,13 @@ static char	*word_expand_get_var(struct s_word_expand_state *state)
 	char	*value;
 	char	next_char_temp;
 
-	state->field_pos--;
 	name_start = state->word;
-	while (util_isname(*state->word))
-		state->word++;
+	if (util_isname(*state->word))
+		while (util_isname(*state->word))
+			state->word++;
+	else
+		return (NULL);
+	state->field_pos--;
 	next_char_temp = *state->word;
 	*state->word = '\0';
 	value = getenv(name_start);

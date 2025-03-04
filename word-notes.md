@@ -35,7 +35,9 @@ If yes, backtracking is required, e.g. recursive call after each attempted `*`.
 Scan over the string and count its length, recognizing single quotes `'` and expansion characters `$`.
 On single quote, scan until next single quote without recognizing expansion characters.
 On expansion character, read variable name without counting it, then count the corresponding value instead.
-After end is reached, allocate memory for the expanded word.
+Minishell doesn't support shell parameters, only environment variables and last exit status `$?` are supported.
+POSIX leaves the result unspecified if a `$` doesn't introduce a valid expansion; we mimic Bash and output the `$` character.
+When the end of the word is reached, allocate memory for the expanded word.
 Repeat the scan from beginning, but this time copying characters instead of counting them.
 
 ### Field splitting

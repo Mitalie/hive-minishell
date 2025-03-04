@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/04 18:18:25 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/03/04 18:47:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ static void	word_expand_end_field(struct s_word_expand_state *state)
 		state->field_has_unquoted_wildcard = false;
 		return ;
 	}
-	field = malloc(sizeof(*field) + state->field_pos);
+	field = malloc(sizeof(*field) + state->field_pos + 1);
 	if (state->field_curr)
 		state->field_curr->next = field;
 	else

@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/02/26 16:54:35 by amakinen         ###   ########.fr        #
+#    Updated: 2025/03/24 17:02:49 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,15 @@ INCDIRS := include
 SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
 	tokenizer.c \
+	ast/ast_command.c \
+	ast/ast_redirect.c \
+	ast/ast_pipeline.c \
+	ast/ast_list.c \
+	ast/ast_free.c \
+	parser/parser_command.c \
+	parser/parser_pipeline.c \
+	parser/parser_list.c \
+	utils/error.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -32,6 +41,11 @@ $(NAME): tgt_LDLIBS := -lreadline
 TESTDIR := test
 TESTS := $(addprefix $(TESTDIR)/,\
 	tokenizer \
+	parser/command \
+	parser/redirect \
+	parser/pipeline \
+	parser/list \
+	parser/group \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

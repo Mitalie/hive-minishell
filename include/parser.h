@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:50:10 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/23 14:32:09 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 19:42:59 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,46 +14,17 @@
 # define PARSER_H
 
 # include "ast.h"
+# include "tokenizer.h"
 
-/* Token type enumeration */
-enum e_token
+enum	e_parser_status
 {
-	TOK_WORD,
-	TOK_REDIR_IN,
-	TOK_REDIR_OUT,
-	TOK_REDIR_APP,
-	TOK_HEREDOC,
-	TOK_PIPE,
-	TOK_AND,
-	TOK_OR,
-	TOK_GROUP_START,
-	TOK_GROUP_END,
-	TOK_END,
+	PARSER_SUCCESS,
+	PARSER_ERR_SYNTAX,
+	PARSER_ERR_MALLOC,
 };
 
-/* Token structure */
-struct s_token
-{
-	enum e_token	type;
-	char			*word_content;
-};
+enum e_parser_status	parser_parse(
+							struct s_token **tokens,
+							struct s_ast_list_entry **root);
 
-/* Command parsing functions */
-struct s_ast_simple_command	*parse_simple_command(struct s_token **tokens);
-struct s_ast_simple_command	*process_command_elements(struct s_token **tokens,
-								struct s_ast_simple_command *cmd,
-								struct s_ast_command_word **args_append,
-								struct s_ast_redirect **redirs_append);
-
-/* Pipeline parsing functions */
-struct s_ast_simple_command	*parse_pipeline(struct s_token **tokens);
-
-/* List parsing functions */
-struct s_ast_list_entry		*parse_list_entry(struct s_token **tokens);
-struct s_ast_list_entry		*parse_list(struct s_token **tokens);
-struct s_ast_list_entry		*parse_group(struct s_token **tokens);
-
-/* Top-level parsing function */
-struct s_ast_list_entry		*parse_command(struct s_token **tokens);
-
-#endif /* PARSER_H */
+#endif

@@ -21,19 +21,14 @@ INCDIRS := include
 SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
 	tokenizer.c \
-	ast/ast_command.c \
-	ast/ast_redirect.c \
-	ast/ast_pipeline.c \
-	ast/ast_list.c \
 	ast/ast_free.c \
+	parser/parser.c \
 	parser/parser_command.c \
 	parser/parser_command_utils.c \
 	parser/parser_pipeline.c \
 	parser/parser_list.c \
-	parser/parser_list_utils.c \
 	parser/parser_group.c \
-	utils/error.c \
-	utils/memory.c \
+	parser/parser_syntax_error.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

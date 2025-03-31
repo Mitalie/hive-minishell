@@ -1,38 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_list_utils.c                                :+:      :+:    :+:   */
+/*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 01:58:09 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 19:26:11 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
 #include "parser.h"
+#include "parser_internal.h"
+
 #include "ast.h"
-#include <stdlib.h>
+#include "tokenizer.h"
 
 /*
 	Top-level parsing function. Parses a complete command line.
-	Returns the root of the AST, or NULL on failure.
+	Stores the created AST in the pointer pointed to by `root`.
 */
-struct s_ast_list_entry	*parse_command(struct s_token **tokens)
+enum e_parser_status	parser_parse(struct s_token **tokens,
+	struct s_ast_list_entry **root)
 {
-	struct s_ast_list_entry	*root;
+	enum e_parser_status	status;
 
-	if (!tokens || !(*tokens) || (*tokens)->type == TOK_END)
-		return (NULL);
-	root = parse_list(tokens);
-	if (!root)
-		return (NULL);
-	if (*tokens && (*tokens)->type != TOK_END)
+	status = parse_list(tokens, root);
+	if (status != PARSER_SUCCESS)
+		return (status);
+	if ((*tokens)->type != TOK_END)
 	{
-		print_syntax_error("syntax error near unexpected token");
-		free_list_entry(root);
-		return (NULL);
+		print_syntax_error("unexpected token");
+		return (PARSER_ERR_SYNTAX);
 	}
-	return (root);
+	(*tokens)++;
+	return (PARSER_SUCCESS);
 }

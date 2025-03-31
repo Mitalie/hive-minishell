@@ -3,95 +3,76 @@
 /*                                                        :::      ::::::::   */
 /*   parser_list.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 14:22:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 03:38:39 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 19:36:26 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
-#include "parser.h"
-#include "ast.h"
+#include "parser_internal.h"
+
 #include <stdlib.h>
+
+#include "ast.h"
+#include "parser.h"
+#include "tokenizer.h"
 
 /*
 	Parses a single list entry from the token list.
 	A list entry can be either a pipeline or a group.
-	Returns the AST list entry, or NULL on failure.
 */
-struct s_ast_list_entry	*parse_list_entry(struct s_token **tokens)
+static enum e_parser_status	parse_list_entry(
+	struct s_token **tokens,
+	struct s_ast_list_entry **list_append)
 {
-	struct s_ast_list_entry		*entry;
-	struct s_ast_simple_command	*pipeline;
+	enum e_parser_status		status;
+	struct s_ast_list_entry		*new_entry;
 
-	if (!tokens || !(*tokens))
-		return (NULL);
+	new_entry = malloc(sizeof(*new_entry));
+	if (!new_entry)
+		return (PARSER_ERR_MALLOC);
+	*list_append = new_entry;
+	new_entry->next = NULL;
 	if ((*tokens)->type == TOK_GROUP_START)
-		return (parse_group(tokens));
-	pipeline = parse_pipeline(tokens);
-	if (!pipeline)
-		return (NULL);
-	entry = create_list_entry(AST_LIST_PIPELINE);
-	if (!entry)
 	{
-		free_simple_command(pipeline);
-		return (NULL);
+		new_entry->type = AST_LIST_GROUP;
+		new_entry->group = NULL;
+		status = parse_group(tokens, &(new_entry->group));
 	}
-	entry->pipeline = pipeline;
-	return (entry);
-}
-
-/*
-	Handles a logical operator and the next list entry.
-	Returns 1 on success, 0 on failure.
-*/
-static int	handle_logical_operator(struct s_token **tokens,
-				struct s_ast_list_entry *entry,
-				struct s_ast_list_entry **next_ptr)
-{
-	struct s_ast_list_entry	*next_entry;
-
-	if ((*tokens)->type == TOK_AND)
-		entry->next_op = AST_LIST_AND;
 	else
-		entry->next_op = AST_LIST_OR;
-	(*tokens)++;
-	if (!(*tokens) || (*tokens)->type == TOK_END)
 	{
-		print_syntax_error("unexpected end after logical operator");
-		return (0);
+		new_entry->type = AST_LIST_PIPELINE;
+		new_entry->pipeline = NULL;
+		status = parse_pipeline(tokens, &(new_entry->pipeline));
 	}
-	next_entry = parse_list_entry(tokens);
-	if (!next_entry)
-		return (0);
-	*next_ptr = next_entry;
-	return (1);
+	return (status);
 }
 
 /*
 	Parses a list of commands separated by && or || operators.
-	Returns the AST list entry for the first command, or NULL on failure.
 */
-struct s_ast_list_entry	*parse_list(struct s_token **tokens)
+enum e_parser_status	parse_list(
+	struct s_token **tokens,
+	struct s_ast_list_entry **list_head)
 {
-	struct s_ast_list_entry	*first_entry;
-	struct s_ast_list_entry	**next_entry_ptr;
+	enum e_parser_status	status;
+	struct s_ast_list_entry	**list_append;
 
-	if (!tokens || !(*tokens))
-		return (NULL);
-	first_entry = parse_list_entry(tokens);
-	if (!first_entry)
-		return (NULL);
-	next_entry_ptr = &(first_entry->next);
-	while (*tokens && ((*tokens)->type == TOK_AND || (*tokens)->type == TOK_OR))
+	list_append = list_head;
+	while (1)
 	{
-		if (!handle_logical_operator(tokens, first_entry, next_entry_ptr))
-		{
-			free_list_entry(first_entry);
-			return (NULL);
-		}
-		next_entry_ptr = &((*next_entry_ptr)->next);
+		status = parse_list_entry(tokens, list_append);
+		if (status != PARSER_SUCCESS)
+			return (status);
+		if ((*tokens)->type == TOK_AND)
+			(*list_append)->next_op = AST_LIST_AND;
+		else if ((*tokens)->type == TOK_OR)
+			(*list_append)->next_op = AST_LIST_OR;
+		else
+			break ;
+		(*tokens)++;
+		list_append = &((*list_append)->next);
 	}
-	return (first_entry);
+	return (PARSER_SUCCESS);
 }

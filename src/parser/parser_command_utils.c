@@ -1,71 +1,94 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_command_elements.c                          :+:      :+:    :+:   */
+/*   parser_command_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:53:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 01:53:36 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 19:23:46 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
-#include "ast.h"
+#include "parser_internal.h"
+
+#include <stdbool.h>
 #include <stdlib.h>
+
+#include "ast.h"
+#include "parser.h"
+#include "tokenizer.h"
+
+static bool	is_redirect_token(struct s_token *token)
+{
+	if (token->type == TOK_REDIR_IN)
+		return (true);
+	if (token->type == TOK_REDIR_OUT)
+		return (true);
+	if (token->type == TOK_REDIR_APP)
+		return (true);
+	if (token->type == TOK_HEREDOC)
+		return (true);
+	return (false);
+}
 
 /*
 	Process elements of a command (words and redirections).
-	Returns the command or NULL on failure.
 */
-struct s_ast_simple_command	*process_command_elements(struct s_token **tokens,
-		struct s_ast_simple_command *cmd,
-		struct s_ast_command_word **args_append,
-		struct s_ast_redirect **redirs_append)
+static enum e_parser_status	process_command_elements(
+	struct s_token **tokens,
+	struct s_ast_simple_command *new_command)
 {
-	while (*tokens && (*tokens)->type != TOK_PIPE
-		&& (*tokens)->type != TOK_AND && (*tokens)->type != TOK_OR
-		&& (*tokens)->type != TOK_END && (*tokens)->type != TOK_GROUP_END)
+	enum e_parser_status		status;
+	struct s_ast_command_word	**args_append;
+	struct s_ast_redirect		**redirs_append;
+
+	args_append = &new_command->args;
+	redirs_append = &new_command->redirs;
+	while (is_redirect_token(*tokens) || (*tokens)->type == TOK_WORD)
 	{
-		if ((*tokens)->type == TOK_WORD)
+		if (is_redirect_token(*tokens))
 		{
-			if (!parse_word(tokens, args_append))
-				return (NULL);
-			args_append = &(*args_append)->next;
-		}
-		else if ((*tokens)->type >= TOK_REDIR_IN
-			&& (*tokens)->type <= TOK_HEREDOC)
-		{
-			if (!parse_redirect(tokens, redirs_append))
-				return (NULL);
+			status = parse_redirect(tokens, redirs_append);
+			if (status != PARSER_SUCCESS)
+				return (status);
 			redirs_append = &(*redirs_append)->next;
 		}
 		else
-			break ;
-		(*tokens)++;
+		{
+			status = parse_word(tokens, args_append);
+			if (status != PARSER_SUCCESS)
+				return (status);
+			args_append = &(*args_append)->next;
+		}
 	}
-	return (cmd);
+	return (PARSER_SUCCESS);
 }
 
 /*
 	Parses a simple command from the token list.
-	Returns the created command node or NULL on failure.
 */
-struct s_ast_simple_command	*parse_simple_command(struct s_token **tokens)
+enum e_parser_status	parse_simple_command(
+	struct s_token **tokens,
+	struct s_ast_simple_command **simple_command)
 {
-	struct s_ast_simple_command	*cmd;
-	struct s_ast_command_word	**args_append;
-	struct s_ast_redirect		**redirs_append;
+	enum e_parser_status		status;
+	struct s_ast_simple_command	*new_command;
 
-	if (!tokens || !(*tokens))
-		return (NULL);
-	cmd = create_simple_command();
-	if (!cmd)
-		return (NULL);
-	args_append = &cmd->args;
-	redirs_append = &cmd->redirs;
-	cmd = process_command_elements(tokens, cmd, args_append, redirs_append);
-	if (!cmd)
-		return (NULL);
-	return (cmd);
+	new_command = malloc(sizeof(*new_command));
+	if (!new_command)
+		return (PARSER_ERR_MALLOC);
+	*simple_command = new_command;
+	new_command->next = NULL;
+	new_command->args = NULL;
+	new_command->redirs = NULL;
+	status = process_command_elements(tokens, new_command);
+	if (status != PARSER_SUCCESS)
+		return (status);
+	if (new_command->args == NULL && new_command->redirs == NULL)
+	{
+		print_syntax_error("expected word or redirect");
+		return (PARSER_ERR_SYNTAX);
+	}
+	return (PARSER_SUCCESS);
 }

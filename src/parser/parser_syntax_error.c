@@ -1,25 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   parser_syntax_error.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/19 12:24:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/23 14:45:27 by josmanov         ###   ########.fr       */
+/*   Created: 2025/02/19 12:22:58 by josmanov          #+#    #+#             */
+/*   Updated: 2025/03/31 19:31:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#include "parser_internal.h"
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <string.h>
-# include "parser.h"
+#include <stdio.h>
 
-/* Error Handling */
-void	print_syntax_error(const char *message);
-
-#endif /* UTILS_H */
+void	print_syntax_error(const char *message)
+{
+	fprintf(stderr, "minishell: syntax error: %s\n", message);
+}

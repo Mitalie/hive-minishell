@@ -3,22 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   parser_command.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 03:36:02 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 19:55:43 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
-#include "ast.h"
+#include "parser_internal.h"
+
 #include <stdlib.h>
 
-/*
-	Gets the redirection operation based on token type.
-	Returns the corresponding AST redirect operation.
-*/
-static enum e_ast_redirect_op	get_redirect_op(enum e_token type)
+#include "ast.h"
+#include "parser.h"
+#include "tokenizer.h"
+
+static enum e_ast_redirect_op	redirect_token_to_op(enum e_token type)
 {
 	if (type == TOK_REDIR_IN)
 		return (AST_REDIR_IN);
@@ -31,38 +31,49 @@ static enum e_ast_redirect_op	get_redirect_op(enum e_token type)
 }
 
 /*
-	Parses a redirect and adds it to the command.
-	Returns 1 on success, 0 on failure.
+	Parses a redirect and adds it to the AST.
+	Next token must be a redirect token.
 */
-int	parse_redirect(struct s_token **tokens,
-		struct s_ast_redirect **redirs_append)
+enum e_parser_status	parse_redirect(
+	struct s_token **tokens,
+	struct s_ast_redirect **redirect)
 {
-	enum e_ast_redirect_op	op;
-	struct s_ast_redirect	*redir;
+	struct s_ast_redirect	*new_redir;
 
-	op = get_redirect_op((*tokens)->type);
+	new_redir = malloc(sizeof(*new_redir));
+	if (!new_redir)
+		return (PARSER_ERR_MALLOC);
+	*redirect = new_redir;
+	new_redir->next = NULL;
+	new_redir->word = NULL;
+	new_redir->op = redirect_token_to_op((*tokens)->type);
 	(*tokens)++;
-	if (!(*tokens) || (*tokens)->type != TOK_WORD)
-		return (0);
-	redir = create_redirect(op, (*tokens)->word_content);
-	if (!redir)
-		return (0);
-	*redirs_append = redir;
-	return (1);
+	if ((*tokens)->type != TOK_WORD)
+	{
+		print_syntax_error("expected word for redirect");
+		return (PARSER_ERR_SYNTAX);
+	}
+	new_redir->word = (*tokens)->word_content;
+	(*tokens)++;
+	return (PARSER_SUCCESS);
 }
 
 /*
-	Parses a word and adds it to the command arguments.
-	Returns 1 on success, 0 on failure.
+	Parses a word and adds it to the AST.
+	Next token must be TOK_WORD.
 */
-int	parse_word(struct s_token **tokens,
-		struct s_ast_command_word **args_append)
+enum e_parser_status	parse_word(
+	struct s_token **tokens,
+	struct s_ast_command_word **word)
 {
-	struct s_ast_command_word	*arg;
+	struct s_ast_command_word	*new_word;
 
-	arg = create_command_word((*tokens)->word_content);
-	if (!arg)
-		return (0);
-	*args_append = arg;
-	return (1);
+	new_word = malloc(sizeof(*new_word));
+	if (!new_word)
+		return (PARSER_ERR_MALLOC);
+	*word = new_word;
+	new_word->next = NULL;
+	new_word->word = (*tokens)->word_content;
+	(*tokens)++;
+	return (PARSER_SUCCESS);
 }

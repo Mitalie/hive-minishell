@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_command_utils.c                             :+:      :+:    :+:   */
+/*   parser_simple_command.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:53:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 19:23:46 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/03/31 20:47:53 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,14 @@ static enum e_parser_status	process_command_elements(
 	{
 		if (is_redirect_token(*tokens))
 		{
-			status = parse_redirect(tokens, redirs_append);
+			status = parser_redirect(tokens, redirs_append);
 			if (status != PARSER_SUCCESS)
 				return (status);
 			redirs_append = &(*redirs_append)->next;
 		}
 		else
 		{
-			status = parse_word(tokens, args_append);
+			status = parser_word(tokens, args_append);
 			if (status != PARSER_SUCCESS)
 				return (status);
 			args_append = &(*args_append)->next;
@@ -68,7 +68,7 @@ static enum e_parser_status	process_command_elements(
 /*
 	Parses a simple command from the token list.
 */
-enum e_parser_status	parse_simple_command(
+enum e_parser_status	parser_simple_command(
 	struct s_token **tokens,
 	struct s_ast_simple_command **simple_command)
 {
@@ -87,7 +87,7 @@ enum e_parser_status	parse_simple_command(
 		return (status);
 	if (new_command->args == NULL && new_command->redirs == NULL)
 	{
-		print_syntax_error("expected word or redirect");
+		parser_syntax_error("expected word or redirect");
 		return (PARSER_ERR_SYNTAX);
 	}
 	return (PARSER_SUCCESS);

@@ -1,38 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   parser_word.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 20:47:56 by amakinen         ###   ########.fr       */
+/*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
+/*   Updated: 2025/03/31 20:48:43 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
 #include "parser_internal.h"
 
+#include <stdlib.h>
+
 #include "ast.h"
-#include "tokenizer.h"
+#include "parser.h"
 
 /*
-	Top-level parsing function. Parses a complete command line.
-	Stores the created AST in the pointer pointed to by `root`.
+	Parses a word and adds it to the AST.
+	Next token must be TOK_WORD.
 */
-enum e_parser_status	parser_parse(struct s_token **tokens,
-	struct s_ast_list_entry **root)
+enum e_parser_status	parser_word(
+	struct s_token **tokens,
+	struct s_ast_command_word **word)
 {
-	enum e_parser_status	status;
+	struct s_ast_command_word	*new_word;
 
-	status = parser_list(tokens, root);
-	if (status != PARSER_SUCCESS)
-		return (status);
-	if ((*tokens)->type != TOK_END)
-	{
-		parser_syntax_error("unexpected token");
-		return (PARSER_ERR_SYNTAX);
-	}
+	new_word = malloc(sizeof(*new_word));
+	if (!new_word)
+		return (PARSER_ERR_MALLOC);
+	*word = new_word;
+	new_word->next = NULL;
+	new_word->word = (*tokens)->word_content;
 	(*tokens)++;
 	return (PARSER_SUCCESS);
 }

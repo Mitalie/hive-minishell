@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
+#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/03/31 03:18:35 by josmanov         ###   ########.fr        #
+#    Updated: 2025/03/31 20:49:51 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,12 +23,13 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	tokenizer.c \
 	ast/ast_free.c \
 	parser/parser.c \
-	parser/parser_command.c \
-	parser/parser_command_utils.c \
-	parser/parser_pipeline.c \
+	parser/parser_syntax_error.c \
 	parser/parser_list.c \
 	parser/parser_group.c \
-	parser/parser_syntax_error.c \
+	parser/parser_pipeline.c \
+	parser/parser_simple_command.c \
+	parser/parser_redirect.c \
+	parser/parser_word.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

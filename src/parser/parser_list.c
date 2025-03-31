@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 14:22:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 19:36:26 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/03/31 20:47:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 	Parses a single list entry from the token list.
 	A list entry can be either a pipeline or a group.
 */
-static enum e_parser_status	parse_list_entry(
+static enum e_parser_status	parser_list_entry(
 	struct s_token **tokens,
 	struct s_ast_list_entry **list_append)
 {
@@ -38,13 +38,13 @@ static enum e_parser_status	parse_list_entry(
 	{
 		new_entry->type = AST_LIST_GROUP;
 		new_entry->group = NULL;
-		status = parse_group(tokens, &(new_entry->group));
+		status = parser_group(tokens, &(new_entry->group));
 	}
 	else
 	{
 		new_entry->type = AST_LIST_PIPELINE;
 		new_entry->pipeline = NULL;
-		status = parse_pipeline(tokens, &(new_entry->pipeline));
+		status = parser_pipeline(tokens, &(new_entry->pipeline));
 	}
 	return (status);
 }
@@ -52,7 +52,7 @@ static enum e_parser_status	parse_list_entry(
 /*
 	Parses a list of commands separated by && or || operators.
 */
-enum e_parser_status	parse_list(
+enum e_parser_status	parser_list(
 	struct s_token **tokens,
 	struct s_ast_list_entry **list_head)
 {
@@ -62,7 +62,7 @@ enum e_parser_status	parse_list(
 	list_append = list_head;
 	while (1)
 	{
-		status = parse_list_entry(tokens, list_append);
+		status = parser_list_entry(tokens, list_append);
 		if (status != PARSER_SUCCESS)
 			return (status);
 		if ((*tokens)->type == TOK_AND)

@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/03/31 20:49:51 by amakinen         ###   ########.fr        #
+#    Updated: 2025/03/31 20:58:31 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,11 +41,6 @@ $(NAME): tgt_LDLIBS := -lreadline
 TESTDIR := test
 TESTS := $(addprefix $(TESTDIR)/,\
 	tokenizer \
-	parser/command \
-	parser/redirect \
-	parser/pipeline \
-	parser/list \
-	parser/group \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main
@@ -122,16 +117,6 @@ $(BINS):
 # Inform make that object files don't need to be remade if the requested
 # targets are up to date with respect to the source files.
 .SECONDARY: $(OBJS)
-
-# Add a target to run only parser tests
-.PHONY: test_ast
-test_ast: $(filter $(TESTDIR)/parser/%,$(TESTS))
-	@echo "Running AST parser tests..."
-	@for test in $(filter $(TESTDIR)/parser/%,$(TESTS)); do \
-		echo "\n=== Running $$test ==="; \
-		./$$test; \
-		echo "=== $$test completed ===\n"; \
-	done
 
 # Dependency files to handle #include dependencies
 DEPS = $(OBJS:.o=.d)

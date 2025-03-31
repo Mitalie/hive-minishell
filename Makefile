@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
+#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/03/24 17:02:49 by amakinen         ###   ########.fr        #
+#    Updated: 2025/03/31 03:18:35 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,9 +27,13 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	ast/ast_list.c \
 	ast/ast_free.c \
 	parser/parser_command.c \
+	parser/parser_command_utils.c \
 	parser/parser_pipeline.c \
 	parser/parser_list.c \
+	parser/parser_list_utils.c \
+	parser/parser_group.c \
 	utils/error.c \
+	utils/memory.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -122,6 +126,16 @@ $(BINS):
 # Inform make that object files don't need to be remade if the requested
 # targets are up to date with respect to the source files.
 .SECONDARY: $(OBJS)
+
+# Add a target to run only parser tests
+.PHONY: test_ast
+test_ast: $(filter $(TESTDIR)/parser/%,$(TESTS))
+	@echo "Running AST parser tests..."
+	@for test in $(filter $(TESTDIR)/parser/%,$(TESTS)); do \
+		echo "\n=== Running $$test ==="; \
+		./$$test; \
+		echo "=== $$test completed ===\n"; \
+	done
 
 # Dependency files to handle #include dependencies
 DEPS = $(OBJS:.o=.d)

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_list.c                                        :+:      :+:    :+:   */
+/*   list.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:55:28 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/23 14:32:03 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 03:48:48 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Print the list entry node details
+/* Print the list entry node details */
 void	print_list_entry(struct s_ast_list_entry *entry)
 {
 	if (!entry)
@@ -51,14 +51,14 @@ void	print_list_entry(struct s_ast_list_entry *entry)
 	}
 }
 
-// Create a dummy pipeline for testing without using create_simple_command
-struct	s_ast_simple_command	*create_dummy_pipeline(void)
+/* Create a dummy pipeline for testing without using create_simple_command */
+struct s_ast_simple_command	*create_dummy_pipeline(void)
 {
-	// Allocate memory directly instead of using create_simple_command
-	struct s_ast_simple_command	*cmd = malloc(sizeof(struct s_ast_simple_command));
+	struct s_ast_simple_command	*cmd;
+
+	cmd = malloc(sizeof(struct s_ast_simple_command));
 	if (!cmd)
 		return (NULL);
-	// Initialize the fields
 	cmd->args = NULL;
 	cmd->redirs = NULL;
 	cmd->next = NULL;
@@ -67,41 +67,46 @@ struct	s_ast_simple_command	*create_dummy_pipeline(void)
 
 int	main(void)
 {
-	// Test 1: Creating list entries of different types
+	struct s_ast_list_entry		*group_entry;
+	struct s_ast_list_entry		*pipeline_entry;
+	struct s_ast_list_entry		*inner_group;
+	struct s_ast_list_entry		*current;
+	struct s_ast_simple_command	*cmd;
+	int							group_result;
+	int							invalid_group_result;
+	int							pipeline_result;
+	int							invalid_pipeline_result;
+	int							i;
+
 	printf("=== Test 1: Create List Entries ===\n");
-	struct s_ast_list_entry	*group_entry = create_list_entry(AST_LIST_GROUP);
-	struct s_ast_list_entry	*pipeline_entry = create_list_entry(AST_LIST_PIPELINE);
+	group_entry = create_list_entry(AST_LIST_GROUP);
+	pipeline_entry = create_list_entry(AST_LIST_PIPELINE);
 	printf("Group Entry:\n");
 	print_list_entry(group_entry);
 	printf("\nPipeline Entry:\n");
 	print_list_entry(pipeline_entry);
-	// Test 2: Setting group pointer
 	printf("\n=== Test 2: Set Group Pointer ===\n");
-	struct s_ast_list_entry	*inner_group = create_list_entry(AST_LIST_GROUP);
-	int	group_result = set_list_entry_group(group_entry, inner_group);
+	inner_group = create_list_entry(AST_LIST_GROUP);
+	group_result = set_list_entry_group(group_entry, inner_group);
 	printf("Setting group pointer result: %s\n", group_result ? "Success" : "Failed");
 	print_list_entry(group_entry);
-	// Test invalid setting (should fail)
-	int	invalid_group_result = set_list_entry_group(pipeline_entry, inner_group);
+	invalid_group_result = set_list_entry_group(pipeline_entry, inner_group);
 	printf("Setting group pointer on pipeline entry: %s\n",
 		invalid_group_result ? "Success (ERROR)" : "Failed (Expected)");
-	// Test 3: Setting pipeline pointer
 	printf("\n=== Test 3: Set Pipeline Pointer ===\n");
-	struct s_ast_simple_command	*cmd = create_dummy_pipeline();
-	int	pipeline_result = set_list_entry_pipeline(pipeline_entry, cmd);
+	cmd = create_dummy_pipeline();
+	pipeline_result = set_list_entry_pipeline(pipeline_entry, cmd);
 	printf("Setting pipeline pointer result: %s\n", pipeline_result ? "Success" : "Failed");
 	print_list_entry(pipeline_entry);
-	// Test invalid setting (should fail)
-	int	invalid_pipeline_result = set_list_entry_pipeline(group_entry, cmd);
+	invalid_pipeline_result = set_list_entry_pipeline(group_entry, cmd);
 	printf("Setting pipeline pointer on group entry: %s\n",
 		invalid_pipeline_result ? "Success (ERROR)" : "Failed (Expected)");
-	// Test 4: Chain list entries together
 	printf("\n=== Test 4: Chain List Entries ===\n");
 	group_entry->next_op = AST_LIST_AND;
 	group_entry->next = pipeline_entry;
 	pipeline_entry->next_op = AST_LIST_OR;
-	struct s_ast_list_entry	*current = group_entry;
-	int	i = 1;
+	current = group_entry;
+	i = 1;
 	while (current)
 	{
 		printf("List Entry %d:\n", i++);
@@ -110,7 +115,6 @@ int	main(void)
 			current->next_op == AST_LIST_AND ? "AND (&&)" : "OR (||)");
 		current = current->next;
 	}
-	// Free resources
 	free(cmd);
 	free(inner_group);
 	free(group_entry);

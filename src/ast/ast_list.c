@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:24:49 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/23 14:31:53 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 03:34:01 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@ struct s_ast_list_entry	*create_list_entry(enum e_ast_list_entry_type type)
 	node->type = type;
 	node->next_op = AST_LIST_AND;
 	node->next = NULL;
+	if (type == AST_LIST_GROUP)
+		node->group = NULL;
+	else
+		node->pipeline = NULL;
 	return (node);
 }
 
@@ -36,7 +40,7 @@ struct s_ast_list_entry	*create_list_entry(enum e_ast_list_entry_type type)
 	Returns 1 on success, 0 if entry is not of the correct type.
 */
 int	set_list_entry_group(struct s_ast_list_entry *entry,
-	struct s_ast_list_entry *group)
+						struct s_ast_list_entry *group)
 {
 	if (!entry || entry->type != AST_LIST_GROUP)
 		return (0);

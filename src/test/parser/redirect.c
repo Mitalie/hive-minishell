@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_redirect.c                                    :+:      :+:    :+:   */
+/*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 15:38:44 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/23 14:45:08 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:36:56 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	free_tokens(struct s_token *tokens)
 	free(tokens); // Free the tokens array itself
 }
 
-// Print the redirect node details
+/* Print the redirect node details */
 void	print_redirect(struct s_ast_redirect *redir)
 {
 	if (!redir)
@@ -54,26 +54,31 @@ void	print_redirect(struct s_ast_redirect *redir)
 
 int	main(void)
 {
-	// Test creating different types of redirects
+	struct s_ast_redirect	*input_redir;
+	struct s_ast_redirect	*output_redir;
+	struct s_ast_redirect	*append_redir;
+	struct s_ast_redirect	*heredoc_redir;
+	struct s_ast_redirect	*current;
+	int						i;
+
 	printf("=== Test 1: Input Redirect ===\n");
-	struct s_ast_redirect	*input_redir = create_redirect(AST_REDIR_IN, strdup("input.txt"));
+	input_redir = create_redirect(AST_REDIR_IN, strdup("input.txt"));
 	print_redirect(input_redir);
 	printf("\n=== Test 2: Output Redirect ===\n");
-	struct s_ast_redirect	*output_redir = create_redirect(AST_REDIR_OUT, strdup("output.txt"));
+	output_redir = create_redirect(AST_REDIR_OUT, strdup("output.txt"));
 	print_redirect(output_redir);
 	printf("\n=== Test 3: Append Redirect ===\n");
-	struct s_ast_redirect	*append_redir = create_redirect(AST_REDIR_APP, strdup("append.txt"));
+	append_redir = create_redirect(AST_REDIR_APP, strdup("append.txt"));
 	print_redirect(append_redir);
 	printf("\n=== Test 4: Heredoc Redirect ===\n");
-	struct s_ast_redirect	*heredoc_redir = create_redirect(AST_HEREDOC, strdup("EOF"));
+	heredoc_redir = create_redirect(AST_HEREDOC, strdup("EOF"));
 	print_redirect(heredoc_redir);
-	// Chain redirects together
 	printf("\n=== Test 5: Chained Redirects ===\n");
 	input_redir->next = output_redir;
 	output_redir->next = append_redir;
 	append_redir->next = heredoc_redir;
-	struct s_ast_redirect	*current = input_redir;
-	int	i = 1;
+	current = input_redir;
+	i = 1;
 	while (current)
 	{
 		printf("Redirect %d:\n", i++);
@@ -89,7 +94,6 @@ int	main(void)
 		printf("  File/Word: %s\n", current->word);
 		current = current->next;
 	}
-	// Free resources
-	// Note: In a real implementation, you would use your ast_free functions here
+	free_redirect(input_redir);
 	return (0);
 }

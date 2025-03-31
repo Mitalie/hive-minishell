@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 14:22:31 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/23 14:32:00 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 03:39:05 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,30 @@
 #include "parser.h"
 #include "ast.h"
 #include <stdlib.h>
+
+/*
+	Processes a pipeline segment after the first command.
+	Returns 0 on syntax error, 1 on success.
+*/
+static int	process_pipe_segment(struct s_token **tokens,
+				struct s_ast_simple_command ***next_cmd_ptr)
+{
+	struct s_ast_simple_command	*current_cmd;
+
+	(*tokens)++;
+	if (!(*tokens) || (*tokens)->type == TOK_END)
+	{
+		print_syntax_error("unexpected end after pipe");
+		return (0);
+	}
+	current_cmd = parse_simple_command(tokens);
+	if (!current_cmd)
+		return (0);
+	**next_cmd_ptr = current_cmd;
+	*next_cmd_ptr = &(current_cmd->next);
+	return (1);
+}
+
 /*
 	Parses a pipeline from the token list.
 	Pipelines consist of simple commands separated by pipe tokens.
@@ -22,8 +46,8 @@
 struct s_ast_simple_command	*parse_pipeline(struct s_token **tokens)
 {
 	struct s_ast_simple_command	*first_cmd;
-	struct s_ast_simple_command	*current_cmd;
 	struct s_ast_simple_command	**next_cmd_ptr;
+	int							status;
 
 	if (!tokens || !(*tokens))
 		return (NULL);
@@ -33,21 +57,12 @@ struct s_ast_simple_command	*parse_pipeline(struct s_token **tokens)
 	next_cmd_ptr = &(first_cmd->next);
 	while (*tokens && (*tokens)->type == TOK_PIPE)
 	{
-		(*tokens)++; /* Skip the pipe token */
-		if (!(*tokens) || (*tokens)->type == TOK_END)
+		status = process_pipe_segment(tokens, &next_cmd_ptr);
+		if (!status)
 		{
-			print_syntax_error("unexpected end after pipe");
-			free_simple_command(first_cmd); // This might be causing the double free
+			free_simple_command(first_cmd);
 			return (NULL);
 		}
-		current_cmd = parse_simple_command(tokens);
-		if (!current_cmd)
-		{
-			free_simple_command(first_cmd); // This might be causing the double free
-			return (NULL);
-		}
-		*next_cmd_ptr = current_cmd;
-		next_cmd_ptr = &(current_cmd->next);
 	}
 	return (first_cmd);
 }

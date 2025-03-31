@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_pipeline.c                                    :+:      :+:    :+:   */
+/*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 12:14:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/23 14:32:04 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/03/31 03:49:20 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ static int	test_parse_pipeline(void)
 	int							result;
 
 	printf("Testing parse_pipeline...\n");
-	/* Setup tokens for "ls | wc" */
 	tokens[0].type = TOK_WORD;
 	tokens[0].word_content = strdup("ls");
 	tokens[1].type = TOK_PIPE;
@@ -72,7 +71,6 @@ static int	test_parse_pipeline(void)
 		free(tokens[2].word_content);
 		return (0);
 	}
-	/* Check first command is "ls" */
 	result = pipeline->args && strcmp(pipeline->args->word, "ls") == 0;
 	if (!result)
 	{
@@ -80,7 +78,6 @@ static int	test_parse_pipeline(void)
 		free_simple_command(pipeline);
 		return (0);
 	}
-	/* Check second command is "wc" */
 	result = pipeline->next && pipeline->next->args
 		&& strcmp(pipeline->next->args->word, "wc") == 0;
 	if (!result)

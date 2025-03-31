@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/02/26 16:54:35 by amakinen         ###   ########.fr        #
+#    Updated: 2025/03/31 20:58:31 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,15 @@ INCDIRS := include
 SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
 	tokenizer.c \
+	ast/ast_free.c \
+	parser/parser.c \
+	parser/parser_syntax_error.c \
+	parser/parser_list.c \
+	parser/parser_group.c \
+	parser/parser_pipeline.c \
+	parser/parser_simple_command.c \
+	parser/parser_redirect.c \
+	parser/parser_word.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

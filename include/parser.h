@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:50:10 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 19:42:59 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/02 17:49:21 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ enum	e_parser_status
 	PARSER_ERR_MALLOC,
 };
 
+struct	s_parser_state;
+
 enum e_parser_status	parser_parse(
-							struct s_token **tokens,
+							struct s_parser_state *state,
 							struct s_ast_list_entry **root);
 
 #endif

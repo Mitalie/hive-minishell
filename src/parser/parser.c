@@ -16,6 +16,11 @@
 #include "ast.h"
 #include "tokenizer.h"
 
+void	parser_next_token(struct s_parser_state *state)
+{
+	state->curr_tok = tokenizer_get_next(&state->tok_state);
+}
+
 /*
 	Top-level parsing function. Parses a complete command line.
 	Stores the created AST in the pointer pointed to by `root`.

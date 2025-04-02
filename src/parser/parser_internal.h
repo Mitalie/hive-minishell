@@ -17,6 +17,12 @@
 # include "ast.h"
 # include "tokenizer.h"
 
+struct	s_parser_state
+{
+	struct s_token				curr_tok;
+	struct s_tokenizer_state	tok_state;
+};
+
 void					parser_next_token(struct s_parser_state *state);
 
 /* Command parsing functions */

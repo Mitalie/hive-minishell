@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/03 19:21:51 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/03 19:27:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,9 @@ enum e_parser_status	parser_parse(struct s_ast_list_entry **root)
 	parser_next_token(&state);
 	*root = NULL;
 	status = PARSER_SUCCESS;
-	if (state.curr_tok.type != TOK_END)
+	if (state.tok_state.eof_reached)
+		status = PARSER_EOF;
+	else if (state.curr_tok.type != TOK_END)
 		status = parser_list(&state, root);
 	if (status == PARSER_SUCCESS && state.curr_tok.type != TOK_END)
 	{

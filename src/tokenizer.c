@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/20 20:42:12 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/03 19:12:16 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,16 +119,16 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 		state->line = readline("test prompt");
 		state->line_pos = state->line;
 	}
-	if (!state->line || *state->line_pos == '\0')
+	if (!state->line)
 	{
-		state->eof_reached = state->line == NULL;
-		free(state->line);
-		state->line = NULL;
+		state->eof_reached = true;
 		return ((t_token){TOK_END, NULL});
 	}
 	while (tok_isblank(*state->line_pos))
 		state->line_pos++;
-	if (tok_is_operator(state, &op_type))
+	if (*state->line_pos == '\0')
+		return ((t_token){TOK_END, NULL});
+	else if (tok_is_operator(state, &op_type))
 		return ((t_token){op_type, NULL});
 	else
 		return ((t_token){TOK_WORD, tok_build_word(state)});

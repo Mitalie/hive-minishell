@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 16:42:39 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/26 16:56:15 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/03 19:23:59 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,15 @@ int	main(void)
 	{
 		debug_print_token(token);
 		free(token.word_content);
+		if (token.type == TOK_END)
+		{
+			free(ts.line);
+			ts.line = NULL;
+		}
 		token = tokenizer_get_next(&ts);
 	}
 	debug_print_token(token);
 	free(token.word_content);
+	free(ts.line);
 	return (0);
 }

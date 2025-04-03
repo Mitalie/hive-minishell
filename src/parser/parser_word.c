@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 20:48:43 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:05:41 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 	Next token must be TOK_WORD.
 */
 enum e_parser_status	parser_word(
-	struct s_token **tokens,
+	struct s_parser_state *state,
 	struct s_ast_command_word **word)
 {
 	struct s_ast_command_word	*new_word;
@@ -32,7 +32,7 @@ enum e_parser_status	parser_word(
 		return (PARSER_ERR_MALLOC);
 	*word = new_word;
 	new_word->next = NULL;
-	new_word->word = (*tokens)->word_content;
-	(*tokens)++;
+	new_word->word = state->curr_tok.word_content;
+	parser_next_token(state);
 	return (PARSER_SUCCESS);
 }

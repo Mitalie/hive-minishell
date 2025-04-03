@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/02 18:18:26 by amakinen         ###   ########.fr        #
+#    Updated: 2025/04/03 21:01:32 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,8 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_simple_command.c \
 	parser/parser_redirect.c \
 	parser/parser_word.c \
+	execute/simple_command.c \
+	execute/pipeline.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -42,6 +44,8 @@ TESTDIR := test
 TESTS := $(addprefix $(TESTDIR)/,\
 	tokenizer \
 	input_parser \
+	simple_command \
+	pipeline \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

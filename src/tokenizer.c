@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/20 20:42:12 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/03 19:04:14 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,6 @@ t_token	tokenizer_get_next(t_tokenizer_state *state)
 	if (!state->line || *state->line_pos == '\0')
 	{
 		state->eof_reached = state->line == NULL;
-		free(state->line);
-		state->line = NULL;
 		return ((t_token){TOK_END, NULL});
 	}
 	while (tok_isblank(*state->line_pos))

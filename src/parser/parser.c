@@ -6,14 +6,14 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/02 17:56:55 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/03 19:21:51 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include "parser_internal.h"
 
-#include <stddef.h>
+#include <stdlib.h>
 
 #include "ast.h"
 #include "tokenizer.h"
@@ -35,18 +35,15 @@ enum e_parser_status	parser_parse(struct s_ast_list_entry **root)
 	state.tok_state.line = NULL;
 	state.tok_state.eof_reached = false;
 	parser_next_token(&state);
-	if (state.curr_tok.type == TOK_END)
-	{
-		*root = NULL;
-		return (PARSER_SUCCESS);
-	}
-	status = parser_list(&state, root);
-	if (status != PARSER_SUCCESS)
-		return (status);
+	*root = NULL;
+	status = PARSER_SUCCESS;
 	if (state.curr_tok.type != TOK_END)
+		status = parser_list(&state, root);
+	if (status == PARSER_SUCCESS && state.curr_tok.type != TOK_END)
 	{
 		parser_syntax_error("unexpected token");
-		return (PARSER_ERR_SYNTAX);
+		status = PARSER_ERR_SYNTAX;
 	}
-	return (PARSER_SUCCESS);
+	free(state.tok_state.line);
+	return (status);
 }

@@ -6,16 +6,18 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:35:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/04 22:02:07 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/05 00:35:45 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "execute.h"
-#include "ast.h"
+
 #include <stdbool.h>
+
+#include "ast.h"
 /*
-	To Do: 
-	Create a condition to decide when to execute the next command in the list.
+    Execute a single list entry (pipeline or group)
+    Returns the exit status of the executed entry
 */
 static int	execute_list_entry(struct s_ast_list_entry *entry)
 {
@@ -30,6 +32,11 @@ static int	execute_list_entry(struct s_ast_list_entry *entry)
 	return (status);
 }
 
+/*
+    Execute a command list, handling logical operators && and ||
+    Commands are executed left to right, evaluating each action for AND/OR
+    Returns the exit status of the last executed command
+*/
 int	execute_list(struct s_ast_list_entry *list_head)
 {
 	int		status;
@@ -40,6 +47,8 @@ int	execute_list(struct s_ast_list_entry *list_head)
 	status = execute_list_entry(list_head);
 	while (list_head->next)
 	{
+		execute_next = (list_head->next_op == AST_LIST_AND && status == 0)
+			|| (list_head->next_op == AST_LIST_OR && status != 0);
 		list_head = list_head->next;
 		if (execute_next)
 			status = execute_list_entry(list_head);

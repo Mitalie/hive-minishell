@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/25 17:42:58 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/04 21:59:48 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,13 +90,17 @@ static void	pipeline_cleanup_parent(struct s_pipeline_fds *fds)
 	TODO: in child, cleanup and exit after builtin (no execve)
 	TODO: handle single builtin in main process
 */
-void	execute_pipeline(struct s_ast_simple_command *pipeline_head)
+int	execute_pipeline(struct s_ast_simple_command *pipeline_head)
 {
 	pid_t					child;
 	bool					first;
 	struct s_pipeline_fds	fds;
+	int						status;
 
 	first = true;
+	status = 0;
+	if (pipeline_head && pipeline_head->next)
+		status = 1;
 	while (pipeline_head)
 	{
 		pipeline_create_pipe(&fds, first, !pipeline_head->next);
@@ -111,4 +115,5 @@ void	execute_pipeline(struct s_ast_simple_command *pipeline_head)
 		pipeline_head = pipeline_head->next;
 		first = false;
 	}
+	return (status);
 }

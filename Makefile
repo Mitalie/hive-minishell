@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
+#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/03 21:01:32 by amakinen         ###   ########.fr        #
+#    Updated: 2025/04/04 21:07:09 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_word.c \
 	execute/simple_command.c \
 	execute/pipeline.c \
+	execute/list.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -46,6 +47,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	input_parser \
 	simple_command \
 	pipeline \
+	list \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

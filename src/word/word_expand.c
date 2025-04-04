@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/04 21:33:23 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/04 19:14:32 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,9 @@ static void	word_expand_end_field(struct s_word_expand_state *state);
 struct s_word_field	*word_expand(char *word)
 {
 	struct s_word_expand_state	state;
+	struct s_word_field			*first_field;
 
-	state.field_first = NULL;
+	state.field_append = &first_field;
 	state.field_curr = NULL;
 	state.field_pos = 0;
 	state.field_has_unquoted_wildcard = false;
@@ -58,9 +59,10 @@ struct s_word_field	*word_expand(char *word)
 	word_expand_scan(&state);
 	state.word = word;
 	state.write = true;
-	state.field_curr = state.field_first;
+	state.field_append = &first_field;
+	state.field_curr = first_field;
 	word_expand_scan(&state);
-	return (state.field_first);
+	return (first_field);
 }
 
 /*
@@ -169,26 +171,26 @@ static char	*word_expand_get_var(struct s_word_expand_state *state)
 static void	word_expand_end_field(struct s_word_expand_state *state)
 {
 	struct s_word_field	*field;
+	struct s_word_field	**new_append;
 
 	if (state->write)
 	{
 		state->field_curr->value[state->field_pos] = '\0';
+		new_append = &state->field_curr->next;
 		if (state->field_has_unquoted_wildcard)
-			word_filename(&state->field_curr);
+			word_filename(state->field_append, &new_append);
 		else
 			word_unquote(state->field_curr->value);
-		state->field_curr = state->field_curr->next;
+		state->field_append = new_append;
+		state->field_curr = *new_append;
 		state->field_pos = 0;
 		state->field_has_unquoted_wildcard = false;
 		return ;
 	}
 	field = malloc(sizeof(*field) + state->field_pos + 1);
-	if (state->field_curr)
-		state->field_curr->next = field;
-	else
-		state->field_first = field;
-	state->field_curr = field;
 	field->next = NULL;
+	*state->field_append = field;
+	state->field_append = &field->next;
 	state->field_pos = 0;
 	state->field_has_unquoted_wildcard = false;
 	return ;

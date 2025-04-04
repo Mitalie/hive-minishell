@@ -1,0 +1,7 @@
+while shell alive
+	line = readline
+	tokens = tokenize(line)
+	ast = parse(tokens)
+	while pending heredocs
+		heredoc[n] = readline
+	execute

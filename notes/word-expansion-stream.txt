@@ -1,0 +1,37 @@
+word expansion stream
+
+Quote removal is specified to come last, but only removes quotes that were present in the original word.
+Therefore we can remove them early and store "quoted" status of each character with an internal escape
+or out-of-line.
+
+expand
+	- needs buffer or lookahead for names -> directly access the input string
+	- emit expand_start, expand_end special chars
+	- emit escape special if special char appears in input
+split
+	- only splits on chars from expansion -> needs to know state
+pathname
+	- only quotes in original can disable wildcards -> needs to know state
+	- may be inefficient if pattern not stored -> storage needs to know state too
+quoteremove
+	- doesn't happen on pathname matches
+	- only removes quotes from original -> needs to know state
+
+
+
+get_word_char |
+get_expanded_char |
+get_splitted_char |
+(branch)
+	- get_quoteremoved_char
+	- get_filename_char
+
+struct word_stream
+{}
+
+
+
+word string -> expanded stream -> split stream
+scan split stream, count both quoteremoved and filepattern length, detect filepattern
+if filepattern detected, alloc and store filepattern, yield filenames
+else alloc and store and yield quoteremoved 

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 19:33:54 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/04 21:37:23 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/04 19:16:18 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	word_filename_scan(char *pattern, struct s_word_field ***append_ptr)
 	in its linked list with the matches. Otherwise keep the pattern field and
 	perform quote removal on its content.
 */
-void	word_filename(struct s_word_field **pattern)
+void	word_filename(struct s_word_field **pattern, struct s_word_field ***lastnext)
 {
 	struct s_word_field	*matches;
 	struct s_word_field	**append_ptr;
@@ -83,6 +83,7 @@ void	word_filename(struct s_word_field **pattern)
 	if (matches)
 	{
 		*append_ptr = (*pattern)->next;
+		*lastnext = append_ptr;
 		free(*pattern);
 		*pattern = matches;
 	}

@@ -1,0 +1,49 @@
+two-pos scan, single loop
+
+s_scan {
+	char	*word_pos
+	char	*var_pos
+	char	quote
+}
+
+s_state {
+	s_scan	count_pos
+	s_scan	copy_pos
+	s_scan	*pos
+	size_t	field_idx
+	e_mode	mode
+	s_field	**append
+	s_field	*curr
+}
+
+mode = COUNT
+
+def get_char:
+	if mode == COUNT
+		return c(count_pos++)
+	if mode == COPY
+		return c(copy_pos++)
+
+def yield_char(c):
+	if mode == COPY
+		curr[field_idx] = c
+	field_idx++
+
+def end_field:
+	if mode == COUNT
+		curr = alloc(field_idx)
+		mode = COPY
+	else
+		curr = process_field(curr)
+		*append = curr
+		append = &curr->next
+		mode = COUNT
+	field_idx = 0
+
+def done:
+	c(copy_pos) == NUL
+
+while not done()
+	c = get_char()
+	handle_char(c) -- maybe calls yield(c), maybe calls end_field()
+

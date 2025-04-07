@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/04 21:59:48 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/07 18:02:10 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 #include "execute.h"
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include "ast.h"
@@ -81,13 +83,33 @@ static void	pipeline_cleanup_parent(struct s_pipeline_fds *fds)
 		close(fds->out);
 }
 
+static int	pipeline_wait_for_children(int num_children, pid_t last_child)
+{
+	int		pipeline_status;
+	int		wait_status;
+	pid_t	waited_child;
+
+	pipeline_status = 0;
+	while (num_children--)
+	{
+		waited_child = wait(&wait_status);
+		if (waited_child == last_child)
+		{
+			if (WIFEXITED(wait_status))
+				pipeline_status = WEXITSTATUS(wait_status);
+			else if (WIFSIGNALED(wait_status))
+				pipeline_status = 128 + WTERMSIG(wait_status);
+		}
+	}
+	return (pipeline_status);
+}
+
 /*
 	Execute all commands in a pipeline in parallel, connecting the stdout of
 	each command to the stdin of the next one.
 	TODO: handle fork() error
-	TODO: store info about children, wait for children before return
-	TODO: store exit status
-	TODO: in child, cleanup and exit after builtin (no execve)
+	TODO: in child, cleanup and exit with correct exit code after empty command
+	or builtin (no execve)
 	TODO: handle single builtin in main process
 */
 int	execute_pipeline(struct s_ast_simple_command *pipeline_head)
@@ -95,25 +117,26 @@ int	execute_pipeline(struct s_ast_simple_command *pipeline_head)
 	pid_t					child;
 	bool					first;
 	struct s_pipeline_fds	fds;
-	int						status;
+	int						num_children;
 
 	first = true;
-	status = 0;
-	if (pipeline_head && pipeline_head->next)
-		status = 1;
+	num_children = 0;
+	child = 0;
 	while (pipeline_head)
 	{
+		num_children++;
 		pipeline_create_pipe(&fds, first, !pipeline_head->next);
 		child = fork();
 		if (child == 0)
 		{
 			pipeline_cleanup_child(&fds);
 			execute_simple_command(pipeline_head);
+			exit(0);
 		}
 		else
 			pipeline_cleanup_parent(&fds);
 		pipeline_head = pipeline_head->next;
 		first = false;
 	}
-	return (status);
+	return (pipeline_wait_for_children(num_children, child));
 }

@@ -6,11 +6,13 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 16:17:11 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/02 17:21:50 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/07 17:02:32 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <readline/readline.h>
 
 #include "ast.h"
 #include "parser.h"
@@ -101,27 +103,27 @@ int	main(void)
 {
 	enum e_parser_status	ps;
 	struct s_ast_list_entry	*root;
+	char					*line;
 
 	while (1)
 	{
-		ps = parser_parse(&root);
-		if (ps == PARSER_EOF || ps == PARSER_ERR_MALLOC)
+		line = readline("input parser> ");
+		if (!line)
 			break ;
+		ps = parser_parse(line, &root);
+		if (ps == PARSER_ERR_MALLOC)
+		{
+			printf("malloc error\n");
+			return (1);
+		}
 		if (ps == PARSER_ERR_SYNTAX)
 			printf("try again\n");
 		else if (!root)
 			printf("empty command\n");
 		else
-		{
 			print_list(root, 0);
-			free_ast(root);
-		}
+		free_ast(root);
+		free(line);
 	}
-	if (ps == PARSER_EOF)
-		printf("done\n");
-	else
-	{
-		printf("malloc error\n");
-		return (1);
-	}
+	printf("done\n");
 }

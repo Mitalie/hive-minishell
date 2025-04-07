@@ -1,0 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   list.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/04 13:35:32 by josmanov          #+#    #+#             */
+/*   Updated: 2025/04/05 00:35:45 by josmanov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "execute.h"
+
+#include <stdbool.h>
+
+#include "ast.h"
+/*
+    Execute a single list entry (pipeline or group)
+    Returns the exit status of the executed entry
+*/
+static int	execute_list_entry(struct s_ast_list_entry *entry)
+{
+	int	status;
+
+	if (entry->type == AST_LIST_PIPELINE)
+		status = execute_pipeline(entry->pipeline);
+	else if (entry->type == AST_LIST_GROUP)
+		status = execute_list(entry->group);
+	else
+		status = 1;
+	return (status);
+}
+
+/*
+    Execute a command list, handling logical operators && and ||
+    Commands are executed left to right, evaluating each action for AND/OR
+    Returns the exit status of the last executed command
+*/
+int	execute_list(struct s_ast_list_entry *list_head)
+{
+	int		status;
+	bool	execute_next;
+
+	if (!list_head)
+		return (0);
+	status = execute_list_entry(list_head);
+	while (list_head->next)
+	{
+		execute_next = (list_head->next_op == AST_LIST_AND && status == 0)
+			|| (list_head->next_op == AST_LIST_OR && status != 0);
+		list_head = list_head->next;
+		if (execute_next)
+			status = execute_list_entry(list_head);
+	}
+	return (status);
+}

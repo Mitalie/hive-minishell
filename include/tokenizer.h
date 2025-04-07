@@ -6,14 +6,12 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:50:25 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/20 20:38:22 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:15:59 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TOKENIZER_H
 # define TOKENIZER_H
-
-# include <stdbool.h>
 
 enum	e_token
 {
@@ -38,9 +36,7 @@ typedef struct s_token
 
 typedef struct s_tokenizer_state
 {
-	char	*line;
 	char	*line_pos;
-	bool	eof_reached;
 }	t_tokenizer_state;
 
 typedef struct s_operator_def

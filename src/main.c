@@ -6,12 +6,13 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/07 17:24:06 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/07 17:28:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <readline/history.h>
 #include <readline/readline.h>
 
 #include "ast.h"
@@ -35,6 +36,8 @@ int	main(void)
 		if (!line)
 			break ;
 		status = parser_parse(line, &ast);
+		if (status == PARSER_SUCCESS && ast)
+			add_history(line);
 		free(line);
 		if (status == PARSER_SUCCESS)
 			execute_list(ast);

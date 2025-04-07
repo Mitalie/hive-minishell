@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/03 19:27:49 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:34:11 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "parser_internal.h"
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <readline/readline.h>
 
 #include "ast.h"
 #include "tokenizer.h"
@@ -31,21 +33,22 @@ enum e_parser_status	parser_parse(struct s_ast_list_entry **root)
 {
 	enum e_parser_status	status;
 	struct s_parser_state	state;
+	char					*line;
 
-	state.tok_state.line = NULL;
-	state.tok_state.eof_reached = false;
+	line = readline("minishell> ");
+	if (!line)
+		return (PARSER_EOF);
+	state.tok_state.line_pos = line;
 	parser_next_token(&state);
 	*root = NULL;
 	status = PARSER_SUCCESS;
-	if (state.tok_state.eof_reached)
-		status = PARSER_EOF;
-	else if (state.curr_tok.type != TOK_END)
+	if (state.curr_tok.type != TOK_END)
 		status = parser_list(&state, root);
 	if (status == PARSER_SUCCESS && state.curr_tok.type != TOK_END)
 	{
 		parser_syntax_error("unexpected token");
 		status = PARSER_ERR_SYNTAX;
 	}
-	free(state.tok_state.line);
+	free(line);
 	return (status);
 }

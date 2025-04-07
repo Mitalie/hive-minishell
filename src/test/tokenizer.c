@@ -6,14 +6,14 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 16:42:39 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/03 19:23:59 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:26:16 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <readline/readline.h>
 
-#include "libft.h"
 #include "tokenizer.h"
 
 static const char		*g_tok_names[] = {
@@ -42,23 +42,23 @@ int	main(void)
 {
 	t_token				token;
 	t_tokenizer_state	ts;
+	char				*line;
 
-	ts.line = NULL;
-	ts.eof_reached = false;
-	token = tokenizer_get_next(&ts);
-	while (!ts.eof_reached)
+	line = NULL;
+	token.type = TOK_END;
+	while (1)
 	{
-		debug_print_token(token);
-		free(token.word_content);
 		if (token.type == TOK_END)
 		{
-			free(ts.line);
-			ts.line = NULL;
+			free(line);
+			line = readline("tokenizer> ");
+			if (!line)
+				break ;
+			ts.line_pos = line;
 		}
 		token = tokenizer_get_next(&ts);
+		debug_print_token(token);
+		free(token.word_content);
 	}
-	debug_print_token(token);
-	free(token.word_content);
-	free(ts.line);
 	return (0);
 }

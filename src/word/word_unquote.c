@@ -6,14 +6,14 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 19:11:34 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/04 19:42:57 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/08 18:51:35 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "word_internal.h"
 
 /*
-	Remove quotes from a string. Characters are moved the over empty space left
+	Remove quotes from a string. Characters are moved over the empty space left
 	by the removed characters. Quote characters that are quoted (e.g. double
 	quote character inside single quotes) are not removed.
 */
@@ -28,7 +28,9 @@ void	word_unquote(char *str)
 	while (*str)
 	{
 		c = *str++;
-		if (c == quote)
+		if (c == INTERNAL_ESCAPE)
+			*unquoted++ = *str++;
+		else if (c == quote)
 			quote = 0;
 		else if (!quote && (c == '\'' || c == '"'))
 			quote = c;

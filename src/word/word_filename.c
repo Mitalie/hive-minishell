@@ -6,13 +6,15 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 19:33:54 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/04 19:16:18 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/08 18:53:59 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "word_internal.h"
+#include "word.h"
 
 #include <dirent.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "libft.h"
@@ -20,7 +22,7 @@
 /*
 	TODO: implement properly, this is just for testing
 */
-bool	word_filename_matches(char *filename, char *pattern)
+static bool	word_filename_matches(char *filename, char *pattern)
 {
 	if (ft_strncmp(filename, pattern, 2) == 0)
 		return (true);
@@ -30,63 +32,43 @@ bool	word_filename_matches(char *filename, char *pattern)
 /*
 	TODO: rename or move elsewhere
 */
-void	word_fields_append(char *value, struct s_word_field ***append_ptr)
+static void	word_filename_append(char *value, struct s_word_field ***append)
 {
 	size_t				value_size;
 	struct s_word_field	*field;
 
 	value_size = ft_strlen(value) + 1;
 	field = malloc(sizeof(*field) + value_size);
+	field->next = NULL;
 	ft_memcpy(field->value, value, value_size);
-	**append_ptr = field;
-	*append_ptr = &field->next;
+	**append = field;
+	*append = &field->next;
 }
 
 /*
-	Iterate through directory entries in current working directory, and store
-	any that match the given filename pattern.
+	Find files in the current working directory that match the given pattern.
 
 	TODO: handle opendir error
 	TODO: handle readdir error
 	TODO: report closedir error
 */
-void	word_filename_scan(char *pattern, struct s_word_field ***append_ptr)
+struct s_word_field	*word_filename(char *pattern)
 {
 	DIR					*dir;
 	struct dirent		*dirent;
-
-	dir = opendir(".");
-	dirent = readdir(dir);
-	while (dirent)
-	{
-		if (word_filename_matches(dirent->d_name, pattern))
-			word_fields_append(dirent->d_name, append_ptr);
-		dirent = readdir(dir);
-	}
-	closedir(dir);
-}
-
-/*
-	Interpret the field as a filename pattern, and search for matches inside
-	current working directory. If matches are found, replace the pattern field
-	in its linked list with the matches. Otherwise keep the pattern field and
-	perform quote removal on its content.
-*/
-void	word_filename(struct s_word_field **pattern, struct s_word_field ***lastnext)
-{
 	struct s_word_field	*matches;
 	struct s_word_field	**append_ptr;
 
 	matches = NULL;
 	append_ptr = &matches;
-	word_filename_scan((*pattern)->value, &append_ptr);
-	if (matches)
+	dir = opendir(".");
+	dirent = readdir(dir);
+	while (dirent)
 	{
-		*append_ptr = (*pattern)->next;
-		*lastnext = append_ptr;
-		free(*pattern);
-		*pattern = matches;
+		if (word_filename_matches(dirent->d_name, pattern))
+			word_filename_append(dirent->d_name, &append_ptr);
+		dirent = readdir(dir);
 	}
-	else
-		word_unquote((*pattern)->value);
+	closedir(dir);
+	return (matches);
 }

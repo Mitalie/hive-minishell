@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/07 17:28:36 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/13 14:43:07 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,14 @@
 #include "parser.h"
 #include "execute.h"
 
+#include "shell.h"
+
 /*
 	TODO: exit status for errors
 	TODO: message and cleanup for malloc and other fatal errors
 */
+
+t_shell	g_shell;
 
 int	main(void)
 {
@@ -30,6 +34,9 @@ int	main(void)
 	struct s_ast_list_entry	*ast;
 	enum e_parser_status	status;
 
+	g_shell.env = env_init();
+	if (!g_shell.env)
+		return (1);
 	while (1)
 	{
 		line = readline("minishell> ");
@@ -45,4 +52,5 @@ int	main(void)
 		if (status == PARSER_ERR_MALLOC)
 			return (1);
 	}
+	env_free(g_shell.env);
 }

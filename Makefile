@@ -40,6 +40,9 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	word/word_heredoc.c \
 	word/word_scan.c \
 	word/word_unescape.c \
+	env/init.c \
+	env/get_set.c \
+	env/utils.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -57,6 +60,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	list \
 	wordexp \
 	wordhere \
+	env \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

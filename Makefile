@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/04 21:07:09 by josmanov         ###   ########.fr        #
+#    Updated: 2025/04/13 13:53:06 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,9 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/simple_command.c \
 	execute/pipeline.c \
 	execute/list.c \
+	env/init.c \
+	env/get_set.c \
+	env/utils.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -48,6 +51,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	simple_command \
 	pipeline \
 	list \
+	env \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

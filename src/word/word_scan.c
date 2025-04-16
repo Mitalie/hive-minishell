@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:18:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/11 17:06:07 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/16 14:33:02 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,11 @@ void	word_scan_expansion(struct s_word_state *state, bool quoted)
 	char	c;
 
 	value = word_scan_get_exp(state);
+	if (!value)
+	{
+		word_out_char(state, '$', quoted);
+		return ;
+	}
 	while (*value)
 	{
 		c = *value++;
@@ -73,7 +78,7 @@ void	word_scan_expansion(struct s_word_state *state, bool quoted)
 
 /*
 	Identify and consume the expansion following a `$`, and return a pointer
-	to its value. If no valid expansion is found, use `"$"` as the value.
+	to its value. If no valid expansion is found, a null pointer is returned.
 
 	TODO: implement correct value for `$?`.
 */
@@ -84,7 +89,10 @@ char	*word_scan_get_exp(struct s_word_state *state)
 	char	name_end_tmp;
 
 	if (*state->word == '?')
+	{
+		state->word++;
 		value = "0";
+	}
 	else if (util_isname(*state->word))
 	{
 		name_start = state->word;
@@ -98,6 +106,6 @@ char	*word_scan_get_exp(struct s_word_state *state)
 			value = "";
 	}
 	else
-		value = "$";
+		return (NULL);
 	return (value);
 }

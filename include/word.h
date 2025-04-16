@@ -6,12 +6,14 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:50:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/28 17:15:29 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:54:21 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WORD_H
 # define WORD_H
+
+# include <stdbool.h>
 
 /*
 	Field resulting from word expansion, allocated as a single block with enough
@@ -24,5 +26,8 @@ struct s_word_field
 };
 
 struct s_word_field	*word_expand(char *word);
+
+bool				word_heredoc_delimiter(char *word);
+char				*word_heredoc_line(char *line);
 
 #endif

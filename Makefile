@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/11 19:28:45 by amakinen         ###   ########.fr        #
+#    Updated: 2025/04/16 15:02:32 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/list.c \
 	util/util_char.c \
 	word/word.c \
+	word/word_exp.c \
 	word/word_filename.c \
 	word/word_scan.c \
 	word/word_unescape.c \

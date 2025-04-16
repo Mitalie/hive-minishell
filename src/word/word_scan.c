@@ -6,19 +6,17 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:18:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/16 14:33:02 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:08:06 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "word_internal.h"
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 #include "util.h"
 
 static void	word_scan_expansion(struct s_word_state *state, bool quoted);
-static char	*word_scan_get_exp(struct s_word_state *state);
 
 /*
 	Scan the word for any special characters that need to be handled.
@@ -60,7 +58,7 @@ void	word_scan_expansion(struct s_word_state *state, bool quoted)
 	char	*value;
 	char	c;
 
-	value = word_scan_get_exp(state);
+	value = word_exp_parse(state);
 	if (!value)
 	{
 		word_out_char(state, '$', quoted);
@@ -74,38 +72,4 @@ void	word_scan_expansion(struct s_word_state *state, bool quoted)
 		else
 			word_out_char(state, c, quoted);
 	}
-}
-
-/*
-	Identify and consume the expansion following a `$`, and return a pointer
-	to its value. If no valid expansion is found, a null pointer is returned.
-
-	TODO: implement correct value for `$?`.
-*/
-char	*word_scan_get_exp(struct s_word_state *state)
-{
-	char	*name_start;
-	char	*value;
-	char	name_end_tmp;
-
-	if (*state->word == '?')
-	{
-		state->word++;
-		value = "0";
-	}
-	else if (util_isname(*state->word))
-	{
-		name_start = state->word;
-		while (util_isname(*state->word))
-			state->word++;
-		name_end_tmp = *state->word;
-		*state->word = '\0';
-		value = getenv(name_start);
-		*state->word = name_end_tmp;
-		if (!value)
-			value = "";
-	}
-	else
-		return (NULL);
-	return (value);
 }

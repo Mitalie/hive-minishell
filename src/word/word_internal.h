@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:24:21 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/11 17:06:07 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:08:06 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ struct	s_word_state
 	bool				out_has_escape;
 	bool				out_has_wildcard;
 };
+
+char	*word_exp_parse(struct s_word_state *state);
 
 void	word_filename(char	*pattern, struct s_word_field ***matches_append,
 			bool *had_matches);

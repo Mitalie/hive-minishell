@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 14:12:48 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/16 15:08:06 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:15:01 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,26 +22,26 @@
 
 	TODO: implement correct value for `$?`.
 */
-char	*word_exp_parse(struct s_word_state *state)
+char	*word_exp_parse(char **word)
 {
 	char	*name_start;
 	char	*value;
 	char	name_end_tmp;
 
-	if (*state->word == '?')
+	if (**word == '?')
 	{
-		state->word++;
+		(*word)++;
 		value = "0";
 	}
-	else if (util_isname(*state->word))
+	else if (util_isname(**word))
 	{
-		name_start = state->word;
-		while (util_isname(*state->word))
-			state->word++;
-		name_end_tmp = *state->word;
-		*state->word = '\0';
+		name_start = *word;
+		while (util_isname(**word))
+			(*word)++;
+		name_end_tmp = **word;
+		**word = '\0';
 		value = getenv(name_start);
-		*state->word = name_end_tmp;
+		**word = name_end_tmp;
 		if (!value)
 			value = "";
 	}

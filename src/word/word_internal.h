@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:24:21 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/16 15:14:52 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/19 19:26:31 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,14 @@ struct	s_word_state
 	bool				out_has_wildcard;
 };
 
+struct	s_word_pattern
+{
+	char	*pattern;
+	size_t	min_len;
+	char	*prefix;
+	size_t	prefix_len;
+};
+
 char	*word_exp_parse(char **word);
 
 void	word_filename(char	*pattern, struct s_word_field ***matches_append,
@@ -38,6 +46,9 @@ void	word_filename(char	*pattern, struct s_word_field ***matches_append,
 
 void	word_out_char(struct s_word_state *state, char c, bool quoted);
 void	word_out_split(struct s_word_state *state);
+
+bool	word_pattern_init_filename(struct s_word_pattern *pattern, char *str);
+bool	word_pattern_test_filename(struct s_word_pattern *pattern, char *str);
 
 void	word_scan(struct s_word_state *state);
 

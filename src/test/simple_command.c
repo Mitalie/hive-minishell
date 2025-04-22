@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simple_command.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:11:56 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/25 22:00:53 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:36:35 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ struct s_ast_simple_command	*g_test_command
 
 int	main(void)
 {
-	execute_simple_command(g_test_command);
+	t_env	*env;
+
+	env = env_init();
+	if (!env)
+		return (1);
+	execute_simple_command(g_test_command, env);
 	write(STDERR_FILENO, "execute_simple_command returned\n", 32);
+	env_free(env);
 }

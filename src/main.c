@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/07 17:28:36 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:47:59 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,11 @@ int	main(void)
 	char					*line;
 	struct s_ast_list_entry	*ast;
 	enum e_parser_status	status;
+	t_env					*env;
 
+	env = env_init();
+	if (!env)
+		return (1);
 	while (1)
 	{
 		line = readline("minishell> ");
@@ -40,9 +44,10 @@ int	main(void)
 			add_history(line);
 		free(line);
 		if (status == PARSER_SUCCESS)
-			execute_list(ast);
+			execute_list(ast, env);
 		free_ast(ast);
 		if (status == PARSER_ERR_MALLOC)
 			return (1);
 	}
+	env_free(env);
 }

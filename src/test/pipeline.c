@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:35:02 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/25 22:01:15 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:50:20 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,12 @@ struct s_ast_simple_command	*g_test_pipeline
 
 int	main(void)
 {
-	execute_pipeline(g_test_pipeline);
+	t_env	*env;
+
+	env = env_init();
+	if (!env)
+		return (1);
+	execute_pipeline(g_test_pipeline, env);
 	write(STDERR_FILENO, "execute_pipeline returned\n", 26);
+	env_free(env);
 }

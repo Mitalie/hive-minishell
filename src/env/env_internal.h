@@ -1,28 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute.h                                          :+:      :+:    :+:   */
+/*   env_internal.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/25 17:28:43 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/21 18:46:39 by josmanov         ###   ########.fr       */
+/*   Created: 2025/04/08 03:25:51 by josmanov          #+#    #+#             */
+/*   Updated: 2025/04/13 14:22:21 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXECUTE_H
-# define EXECUTE_H
+#ifndef ENV_INTERNAL_H
+# define ENV_INTERNAL_H
 
 # include "env.h"
 
-struct	s_ast_simple_command;
-struct	s_ast_list_entry;
-
-void	execute_simple_command(struct s_ast_simple_command *command,
-			t_env *env);
-int		execute_pipeline(struct s_ast_simple_command *pipeline_head,
-			t_env *env);
-int		execute_list(struct s_ast_list_entry *list_head,
-			t_env *env);
+int		count_array_size(char **array);
+int		env_find_index(t_env *env, const char *key);
+char	*create_env_string(const char *key, const char *value);
+int		env_resize(t_env *env);
 
 #endif

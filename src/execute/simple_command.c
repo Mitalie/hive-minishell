@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simple_command.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/25 21:24:35 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:36:15 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 #include "ast.h"
 
-extern char	**environ;
+#include "env.h"
 
 /*
 	TODO: handle open() error
@@ -94,7 +94,7 @@ static char	**build_argv(struct s_ast_command_word *args)
 	TODO: path search
 	TODO: handle builtins
 */
-void	execute_simple_command(struct s_ast_simple_command *command)
+void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 {
 	char	**argv;
 
@@ -104,7 +104,7 @@ void	execute_simple_command(struct s_ast_simple_command *command)
 	argv = build_argv(command->args);
 	if (!argv)
 		return ;
-	execve(argv[0], argv, environ);
+	execve(argv[0], argv, env_get_array(env));
 	perror("execute_simple_command: execve");
 	free(argv);
 }

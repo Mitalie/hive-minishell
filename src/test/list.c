@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 23:14:19 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/05 00:42:00 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:50:06 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,13 @@ struct s_ast_list_entry	*g_test_list
 
 int	main(void)
 {
-	int	status;
+	t_env	*env;
+	int		status;
 
-	status = execute_list(g_test_list);
+	env = env_init();
+	if (!env)
+		return (1);
+	status = execute_list(g_test_list, env);
 	dprintf(STDERR_FILENO, "execute_list returned status: %d\n", status);
-	return (0);
+	env_free(env);
 }

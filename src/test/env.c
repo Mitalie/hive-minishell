@@ -6,16 +6,12 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 12:20:42 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/13 14:49:38 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:15:34 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "env.h"
-
-#include "shell.h"
-
-t_shell	g_shell;
 
 static void	print_env_variable(t_env *env, const char *var_name)
 {

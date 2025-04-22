@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/13 14:43:07 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:47:59 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,23 +19,20 @@
 #include "parser.h"
 #include "execute.h"
 
-#include "shell.h"
-
 /*
 	TODO: exit status for errors
 	TODO: message and cleanup for malloc and other fatal errors
 */
-
-t_shell	g_shell;
 
 int	main(void)
 {
 	char					*line;
 	struct s_ast_list_entry	*ast;
 	enum e_parser_status	status;
+	t_env					*env;
 
-	g_shell.env = env_init();
-	if (!g_shell.env)
+	env = env_init();
+	if (!env)
 		return (1);
 	while (1)
 	{
@@ -47,10 +44,10 @@ int	main(void)
 			add_history(line);
 		free(line);
 		if (status == PARSER_SUCCESS)
-			execute_list(ast);
+			execute_list(ast, env);
 		free_ast(ast);
 		if (status == PARSER_ERR_MALLOC)
 			return (1);
 	}
-	env_free(g_shell.env);
+	env_free(env);
 }

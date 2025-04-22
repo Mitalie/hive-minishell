@@ -6,14 +6,14 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 02:15:43 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/13 14:44:25 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:47:07 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include "env_internal.h"
+#include "libft.h"
 #include <stdlib.h>
-#include <string.h>
 
 char	*env_get(t_env *env, const char *key)
 {
@@ -23,28 +23,14 @@ char	*env_get(t_env *env, const char *key)
 	index = env_find_index(env, key);
 	if (index == -1)
 		return (NULL);
-	key_len = strlen(key);
+	key_len = ft_strlen(key);
 	return (env->env_array[index] + key_len + 1);
 }
 
-static int	handle_existing_entry(t_env *env, int index, char *new_entry)
+static int	update_existing_entry(t_env *env, int index, char *new_entry)
 {
-	char	*temp;
-
-	if (index >= env->original_size)
-		free(env->env_array[index]);
+	free(env->env_array[index]);
 	env->env_array[index] = new_entry;
-	if (index < env->original_size)
-	{
-		if (env->original_size > 1)
-		{
-			temp = env->env_array[index];
-			env->env_array[index] = env->env_array[env->original_size - 1];
-			env->env_array[env->original_size - 1] = temp;
-			index = env->original_size - 1;
-		}
-		env->original_size--;
-	}
 	return (0);
 }
 
@@ -55,9 +41,9 @@ static int	add_new_entry(t_env *env, char *new_entry)
 		free(new_entry);
 		return (-1);
 	}
-	env->env_array[env->used_size] = new_entry;
-	env->used_size++;
-	env->env_array[env->used_size] = NULL;
+	env->env_array[env->meta.used_size] = new_entry;
+	env->meta.used_size++;
+	env->env_array[env->meta.used_size] = NULL;
 	return (0);
 }
 
@@ -71,38 +57,21 @@ int	env_set(t_env *env, const char *key, const char *value)
 	if (!new_entry)
 		return (-1);
 	if (index != -1)
-	{
-		if (handle_existing_entry(env, index, new_entry) == -1)
-		{
-			free(new_entry);
-			return (-1);
-		}
-	}
-	else
-	{
-		if (add_new_entry(env, new_entry) == -1)
-			return (-1);
-	}
-	return (0);
+		return (update_existing_entry(env, index, new_entry));
+	return (add_new_entry(env, new_entry));
 }
 
 int	env_unset(t_env *env, const char *key)
 {
 	int	index;
-	int	i;
 
 	index = env_find_index(env, key);
 	if (index == -1)
 		return (0);
-	if (index >= env->original_size)
-		free(env->env_array[index]);
-	i = index;
-	while (i < env->used_size - 1)
-	{
-		env->env_array[i] = env->env_array[i + 1];
-		i++;
-	}
-	env->used_size--;
-	env->env_array[env->used_size] = NULL;
+	free(env->env_array[index]);
+	ft_memmove(&env->env_array[index], &env->env_array[index + 1],
+		sizeof(char *) * (env->meta.used_size - index));
+	env->meta.used_size--;
+	env->env_array[env->meta.used_size] = NULL;
 	return (0);
 }

@@ -6,53 +6,79 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/13 14:35:06 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:51:46 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include "env_internal.h"
+#include "libft.h"
 #include <stdlib.h>
-#include <stddef.h>
 
 extern char	**environ;
 
 static int	init_env_array(t_env *env, int size)
 {
 	if (size > 0)
-		env->array_size = size * 2;
+		env->meta.array_size = size * 2;
 	else
-		env->array_size = 10;
-	env->used_size = size;
-	env->original_size = size;
-	env->env_array = malloc(sizeof(char *) * (env->array_size + 1));
+		env->meta.array_size = 10;
+	env->meta.used_size = 0;
+	env->env_array = malloc(sizeof(char *) * (env->meta.array_size + 1));
 	if (!env->env_array)
 		return (0);
+	env->env_array[0] = NULL;
 	return (1);
+}
+
+static char	*ft_strdup_env(const char *s)
+{
+	char	*new;
+	size_t	len;
+
+	len = ft_strlen(s);
+	new = malloc(len + 1);
+	if (!new)
+		return (NULL);
+	ft_memcpy(new, s, len + 1);
+	return (new);
+}
+
+static int	fill_env_array(t_env *env)
+{
+	int		i;
+	char	*value;
+
+	i = 0;
+	while (environ[i])
+	{
+		value = ft_strdup_env(environ[i]);
+		if (!value || env_resize(env) == -1)
+		{
+			env_free(env);
+			return (-1);
+		}
+		env->env_array[env->meta.used_size++] = value;
+		env->env_array[env->meta.used_size] = NULL;
+		i++;
+	}
+	return (0);
 }
 
 t_env	*env_init(void)
 {
 	t_env	*env;
-	int		i;
-	int		size;
 
 	env = malloc(sizeof(t_env));
 	if (!env)
 		return (NULL);
-	size = count_array_size(environ);
-	if (!init_env_array(env, size))
+	if (!init_env_array(env, count_array_size(environ)))
 	{
 		free(env);
 		return (NULL);
 	}
-	i = 0;
-	while (i < size)
-	{
-		env->env_array[i] = environ[i];
-		i++;
-	}
-	env->env_array[i] = NULL;
+	if (fill_env_array(env) == -1)
+		return (NULL);
 	return (env);
 }
 
@@ -62,8 +88,8 @@ void	env_free(t_env *env)
 
 	if (!env)
 		return ;
-	i = env->original_size;
-	while (i < env->used_size)
+	i = 0;
+	while (i < env->meta.used_size)
 	{
 		free(env->env_array[i]);
 		i++;

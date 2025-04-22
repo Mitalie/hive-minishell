@@ -6,19 +6,23 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 13:24:48 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/15 15:18:31 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/21 19:01:26 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ENV_H
 # define ENV_H
 
-typedef struct s_env
+typedef struct s_env_meta
 {
-	char	**env_array;
 	int		array_size;
 	int		used_size;
-	int		original_size;
+}	t_env_meta;
+
+typedef struct s_env
+{
+	char		**env_array;
+	t_env_meta	meta;
 }	t_env;
 
 /* Initialize environment from extern environ */

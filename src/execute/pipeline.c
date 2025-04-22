@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/07 18:02:10 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/21 18:30:58 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ static int	pipeline_wait_for_children(int num_children, pid_t last_child)
 	or builtin (no execve)
 	TODO: handle single builtin in main process
 */
-int	execute_pipeline(struct s_ast_simple_command *pipeline_head)
+int	execute_pipeline(struct s_ast_simple_command *pipeline_head, t_env *env)
 {
 	pid_t					child;
 	bool					first;
@@ -130,7 +130,7 @@ int	execute_pipeline(struct s_ast_simple_command *pipeline_head)
 		if (child == 0)
 		{
 			pipeline_cleanup_child(&fds);
-			execute_simple_command(pipeline_head);
+			execute_simple_command(pipeline_head, env);
 			exit(0);
 		}
 		else

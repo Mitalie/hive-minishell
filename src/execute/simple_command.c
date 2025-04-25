@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/21 18:36:15 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:09:53 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <unistd.h>
 
 #include "ast.h"
-
+#include "path.h"
 #include "env.h"
 
 /*
@@ -94,9 +94,11 @@ static char	**build_argv(struct s_ast_command_word *args)
 	TODO: path search
 	TODO: handle builtins
 */
+
 void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 {
 	char	**argv;
+	char	*cmd_path;
 
 	apply_redirects(command->redirs);
 	if (!command->args)
@@ -104,7 +106,14 @@ void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 	argv = build_argv(command->args);
 	if (!argv)
 		return ;
-	execve(argv[0], argv, env_get_array(env));
+	cmd_path = path_search(argv[0], env);
+	if (cmd_path)
+	{
+		execve(cmd_path, argv, env_get_array(env));
+		free(cmd_path);
+	}
+	else
+		execve(argv[0], argv, env_get_array(env));
 	perror("execute_simple_command: execve");
 	free(argv);
 }

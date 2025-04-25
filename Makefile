@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
+#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/19 19:29:08 by amakinen         ###   ########.fr        #
+#    Updated: 2025/04/25 16:08:35 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,6 +44,8 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	env/init.c \
 	env/get_set.c \
 	env/utils.c \
+	path/path.c \
+	path/path_utils.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -62,6 +64,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	wordexp \
 	wordhere \
 	env \
+	path_search \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

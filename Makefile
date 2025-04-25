@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
+#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/19 19:29:08 by amakinen         ###   ########.fr        #
+#    Updated: 2025/04/25 16:08:35 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_simple_command.c \
 	parser/parser_redirect.c \
 	parser/parser_word.c \
+	parser/parser_heredoc.c \
 	execute/simple_command.c \
 	execute/pipeline.c \
 	execute/list.c \
@@ -44,6 +45,11 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	env/init.c \
 	env/get_set.c \
 	env/utils.c \
+	heredoc/heredoc.c \
+	heredoc/heredoc_read.c \
+	heredoc/heredoc_handler.c \
+	heredoc/heredoc_process.c \
+	heredoc/heredoc_utils.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -62,6 +68,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	wordexp \
 	wordhere \
 	env \
+	heredoc \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

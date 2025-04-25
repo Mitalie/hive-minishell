@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:07:51 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 19:49:00 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/23 16:56:50 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ struct s_ast_redirect
 {
 	enum e_ast_redirect_op	op;
 	char					*word;
+	int						fd;
 	struct s_ast_redirect	*next;
 };
 

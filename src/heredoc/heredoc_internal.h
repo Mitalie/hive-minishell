@@ -1,32 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.h                                           :+:      :+:    :+:   */
+/*   heredoc_internal.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/19 12:50:10 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/25 18:58:03 by josmanov         ###   ########.fr       */
+/*   Created: 2025/04/18 12:40:48 by josmanov          #+#    #+#             */
+/*   Updated: 2025/04/25 18:57:00 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSER_H
-# define PARSER_H
+#ifndef HEREDOC_INTERNAL_H
+# define HEREDOC_INTERNAL_H
 
+# include "parser.h"
 # include "ast.h"
 
-struct	s_heredoc_entry;
+# define HEREDOC_TMP_PREFIX "/tmp/minishell_heredoc_"
 
-enum	e_parser_status
-{
-	PARSER_SUCCESS,
-	PARSER_ERR_SYNTAX,
-	PARSER_ERR_MALLOC,
-	PARSER_ERR_HEREDOC,
-};
-
-enum e_parser_status	parser_parse(char *line,
-							struct s_ast_list_entry **root);
-enum e_parser_status	process_heredocs(struct s_heredoc_entry *heredoc_list);
+enum e_parser_status	read_heredoc(struct s_ast_redirect *redirect);
+char					*generate_temp_filename(void);
+int						handle_heredoc_line(int fd, char *line,
+							char *delimiter);
+int						create_heredoc_file(char **tmp_filename);
+int						reopen_heredoc_file(char *tmp_filename);
 
 #endif

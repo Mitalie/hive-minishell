@@ -33,6 +33,7 @@ enum e_parser_status	parser_parse(char *line, struct s_ast_list_entry **root)
 	struct s_parser_state	state;
 
 	state.tok_state.line_pos = line;
+	state.heredoc_list = NULL;
 	parser_next_token(&state);
 	*root = NULL;
 	status = PARSER_SUCCESS;
@@ -42,6 +43,14 @@ enum e_parser_status	parser_parse(char *line, struct s_ast_list_entry **root)
 	{
 		parser_syntax_error("unexpected token");
 		status = PARSER_ERR_SYNTAX;
+	}
+	if (status == PARSER_SUCCESS && state.heredoc_list)
+		status = process_heredocs(state.heredoc_list);
+	if (status != PARSER_SUCCESS)
+	{
+		free_heredoc_list(state.heredoc_list);
+		free_ast(*root);
+		*root = NULL;
 	}
 	return (status);
 }

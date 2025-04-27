@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 21:50:28 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/27 21:33:26 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/27 21:40:16 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 /*
 	Functions that might fail should return one of these status codes. Errors
-	should should also be reported to user using `status_err` or `status_warn`
-	helpers. Functions that receive non-success codes should clean up any
-	resources its callers can't access and then return the code further, unless
-	that function instead handles a particular error type and continues.
+	should also be reported to user using `status_err` or `status_warn` helpers.
+	Functions that receive codes other than `S_OK` should clean up any resources
+	its callers can't access and then return the code further, unless it instead
+	handles a particular class of errors and continues.
 
 	- `S_OK` indicates normal operation of the shell shall continue.
 	- `S_EXIT_OK` indicates a clean exit, such as exit command, end-of-input, or

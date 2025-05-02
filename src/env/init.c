@@ -6,18 +6,19 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/21 18:51:46 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/01 21:45:24 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include "env_internal.h"
 #include "libft.h"
+
 #include <stdlib.h>
 
 extern char	**environ;
 
-static int	init_env_array(t_env *env, int size)
+static t_status	init_env_array(t_env *env, int size)
 {
 	if (size > 0)
 		env->meta.array_size = size * 2;
@@ -26,9 +27,9 @@ static int	init_env_array(t_env *env, int size)
 	env->meta.used_size = 0;
 	env->env_array = malloc(sizeof(char *) * (env->meta.array_size + 1));
 	if (!env->env_array)
-		return (0);
+		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
 	env->env_array[0] = NULL;
-	return (1);
+	return (S_OK);
 }
 
 static char	*ft_strdup_env(const char *s)
@@ -44,42 +45,45 @@ static char	*ft_strdup_env(const char *s)
 	return (new);
 }
 
-static int	fill_env_array(t_env *env)
+static t_status	copy_environ_to_env(t_env *env)
 {
-	int		i;
-	char	*value;
+	int			i;
+	char		*value;
+	t_status	status;
 
 	i = 0;
 	while (environ[i])
 	{
 		value = ft_strdup_env(environ[i]);
-		if (!value || env_resize(env) == -1)
+		if (!value)
+			return (status_err(S_RESET_ERR, "malloc", NULL, 0));
+		status = env_resize(env);
+		if (status != S_OK)
 		{
-			env_free(env);
-			return (-1);
+			free(value);
+			return (status);
 		}
 		env->env_array[env->meta.used_size++] = value;
 		env->env_array[env->meta.used_size] = NULL;
 		i++;
 	}
-	return (0);
+	return (S_OK);
 }
 
-t_env	*env_init(void)
+t_status	env_init(t_env *env)
 {
-	t_env	*env;
+	t_status	status;
 
-	env = malloc(sizeof(t_env));
-	if (!env)
-		return (NULL);
-	if (!init_env_array(env, count_array_size(environ)))
+	status = init_env_array(env, count_array_size(environ));
+	if (status != S_OK)
+		return (status);
+	status = copy_environ_to_env(env);
+	if (status != S_OK)
 	{
-		free(env);
-		return (NULL);
+		env_free(env);
+		return (status);
 	}
-	if (fill_env_array(env) == -1)
-		return (NULL);
-	return (env);
+	return (S_OK);
 }
 
 void	env_free(t_env *env)
@@ -88,12 +92,14 @@ void	env_free(t_env *env)
 
 	if (!env)
 		return ;
-	i = 0;
-	while (i < env->meta.used_size)
+	if (env->env_array)
 	{
-		free(env->env_array[i]);
-		i++;
+		i = 0;
+		while (i < env->meta.used_size)
+		{
+			free(env->env_array[i]);
+			i++;
+		}
+		free(env->env_array);
 	}
-	free(env->env_array);
-	free(env);
 }

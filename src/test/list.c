@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 23:14:19 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/21 18:50:06 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/01 22:18:51 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include "ast.h"
 #include "execute.h"
+#include "env.h"
+#include "status.h"
 
 /*
 	/bin/echo "First command" &&
@@ -65,13 +67,14 @@ struct s_ast_list_entry	*g_test_list
 
 int	main(void)
 {
-	t_env	*env;
-	int		status;
+	t_env		env;
+	t_status	env_status;
+	int			status;
 
-	env = env_init();
-	if (!env)
+	env_status = env_init(&env);
+	if (env_status != S_OK)
 		return (1);
-	status = execute_list(g_test_list, env);
+	status = execute_list(g_test_list, &env);
 	dprintf(STDERR_FILENO, "execute_list returned status: %d\n", status);
-	env_free(env);
+	env_free(&env);
 }

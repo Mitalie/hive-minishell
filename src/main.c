@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/21 18:47:59 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/01 22:19:37 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include "ast.h"
 #include "parser.h"
 #include "execute.h"
+#include "env.h"
+#include "status.h"
 
 /*
 	TODO: exit status for errors
@@ -29,10 +31,11 @@ int	main(void)
 	char					*line;
 	struct s_ast_list_entry	*ast;
 	enum e_parser_status	status;
-	t_env					*env;
+	t_env					env;
+	t_status				env_status;
 
-	env = env_init();
-	if (!env)
+	env_status = env_init(&env);
+	if (env_status != S_OK)
 		return (1);
 	while (1)
 	{
@@ -44,10 +47,10 @@ int	main(void)
 			add_history(line);
 		free(line);
 		if (status == PARSER_SUCCESS)
-			execute_list(ast, env);
+			execute_list(ast, &env);
 		free_ast(ast);
 		if (status == PARSER_ERR_MALLOC)
 			return (1);
 	}
-	env_free(env);
+	env_free(&env);
 }

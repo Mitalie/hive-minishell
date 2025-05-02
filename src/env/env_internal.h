@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 03:25:51 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/13 14:22:21 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/01 21:20:35 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,15 @@
 # define ENV_INTERNAL_H
 
 # include "env.h"
+# include "status.h"
 
-int		count_array_size(char **array);
-int		env_find_index(t_env *env, const char *key);
-char	*create_env_string(const char *key, const char *value);
-int		env_resize(t_env *env);
+# include <stdbool.h>
+# include <stddef.h>
+
+int			count_array_size(char **array);
+int			env_find_index(t_env *env, const char *key, size_t key_len);
+char		*create_env_string(const char *key, size_t key_len,
+				const char *value, size_t value_len);
+t_status	env_resize(t_env *env);
 
 #endif

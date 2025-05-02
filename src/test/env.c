@@ -6,12 +6,13 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 12:20:42 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/21 18:15:34 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/01 22:17:52 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "env.h"
+#include "status.h"
 
 static void	print_env_variable(t_env *env, const char *var_name)
 {
@@ -32,11 +33,11 @@ static void	test_env_get(t_env *env)
 
 static void	test_env_set_new(t_env *env)
 {
-	int	result;
+	t_status	result;
 
 	printf("\n2. Testing env_set for new variable TEST_VAR:\n");
 	result = env_set(env, "TEST_VAR", "Hello World");
-	if (result == 0)
+	if (result == S_OK)
 		printf("Successfully set TEST_VAR\n");
 	else
 		printf("Failed to set TEST_VAR\n");
@@ -45,13 +46,13 @@ static void	test_env_set_new(t_env *env)
 
 static void	test_env_set_existing(t_env *env)
 {
-	int		result;
+	t_status	result;
 
 	printf("\n3. Testing env_set to modify existing variable HOME:\n");
 	printf("Before: ");
 	print_env_variable(env, "HOME");
 	result = env_set(env, "HOME", "/temp/home");
-	if (result == 0)
+	if (result == S_OK)
 		printf("Successfully modified HOME\n");
 	else
 		printf("Failed to modify HOME\n");
@@ -61,13 +62,13 @@ static void	test_env_set_existing(t_env *env)
 
 static void	test_env_unset(t_env *env)
 {
-	int	result;
+	t_status	result;
 
 	printf("\n4. Testing env_unset for TEST_VAR:\n");
 	printf("Before: ");
 	print_env_variable(env, "TEST_VAR");
 	result = env_unset(env, "TEST_VAR");
-	if (result == 0)
+	if (result == S_OK)
 		printf("Successfully unset TEST_VAR\n");
 	else
 		printf("Failed to unset TEST_VAR\n");
@@ -99,23 +100,24 @@ static void	test_env_array(t_env *env)
 
 int	main(void)
 {
-	t_env	*env;
+	t_env		env;
+	t_status	status;
 
 	printf("--- Testing Environment Functions ---\n\n");
 	printf("Initializing environment...\n");
-	env = env_init();
-	if (!env)
+	status = env_init(&env);
+	if (status != S_OK)
 	{
 		printf("Failed to initialize environment\n");
 		return (1);
 	}
-	test_env_get(env);
-	test_env_set_new(env);
-	test_env_set_existing(env);
-	test_env_unset(env);
-	test_env_array(env);
+	test_env_get(&env);
+	test_env_set_new(&env);
+	test_env_set_existing(&env);
+	test_env_unset(&env);
+	test_env_array(&env);
 	printf("\nCleaning up environment...\n");
-	env_free(env);
+	env_free(&env);
 	printf("Test completed.\n");
 	return (0);
 }

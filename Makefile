@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/25 16:08:35 by josmanov         ###   ########.fr        #
+#    Updated: 2025/04/26 20:36:51 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ INCDIRS := include
 # Project files and targets
 SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
+	status.c \
 	tokenizer.c \
 	ast/ast_free.c \
 	parser/parser.c \
@@ -35,6 +36,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/pipeline.c \
 	execute/list.c \
 	util/util_char.c \
+	util/util_write.c \
 	word/word.c \
 	word/word_exp.c \
 	word/word_filename.c \

@@ -6,13 +6,14 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 14:22:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 19:03:15 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/02 19:03:15 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 
 #include <stdlib.h>
+#include <unistd.h>
 
 static void	free_command_word(struct s_ast_command_word *word);
 static void	free_redirect(struct s_ast_redirect *redir);
@@ -49,6 +50,10 @@ static void	free_redirect(struct s_ast_redirect *redir)
 	{
 		next = redir->next;
 		free(redir->word);
+		if (redir->op == AST_HEREDOC && redir->heredoc_lines)
+			free_command_word(redir->heredoc_lines);
+		if (redir->fd != -1)
+			close(redir->fd);
 		free(redir);
 		redir = next;
 	}

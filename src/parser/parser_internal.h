@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 16:49:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/25 15:41:40 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/04 01:22:57 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,10 @@
 # include "ast.h"
 # include "tokenizer.h"
 
-struct	s_heredoc_entry
-{
-	struct s_ast_redirect		*redirect_node;
-	struct s_heredoc_entry		*next;
-};
-
 struct	s_parser_state
 {
 	struct s_token				curr_tok;
 	struct s_tokenizer_state	tok_state;
-	struct s_heredoc_entry		*heredoc_list;
 };
 
 void					parser_next_token(struct s_parser_state *state);
@@ -53,11 +46,8 @@ enum e_parser_status	parser_group(
 							struct s_parser_state *state,
 							struct s_ast_list_entry **group_head);
 
-/* Heredoc list management functions */
-enum e_parser_status	add_heredoc_to_list(
-							struct s_parser_state *state,
-							struct s_ast_redirect *redirect);
-void					free_heredoc_list(struct s_heredoc_entry *list);
+/* Heredoc handling */
+enum e_parser_status	read_heredoc(struct s_ast_redirect *redirect);
 
 /* Error handling helper */
 

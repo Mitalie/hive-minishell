@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/25 15:42:00 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/02 00:42:00 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ enum e_parser_status	parser_redirect(
 		return (PARSER_ERR_MALLOC);
 	new_redirect->next = NULL;
 	new_redirect->fd = -1;
+	new_redirect->heredoc_lines = NULL;
 	new_redirect->op = redirect_token_to_op(state->curr_tok.type);
 	parser_next_token(state);
 	if (state->curr_tok.type != TOK_WORD)
@@ -59,6 +60,6 @@ enum e_parser_status	parser_redirect(
 	*redirect = new_redirect;
 	status = PARSER_SUCCESS;
 	if (new_redirect->op == AST_HEREDOC)
-		status = add_heredoc_to_list(state, new_redirect);
+		status = read_heredoc(new_redirect);
 	return (status);
 }

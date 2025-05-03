@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/04/26 20:36:51 by amakinen         ###   ########.fr        #
+#    Updated: 2025/05/02 23:15:37 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/simple_command.c \
 	execute/pipeline.c \
 	execute/list.c \
+	execute/heredoc.c \
 	util/util_char.c \
 	util/util_write.c \
 	word/word.c \
@@ -47,11 +48,6 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	env/init.c \
 	env/get_set.c \
 	env/utils.c \
-	heredoc/heredoc.c \
-	heredoc/heredoc_read.c \
-	heredoc/heredoc_handler.c \
-	heredoc/heredoc_process.c \
-	heredoc/heredoc_utils.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

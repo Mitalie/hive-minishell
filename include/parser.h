@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:50:10 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/25 18:58:03 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/02 18:58:03 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 # define PARSER_H
 
 # include "ast.h"
-
-struct	s_heredoc_entry;
 
 enum	e_parser_status
 {
@@ -27,6 +25,5 @@ enum	e_parser_status
 
 enum e_parser_status	parser_parse(char *line,
 							struct s_ast_list_entry **root);
-enum e_parser_status	process_heredocs(struct s_heredoc_entry *heredoc_list);
 
 #endif

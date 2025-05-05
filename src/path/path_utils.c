@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:02:24 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/25 16:36:41 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/05 23:58:00 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+/*
+	Frees a NULL-terminated array of strings and the array itself
+	Used to clean up after ft_split and similar functions
+*/
 void	ft_free_split(char **arr)
 {
 	int	i;
@@ -25,8 +29,9 @@ void	ft_free_split(char **arr)
 }
 
 /*
-** Check if command is executable at given path
-** Uses access() to verify execution permissions
+	Checks if a file exists, is accessible, and is a regular executable file
+	Uses access() to verify execution permissions and stat() to verify file type
+	Returns true if the path points to an executable file, false otherwise
 */
 bool	path_is_executable(const char *path)
 {

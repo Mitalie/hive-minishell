@@ -6,25 +6,21 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/25 16:09:53 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/05 23:57:29 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "execute.h"
-
+#include "execute_internal.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#include "ast.h"
-#include "path.h"
-#include "env.h"
+#include <errno.h>
+#include "libft.h"
 
 /*
-	TODO: handle open() error
-	TODO: handle dup2() error
-	TODO: report close() error
+	Performs a file redirection by opening a file and duplicating descriptors
+	Handles different types of redirections based on the open_flags parameter
 */
 static void	do_redirect(const char *path, int target_fd, int open_flags)
 {
@@ -36,11 +32,10 @@ static void	do_redirect(const char *path, int target_fd, int open_flags)
 }
 
 /*
-	Apply redirections from the ast redirection list.
-	TODO: handle heredoc
-	TODO: apply word processing steps
+	Processes and applies all redirections from the AST redirection list
+	Supports input (<), output (>), and append (>>) redirections
 */
-static void	apply_redirects(struct s_ast_redirect *redirs)
+void	apply_redirects(struct s_ast_redirect *redirs)
 {
 	while (redirs)
 	{
@@ -57,10 +52,10 @@ static void	apply_redirects(struct s_ast_redirect *redirs)
 }
 
 /*
-	Convert args list from ast to the argv format required by execve.
-	TODO: apply word processing steps
+	Converts the AST command word list to an argv array for execve
+	Allocates a new array with command and arguments, NULL-terminated
 */
-static char	**build_argv(struct s_ast_command_word *args)
+char	**build_argv(struct s_ast_command_word *args)
 {
 	size_t						n_args;
 	char						**argv;
@@ -89,16 +84,14 @@ static char	**build_argv(struct s_ast_command_word *args)
 }
 
 /*
-	Execute a simple command, processing word expansions and redirections as
-	necessary.
-	TODO: path search
-	TODO: handle builtins
+	Executes a simple command from the AST
+	Handles redirections, builds argument array, and executes the command
+	Exits with appropriate status code based on command execution result
 */
-
 void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 {
 	char	**argv;
-	char	*cmd_path;
+	int		exit_code;
 
 	apply_redirects(command->redirs);
 	if (!command->args)
@@ -106,14 +99,10 @@ void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 	argv = build_argv(command->args);
 	if (!argv)
 		return ;
-	cmd_path = path_search(argv[0], env);
-	if (cmd_path)
-	{
-		execve(cmd_path, argv, env_get_array(env));
-		free(cmd_path);
-	}
+	if (ft_strchr(argv[0], '/'))
+		handle_absolute_path(argv, env, &exit_code);
 	else
-		execve(argv[0], argv, env_get_array(env));
-	perror("execute_simple_command: execve");
+		handle_path_search(argv, env, &exit_code);
 	free(argv);
+	exit(exit_code);
 }

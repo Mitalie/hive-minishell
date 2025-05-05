@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 21:23:26 by amakinen          #+#    #+#             */
-/*   Updated: 2025/03/03 21:32:42 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/04/26 20:35:46 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,11 @@
 # define UTIL_H
 
 # include <stdbool.h>
+# include <stddef.h>
 
 bool	util_isblank(char c);
 bool	util_isname(char c);
+
+bool	util_write_all(int fd, const void *buf, size_t len);
 
 #endif

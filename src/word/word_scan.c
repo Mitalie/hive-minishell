@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:18:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/16 15:15:02 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/09 18:31:22 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,17 @@
 
 #include <stdbool.h>
 
+#include "status.h"
 #include "util.h"
 
-static void	word_scan_expansion(struct s_word_state *state, bool quoted);
+static t_status	word_scan_expansion(struct s_word_state *state, bool quoted);
 
 /*
 	Scan the word for any special characters that need to be handled.
 	Recognizes quotes and maintains quote state, and recognizes expansions
 	introduced by `$`.
 */
-void	word_scan(struct s_word_state *state)
+t_status	word_scan(struct s_word_state *state)
 {
 	char	quote;
 	char	c;
@@ -43,7 +44,7 @@ void	word_scan(struct s_word_state *state)
 		if (quote)
 			state->out_has_quotes = true;
 	}
-	word_out_split(state);
+	return (word_out_split(state));
 }
 
 /*
@@ -53,23 +54,29 @@ void	word_scan(struct s_word_state *state)
 
 	TODO: split using IFS instead of isblank.
 */
-void	word_scan_expansion(struct s_word_state *state, bool quoted)
+t_status	word_scan_expansion(struct s_word_state *state, bool quoted)
 {
-	char	*value;
-	char	c;
+	char		*value;
+	char		c;
+	t_status	status;
 
 	value = word_exp_parse(&state->word);
 	if (!value)
 	{
 		word_out_char(state, '$', quoted);
-		return ;
+		return (S_OK);
 	}
 	while (*value)
 	{
 		c = *value++;
 		if (!quoted && util_isblank(c))
-			word_out_split(state);
+		{
+			status = word_out_split(state);
+			if (status != S_OK)
+				return (status);
+		}
 		else
 			word_out_char(state, c, quoted);
 	}
+	return (S_OK);
 }

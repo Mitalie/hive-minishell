@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:11:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/27 21:30:00 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/09 18:53:14 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,6 @@ void	status_warn(const char *msg, const char *extra, int errnum)
 		len += ft_strlcpy(buf + len, ": ", ERR_BUF_LEN - len);
 		len += ft_strlcpy(buf + len, strerror(errnum), ERR_BUF_LEN - len);
 	}
+	buf[len++] = '\n';
 	util_write_all(STDERR_FILENO, buf, len);
 }

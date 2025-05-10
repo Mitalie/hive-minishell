@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/10 22:23:35 by josmanov         ###   ########.fr        #
+#    Updated: 2025/05/11 00:51:23 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,9 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_word.c \
 	parser/parser_heredoc.c \
 	execute/simple_command.c \
+	execute/path/path.c \
+	execute/path/path_utils.c \
+	execute/path/path_execve.c \
 	execute/pipeline.c \
 	execute/list.c \
 	execute/heredoc.c \
@@ -67,6 +70,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	wordexp \
 	wordhere \
 	env \
+	path_execve \
 	heredoc \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)

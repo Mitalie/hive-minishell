@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/05 23:57:29 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 23:42:23 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 /*
 	Performs a file redirection by opening a file and duplicating descriptors
 	Handles different types of redirections based on the open_flags parameter
+	TODO: handle open() error
+	TODO: handle dup2() error
+	TODO: report close() error
 */
 static void	do_redirect(const char *path, int target_fd, int open_flags)
 {
@@ -34,8 +37,10 @@ static void	do_redirect(const char *path, int target_fd, int open_flags)
 /*
 	Processes and applies all redirections from the AST redirection list
 	Supports input (<), output (>), and append (>>) redirections
+	TODO: handle heredoc
+	TODO: apply word processing steps
 */
-void	apply_redirects(struct s_ast_redirect *redirs)
+static void	apply_redirects(struct s_ast_redirect *redirs)
 {
 	while (redirs)
 	{
@@ -54,8 +59,9 @@ void	apply_redirects(struct s_ast_redirect *redirs)
 /*
 	Converts the AST command word list to an argv array for execve
 	Allocates a new array with command and arguments, NULL-terminated
+	TODO: apply word processing steps
 */
-char	**build_argv(struct s_ast_command_word *args)
+static char	**build_argv(struct s_ast_command_word *args)
 {
 	size_t						n_args;
 	char						**argv;
@@ -87,6 +93,7 @@ char	**build_argv(struct s_ast_command_word *args)
 	Executes a simple command from the AST
 	Handles redirections, builds argument array, and executes the command
 	Exits with appropriate status code based on command execution result
+	TODO: handle builtins
 */
 void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 {
@@ -99,10 +106,7 @@ void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 	argv = build_argv(command->args);
 	if (!argv)
 		return ;
-	if (ft_strchr(argv[0], '/'))
-		handle_absolute_path(argv, env, &exit_code);
-	else
-		handle_path_search(argv, env, &exit_code);
+	handle_path_search(argv, env, &exit_code);
 	free(argv);
 	exit(exit_code);
 }

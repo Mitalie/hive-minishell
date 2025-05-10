@@ -1,18 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_path.c                                     :+:      :+:    :+:   */
+/*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/01 21:02:18 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/05 23:50:25 by josmanov         ###   ########.fr       */
+/*   Created: 2025/04/23 12:02:43 by josmanov          #+#    #+#             */
+/*   Updated: 2025/05/11 01:08:00 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "execute_internal.h"
+#include "../execute_internal.h"
+#include "path_utils.h"
 #include <errno.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "path.h"
 #include "env.h"
 #include "status.h"

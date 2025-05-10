@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/05 23:56:23 by josmanov         ###   ########.fr        #
+#    Updated: 2025/05/11 00:51:23 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,9 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_redirect.c \
 	parser/parser_word.c \
 	execute/simple_command.c \
-	execute/command_path.c \
+	execute/path/path.c \
+	execute/path/path_utils.c \
+	execute/path/path_execve.c \
 	execute/pipeline.c \
 	execute/list.c \
 	util/util_char.c \
@@ -47,9 +49,6 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	env/init.c \
 	env/get_set.c \
 	env/utils.c \
-	path/path.c \
-	path/path_utils.c \
-	path/path_execve.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -68,7 +67,6 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	wordexp \
 	wordhere \
 	env \
-	path_search \
 	path_execve \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)

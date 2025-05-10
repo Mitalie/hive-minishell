@@ -5,39 +5,23 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/01 19:30:33 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/06 00:01:00 by josmanov         ###   ########.fr       */
+/*   Created: 2025/05/10 23:04:18 by josmanov          #+#    #+#             */
+/*   Updated: 2025/05/11 01:07:03 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "path_internal.h"
-#include <unistd.h>
+#include "path_utils.h"
 #include <errno.h>
-#include <libft.h>
-
-/*
-	Builds a full path from directory and command, then checks if it's executable
-	Returns the full path if it exists and is executable, NULL otherwise
-*/
-static char	*build_path_and_try(char *dir, char **argv)
-{
-	char	*full_path;
-
-	full_path = build_full_path(dir, argv[0]);
-	if (!full_path)
-		return (NULL);
-	if (path_is_executable(full_path))
-		return (full_path);
-	free(full_path);
-	return (NULL);
-}
+#include <stdlib.h>
+#include <unistd.h>
+#include "libft.h"
 
 /*
 	Handles execution of commands with absolute paths
 	Attempts to execute the command and returns appropriate exit code
 	Returns 126 for permission denied, 127 for other errors
 */
-static int	handle_absolute_path(char **argv, char **envp)
+static int	handle_absolute_path_internal(char **argv, char **envp)
 {
 	execve(argv[0], argv, envp);
 	if (errno == EACCES)
@@ -55,7 +39,7 @@ static int	try_path_element(char *dir, char **argv, char **envp)
 	char	*full_path;
 	int		result;
 
-	full_path = build_path_and_try(dir, argv);
+	full_path = build_full_path(dir, argv[0]);
 	if (!full_path)
 		return (0);
 	execve(full_path, argv, envp);
@@ -83,7 +67,7 @@ int	try_path_execve(char *path_list, char **argv, char **envp)
 	if (!path_list || !argv || !argv[0] || !*argv[0])
 		return (127);
 	if (ft_strchr(argv[0], '/'))
-		return (handle_absolute_path(argv, envp));
+		return (handle_absolute_path_internal(argv, envp));
 	had_permission_error = 0;
 	elem_start = path_list;
 	scan = path_list;

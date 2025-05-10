@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 14:03:04 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/05 23:56:56 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 23:57:13 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,6 @@
 # define PATH_H
 
 # include "env.h"
-# include <stdbool.h>
-
-/*
-	Public interface for path-related operations
-	These functions handle searching for commands in PATH and executing them
-*/
-char	*path_search(const char *cmd, t_env *env);
 
 /*
 	Searches for and executes a command by scanning through PATH

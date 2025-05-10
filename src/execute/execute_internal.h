@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 21:30:33 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/06 00:00:36 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 23:41:28 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,5 @@
 void	handle_absolute_path(char **argv, t_env *env, int *exit_code);
 
 void	handle_path_search(char **argv, t_env *env, int *exit_code);
-
-void	apply_redirects(struct s_ast_redirect *redirs);
-
-char	**build_argv(struct s_ast_command_word *args);
 
 #endif

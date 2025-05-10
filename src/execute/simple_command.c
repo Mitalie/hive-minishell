@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/21 18:36:15 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/02 23:09:53 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@
 #include <unistd.h>
 
 #include "ast.h"
-
+#include "status.h"
 #include "env.h"
+
+int	process_heredoc(struct s_ast_redirect *redirect);
 
 /*
 	TODO: handle open() error
@@ -37,11 +39,12 @@ static void	do_redirect(const char *path, int target_fd, int open_flags)
 
 /*
 	Apply redirections from the ast redirection list.
-	TODO: handle heredoc
 	TODO: apply word processing steps
 */
 static void	apply_redirects(struct s_ast_redirect *redirs)
 {
+	int	fd;
+
 	while (redirs)
 	{
 		if (redirs->op == AST_REDIR_IN)
@@ -52,6 +55,15 @@ static void	apply_redirects(struct s_ast_redirect *redirs)
 		else if (redirs->op == AST_REDIR_APP)
 			do_redirect(redirs->word, STDOUT_FILENO,
 				O_CREAT | O_WRONLY | O_APPEND);
+		else if (redirs->op == AST_HEREDOC)
+		{
+			fd = process_heredoc(redirs);
+			if (fd != -1)
+			{
+				dup2(fd, STDIN_FILENO);
+				close(fd);
+			}
+		}
 		redirs = redirs->next;
 	}
 }

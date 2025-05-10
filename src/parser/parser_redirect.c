@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/02 16:05:41 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:33:23 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,22 +38,27 @@ enum e_parser_status	parser_redirect(
 	struct s_parser_state *state,
 	struct s_ast_redirect **redirect)
 {
-	struct s_ast_redirect	*new_redir;
+	enum e_parser_status	status;
+	struct s_ast_redirect	*new_redirect;
 
-	new_redir = malloc(sizeof(*new_redir));
-	if (!new_redir)
+	new_redirect = malloc(sizeof(*new_redirect));
+	if (!new_redirect)
 		return (PARSER_ERR_MALLOC);
-	*redirect = new_redir;
-	new_redir->next = NULL;
-	new_redir->word = NULL;
-	new_redir->op = redirect_token_to_op(state->curr_tok.type);
+	new_redirect->next = NULL;
+	new_redirect->heredoc_lines = NULL;
+	new_redirect->op = redirect_token_to_op(state->curr_tok.type);
 	parser_next_token(state);
 	if (state->curr_tok.type != TOK_WORD)
 	{
-		parser_syntax_error("expected word for redirect");
+		free(new_redirect);
+		parser_syntax_error("expected word after redirect");
 		return (PARSER_ERR_SYNTAX);
 	}
-	new_redir->word = state->curr_tok.word_content;
+	new_redirect->word = state->curr_tok.word_content;
 	parser_next_token(state);
-	return (PARSER_SUCCESS);
+	*redirect = new_redirect;
+	status = PARSER_SUCCESS;
+	if (new_redirect->op == AST_HEREDOC)
+		status = read_heredoc(new_redirect);
+	return (status);
 }

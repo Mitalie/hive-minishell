@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:50:10 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/02 18:58:03 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:23:52 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ enum	e_parser_status
 	PARSER_SUCCESS,
 	PARSER_ERR_SYNTAX,
 	PARSER_ERR_MALLOC,
-	PARSER_ERR_HEREDOC,
 };
 
 enum e_parser_status	parser_parse(char *line,

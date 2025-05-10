@@ -6,41 +6,33 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:10:22 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/04 00:16:44 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:38:00 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#define _GNU_SOURCE
 #include "execute.h"
 #include "ast.h"
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "libft.h"
 #include "status.h"
-#include <limits.h>
+#include "util.h"
 
 /*
-	Create a temporary file
+	Create a temporary file using O_TMPFILE
 	Returns the file descriptor or -1 on error
 */
-static int	create_tmpfile(char **filename)
+static int	create_tmpfile(void)
 {
-	int		fd;
-	char	temp_path[PATH_MAX];
+	int	fd;
 
-	snprintf(temp_path, PATH_MAX, "/tmp/minishell_heredoc_%d_%d",
-		getpid(), rand());
-	*filename = ft_strdup(temp_path);
-	if (!*filename)
-		return (-1);
-	fd = open(*filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
+	fd = open("/tmp", O_TMPFILE | O_RDWR, 0600);
 	if (fd == -1)
 	{
-		free(*filename);
-		*filename = NULL;
 		status_err(S_COMM_ERR, "Failed to create temporary file", NULL, 0);
+		return (-1);
 	}
 	return (fd);
 }
@@ -75,19 +67,20 @@ static int	write_heredoc_lines(int fd, struct s_ast_command_word *lines)
 }
 
 /*
-	Reopen the temporary file for reading
+	Reopen the temporary file for reading using /proc/self/fd/
 	Returns the new file descriptor or -1 on error
 */
-static int	reopen_tmpfile(int fd, char *filename)
+static int	reopen_tmpfile(int fd)
 {
-	int	new_fd;
+	int		new_fd;
+	char	proc_path[32];
 
-	close(fd);
-	new_fd = open(filename, O_RDONLY);
+	ft_strlcpy(proc_path, "/proc/self/fd/", 32);
+	util_itoa_base(fd, "0123456789", proc_path + 14);
+	new_fd = open(proc_path, O_RDONLY);
 	if (new_fd == -1)
 		status_err(S_COMM_ERR, "Failed to reopen temporary file", NULL, 0);
-	unlink(filename);
-	free(filename);
+	close(fd);
 	return (new_fd);
 }
 
@@ -98,25 +91,22 @@ static int	reopen_tmpfile(int fd, char *filename)
 */
 int	process_heredoc(struct s_ast_redirect *redirect)
 {
-	int		fd;
-	int		read_fd;
-	char	*filename;
+	int	fd;
+	int	read_fd;
 
 	if (!redirect || !redirect->heredoc_lines)
 	{
 		status_err(S_COMM_ERR, "Invalid heredoc redirect", NULL, 0);
 		return (-1);
 	}
-	fd = create_tmpfile(&filename);
+	fd = create_tmpfile();
 	if (fd == -1)
 		return (-1);
 	if (write_heredoc_lines(fd, redirect->heredoc_lines) == -1)
 	{
 		close(fd);
-		unlink(filename);
-		free(filename);
 		return (-1);
 	}
-	read_fd = reopen_tmpfile(fd, filename);
+	read_fd = reopen_tmpfile(fd);
 	return (read_fd);
 }

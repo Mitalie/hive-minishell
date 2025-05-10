@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/02 00:42:00 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:33:23 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ enum e_parser_status	parser_redirect(
 	if (!new_redirect)
 		return (PARSER_ERR_MALLOC);
 	new_redirect->next = NULL;
-	new_redirect->fd = -1;
 	new_redirect->heredoc_lines = NULL;
 	new_redirect->op = redirect_token_to_op(state->curr_tok.type);
 	parser_next_token(state);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/03 00:57:24 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:24:44 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,6 @@ enum e_parser_status	parser_parse(char *line, struct s_ast_list_entry **root)
 		status = PARSER_ERR_SYNTAX;
 	}
 	if (status != PARSER_SUCCESS)
-	{
-		free_ast(*root);
 		*root = NULL;
-	}
 	return (status);
 }

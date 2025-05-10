@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/03 00:40:32 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:42:03 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,13 @@
 
 /*
 	Check if a line matches the delimiter
+	Returns true if the line is the delimiter
 */
 static bool	is_delimiter(char *line, char *delimiter, size_t delim_len)
 {
 	if (!line)
 		return (true);
-	if (ft_strncmp(line, delimiter, delim_len) == 0 && line[delim_len] == '\0')
-		return (false);
-	return (0);
+	return (ft_strncmp(line, delimiter, delim_len + 1) == 0);
 }
 
 /*
@@ -50,25 +49,22 @@ static enum e_parser_status	add_line_to_heredoc(
 	Process a line for the heredoc
 */
 static enum e_parser_status	process_heredoc_line(
-	struct s_ast_command_word **lines_append,
-	char *line,
-	char *delimiter,
-	int quoted)
+	struct s_heredoc_params *params)
 {
 	enum e_parser_status	status;
-	size_t					delim_len;
 
-	delim_len = ft_strlen(delimiter);
-	if (is_delimiter(line, delimiter, delim_len))
+	if (is_delimiter(params->line, params->delimiter, params->delim_len))
 	{
-		free(line);
+		free(params->line);
 		return (PARSER_SUCCESS);
 	}
-	if (!quoted)
-		line = word_heredoc_line(line);
-	if (!line)
+	if (!params->quoted)
+		params->line = word_heredoc_line(params->line);
+	if (!params->line)
 		return (PARSER_ERR_MALLOC);
-	status = add_line_to_heredoc(lines_append, line);
+	status = add_line_to_heredoc(params->lines_append, params->line);
+	if (status != PARSER_SUCCESS)
+		free(params->line);
 	return (status);
 }
 
@@ -78,24 +74,28 @@ static enum e_parser_status	process_heredoc_line(
 */
 enum e_parser_status	read_heredoc(struct s_ast_redirect *redirect)
 {
-	char						*line;
-	struct s_ast_command_word	**lines_append;
+	struct s_heredoc_params		params;
 	enum e_parser_status		status;
-	int							quoted;
 
 	redirect->heredoc_lines = NULL;
-	lines_append = &redirect->heredoc_lines;
-	quoted = word_heredoc_delimiter(redirect->word);
+	params.lines_append = &redirect->heredoc_lines;
+	params.quoted = word_heredoc_delimiter(redirect->word);
+	params.delimiter = redirect->word;
+	params.delim_len = ft_strlen(redirect->word);
 	status = PARSER_SUCCESS;
 	while (status == PARSER_SUCCESS)
 	{
-		line = readline("> ");
-		status = process_heredoc_line(lines_append, line,
-				redirect->word, quoted);
-		if (status == PARSER_SUCCESS && !line)
+		params.line = readline("> ");
+		if (!params.line)
 			break ;
+		if (is_delimiter(params.line, params.delimiter, params.delim_len))
+		{
+			free(params.line);
+			break ;
+		}
+		status = process_heredoc_line(&params);
 		if (status == PARSER_SUCCESS)
-			lines_append = &(*lines_append)->next;
+			params.lines_append = &(*params.lines_append)->next;
 	}
 	return (status);
 }

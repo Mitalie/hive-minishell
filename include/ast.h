@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:07:51 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/02 23:56:50 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:23:45 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ struct s_ast_redirect
 {
 	enum e_ast_redirect_op		op;
 	char						*word;
-	int							fd;
 	struct s_ast_command_word	*heredoc_lines;
 	struct s_ast_redirect		*next;
 };

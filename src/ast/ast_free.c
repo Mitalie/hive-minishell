@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ast_free.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 14:22:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/02 19:03:15 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:39:33 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 
 #include <stdlib.h>
-#include <unistd.h>
 
 static void	free_command_word(struct s_ast_command_word *word);
 static void	free_redirect(struct s_ast_redirect *redir);
@@ -52,8 +51,6 @@ static void	free_redirect(struct s_ast_redirect *redir)
 		free(redir->word);
 		if (redir->op == AST_HEREDOC && redir->heredoc_lines)
 			free_command_word(redir->heredoc_lines);
-		if (redir->fd != -1)
-			close(redir->fd);
 		free(redir);
 		redir = next;
 	}

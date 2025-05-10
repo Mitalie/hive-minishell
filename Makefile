@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/02 23:15:37 by josmanov         ###   ########.fr        #
+#    Updated: 2025/05/10 22:23:35 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/heredoc.c \
 	util/util_char.c \
 	util/util_write.c \
+	util/util_itoa.c \
 	word/word.c \
 	word/word_exp.c \
 	word/word_filename.c \

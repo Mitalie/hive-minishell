@@ -6,13 +6,14 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 16:49:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/04 01:22:57 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:25:12 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSER_INTERNAL_H
 # define PARSER_INTERNAL_H
 
+# include <stddef.h>
 # include "parser.h"
 # include "ast.h"
 # include "tokenizer.h"
@@ -47,6 +48,15 @@ enum e_parser_status	parser_group(
 							struct s_ast_list_entry **group_head);
 
 /* Heredoc handling */
+struct s_heredoc_params
+{
+	struct s_ast_command_word	**lines_append;
+	char						*line;
+	char						*delimiter;
+	int							quoted;
+	size_t						delim_len;
+};
+
 enum e_parser_status	read_heredoc(struct s_ast_redirect *redirect);
 
 /* Error handling helper */

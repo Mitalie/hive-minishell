@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/10 22:24:44 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:57:24 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,5 @@ enum e_parser_status	parser_parse(char *line, struct s_ast_list_entry **root)
 		parser_syntax_error("unexpected token");
 		status = PARSER_ERR_SYNTAX;
 	}
-	if (status != PARSER_SUCCESS)
-		*root = NULL;
 	return (status);
 }

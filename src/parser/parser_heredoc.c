@@ -11,10 +11,11 @@
 /* ************************************************************************** */
 
 #include "parser_internal.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <readline/readline.h>
 #include "libft.h"
 #include "word.h"
-#include <readline/readline.h>
 
 /*
 	Check if a line matches the delimiter
@@ -31,7 +32,7 @@ static bool	is_delimiter(char *line, char *delimiter, size_t delim_len)
 	Add a line to the heredoc lines list
 */
 static enum e_parser_status	add_line_to_heredoc(
-	struct s_ast_command_word **lines_append,
+	struct s_ast_command_word ***lines_append,
 	char *line)
 {
 	struct s_ast_command_word	*new_line;
@@ -41,7 +42,8 @@ static enum e_parser_status	add_line_to_heredoc(
 		return (PARSER_ERR_MALLOC);
 	new_line->word = line;
 	new_line->next = NULL;
-	*lines_append = new_line;
+	**lines_append = new_line;
+	*lines_append = &new_line->next;
 	return (PARSER_SUCCESS);
 }
 
@@ -53,16 +55,11 @@ static enum e_parser_status	process_heredoc_line(
 {
 	enum e_parser_status	status;
 
-	if (is_delimiter(params->line, params->delimiter, params->delim_len))
-	{
-		free(params->line);
-		return (PARSER_SUCCESS);
-	}
 	if (!params->quoted)
 		params->line = word_heredoc_line(params->line);
 	if (!params->line)
 		return (PARSER_ERR_MALLOC);
-	status = add_line_to_heredoc(params->lines_append, params->line);
+	status = add_line_to_heredoc(&params->lines_append, params->line);
 	if (status != PARSER_SUCCESS)
 		free(params->line);
 	return (status);
@@ -94,8 +91,6 @@ enum e_parser_status	read_heredoc(struct s_ast_redirect *redirect)
 			break ;
 		}
 		status = process_heredoc_line(&params);
-		if (status == PARSER_SUCCESS)
-			params.lines_append = &(*params.lines_append)->next;
 	}
 	return (status);
 }

@@ -17,6 +17,11 @@
 #include <unistd.h>
 #include <errno.h>
 #include "libft.h"
+#include "ast.h"
+#include "status.h"
+#include "env.h"
+
+int	process_heredoc(struct s_ast_redirect *redirect);
 
 /*
 	Performs a file redirection by opening a file and duplicating descriptors
@@ -37,11 +42,12 @@ static void	do_redirect(const char *path, int target_fd, int open_flags)
 /*
 	Processes and applies all redirections from the AST redirection list
 	Supports input (<), output (>), and append (>>) redirections
-	TODO: handle heredoc
 	TODO: apply word processing steps
 */
 static void	apply_redirects(struct s_ast_redirect *redirs)
 {
+	int	fd;
+
 	while (redirs)
 	{
 		if (redirs->op == AST_REDIR_IN)
@@ -52,6 +58,15 @@ static void	apply_redirects(struct s_ast_redirect *redirs)
 		else if (redirs->op == AST_REDIR_APP)
 			do_redirect(redirs->word, STDOUT_FILENO,
 				O_CREAT | O_WRONLY | O_APPEND);
+		else if (redirs->op == AST_HEREDOC)
+		{
+			fd = process_heredoc(redirs);
+			if (fd != -1)
+			{
+				dup2(fd, STDIN_FILENO);
+				close(fd);
+			}
+		}
 		redirs = redirs->next;
 	}
 }

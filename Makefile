@@ -31,14 +31,17 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_simple_command.c \
 	parser/parser_redirect.c \
 	parser/parser_word.c \
+	parser/parser_heredoc.c \
 	execute/simple_command.c \
 	execute/path/path.c \
 	execute/path/path_utils.c \
 	execute/path/path_execve.c \
 	execute/pipeline.c \
 	execute/list.c \
+	execute/heredoc.c \
 	util/util_char.c \
 	util/util_write.c \
+	util/util_itoa.c \
 	word/word.c \
 	word/word_exp.c \
 	word/word_filename.c \
@@ -68,6 +71,7 @@ TESTS := $(addprefix $(TESTDIR)/,\
 	wordhere \
 	env \
 	path_execve \
+	heredoc \
 )
 TEST_SRCS := $(TESTS:%=$(SRCDIR)/%.c)
 # - Remove main.o from OBJS as each test comes with its own main

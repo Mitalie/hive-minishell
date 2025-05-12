@@ -1,40 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   util_char.c                                        :+:      :+:    :+:   */
+/*   builtin.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/03 21:24:37 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 15:38:41 by amakinen         ###   ########.fr       */
+/*   Created: 2025/05/12 15:12:18 by amakinen          #+#    #+#             */
+/*   Updated: 2025/05/12 15:18:33 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "util.h"
+#ifndef BUILTIN_H
+# define BUILTIN_H
 
-#include <stdbool.h>
+# include "env.h"
+# include "status.h"
 
-bool	util_isblank(char c)
-{
-	if (c == ' ' || c == '\t' || c == '\n')
-		return (true);
-	return (false);
-}
+typedef t_status	t_builtin_func(char	**argv, t_env *env,
+						int *exit_code, int stdout_fd);
 
-bool	util_isdigit(char c)
-{
-	if (c >= '0' && c <= '9')
-		return (true);
-	return (false);
-}
+t_builtin_func	*builtin_get_func(const char *name);
 
-bool	util_isname(char c)
-{
-	if (c == '_'
-		|| (c >= '0' && c <= '9')
-		|| (c >= 'a' && c <= 'z')
-		|| (c >= 'A' && c <= 'Z')
-	)
-		return (true);
-	return (false);
-}
+#endif

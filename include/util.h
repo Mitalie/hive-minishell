@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   util.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 21:23:26 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/10 22:23:57 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 15:49:28 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,10 @@
 # include <stddef.h>
 
 bool	util_isblank(char c);
+bool	util_isdigit(char c);
 bool	util_isname(char c);
+
+bool	util_parse_int(const char *str, size_t *parsed_len, int *value_out);
 
 bool	util_write_all(int fd, const void *buf, size_t len);
 

@@ -1,40 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   util_char.c                                        :+:      :+:    :+:   */
+/*   builtin_internal.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/03 21:24:37 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 15:38:41 by amakinen         ###   ########.fr       */
+/*   Created: 2025/05/12 15:19:36 by amakinen          #+#    #+#             */
+/*   Updated: 2025/05/12 16:06:25 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "util.h"
+#ifndef BUILTIN_INTERNAL_H
+# define BUILTIN_INTERNAL_H
 
-#include <stdbool.h>
+# include "builtin.h"
 
-bool	util_isblank(char c)
+# include "env.h"
+# include "status.h"
+
+struct s_builtin_func_reg
 {
-	if (c == ' ' || c == '\t' || c == '\n')
-		return (true);
-	return (false);
-}
+	t_builtin_func	*func;
+	const char		*name;
+};
 
-bool	util_isdigit(char c)
-{
-	if (c >= '0' && c <= '9')
-		return (true);
-	return (false);
-}
+t_status	builtin_cmd_exit(char	**argv, t_env *env,
+				int *exit_code, int stdout_fd);
 
-bool	util_isname(char c)
-{
-	if (c == '_'
-		|| (c >= '0' && c <= '9')
-		|| (c >= 'a' && c <= 'z')
-		|| (c >= 'A' && c <= 'Z')
-	)
-		return (true);
-	return (false);
-}
+#endif

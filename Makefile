@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
+#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/12 16:54:30 by josmanov         ###   ########.fr        #
+#    Updated: 2025/05/12 17:54:52 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,8 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	status.c \
 	tokenizer.c \
 	ast/ast_free.c \
+	builtin/builtin.c \
+	builtin/builtin_cmd_exit.c \
 	parser/parser.c \
 	parser/parser_syntax_error.c \
 	parser/parser_list.c \
@@ -38,6 +40,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/list.c \
 	execute/heredoc.c \
 	util/util_char.c \
+	util/util_parse_int.c \
 	util/util_write.c \
 	util/util_itoa.c \
 	word/word.c \

@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/11 00:51:23 by josmanov         ###   ########.fr        #
+#    Updated: 2025/05/12 16:54:30 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,9 +33,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_word.c \
 	parser/parser_heredoc.c \
 	execute/simple_command.c \
-	execute/path/path.c \
-	execute/path/path_utils.c \
-	execute/path/path_execve.c \
+	execute/path.c \
 	execute/pipeline.c \
 	execute/list.c \
 	execute/heredoc.c \

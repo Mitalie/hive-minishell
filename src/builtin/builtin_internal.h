@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:19:36 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 20:20:01 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:03:26 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ struct s_builtin_func_reg
 t_status	builtin_cmd_exit(char	**argv, t_env *env,
 				int *exit_code, int stdout_fd);
 t_status	builtin_cmd_echo(char **argv, t_env *env,
+				int *exit_code, int stdout_fd);
+t_status	builtin_cmd_pwd(char	**argv, t_env *env,
 				int *exit_code, int stdout_fd);
 
 #endif

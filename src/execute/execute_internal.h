@@ -1,17 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipeline_internal.h                                :+:      :+:    :+:   */
+/*   execute_internal.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
-/*   Updated: 2025/02/25 17:30:11 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:38:26 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPELINE_INTERNAL_H
-# define PIPELINE_INTERNAL_H
+#ifndef EXECUTE_INTERNAL_H
+# define EXECUTE_INTERNAL_H
+
+# include "env.h"
+
+/*
+	Internal functions for command execution
+	These functions handle the finding and executing external commands
+*/
+void	handle_absolute_path(char **argv, t_env *env, int *exit_code);
+
+void	handle_path_search(char **argv, t_env *env, int *exit_code);
 
 struct	s_pipeline_fds
 {

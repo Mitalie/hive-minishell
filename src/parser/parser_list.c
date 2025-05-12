@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 14:22:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/02 16:08:48 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:41:00 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,23 @@
 #include <stdlib.h>
 
 #include "ast.h"
-#include "parser.h"
+#include "status.h"
 #include "tokenizer.h"
 
 /*
 	Parses a single list entry from the token list.
 	A list entry can be either a pipeline or a group.
 */
-static enum e_parser_status	parser_list_entry(
+static t_status	parser_list_entry(
 	struct s_parser_state *state,
 	struct s_ast_list_entry **list_append)
 {
-	enum e_parser_status		status;
-	struct s_ast_list_entry		*new_entry;
+	t_status				status;
+	struct s_ast_list_entry	*new_entry;
 
 	new_entry = malloc(sizeof(*new_entry));
 	if (!new_entry)
-		return (PARSER_ERR_MALLOC);
+		return (S_EXIT_ERR);
 	*list_append = new_entry;
 	new_entry->next = NULL;
 	if (state->curr_tok.type == TOK_GROUP_START)
@@ -52,18 +52,18 @@ static enum e_parser_status	parser_list_entry(
 /*
 	Parses a list of commands separated by && or || operators.
 */
-enum e_parser_status	parser_list(
+t_status	parser_list(
 	struct s_parser_state *state,
 	struct s_ast_list_entry **list_head)
 {
-	enum e_parser_status	status;
+	t_status				status;
 	struct s_ast_list_entry	**list_append;
 
 	list_append = list_head;
 	while (1)
 	{
 		status = parser_list_entry(state, list_append);
-		if (status != PARSER_SUCCESS)
+		if (status != S_OK)
 			return (status);
 		if (state->curr_tok.type == TOK_AND)
 			(*list_append)->next_op = AST_LIST_AND;
@@ -74,5 +74,5 @@ enum e_parser_status	parser_list(
 		parser_next_token(state);
 		list_append = &((*list_append)->next);
 	}
-	return (PARSER_SUCCESS);
+	return (S_OK);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/10 22:33:23 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:41:10 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 #include "ast.h"
-#include "parser.h"
+#include "status.h"
 #include "tokenizer.h"
 
 static enum e_ast_redirect_op	redirect_token_to_op(enum e_token type)
@@ -34,16 +34,16 @@ static enum e_ast_redirect_op	redirect_token_to_op(enum e_token type)
 	Parses a redirect and adds it to the AST.
 	Next token must be a redirect token.
 */
-enum e_parser_status	parser_redirect(
+t_status	parser_redirect(
 	struct s_parser_state *state,
 	struct s_ast_redirect **redirect)
 {
-	enum e_parser_status	status;
+	t_status				status;
 	struct s_ast_redirect	*new_redirect;
 
 	new_redirect = malloc(sizeof(*new_redirect));
 	if (!new_redirect)
-		return (PARSER_ERR_MALLOC);
+		return (S_EXIT_ERR);
 	new_redirect->next = NULL;
 	new_redirect->heredoc_lines = NULL;
 	new_redirect->op = redirect_token_to_op(state->curr_tok.type);
@@ -52,12 +52,12 @@ enum e_parser_status	parser_redirect(
 	{
 		free(new_redirect);
 		parser_syntax_error("expected word after redirect");
-		return (PARSER_ERR_SYNTAX);
+		return (S_RESET_SYNTAX);
 	}
 	new_redirect->word = state->curr_tok.word_content;
 	parser_next_token(state);
 	*redirect = new_redirect;
-	status = PARSER_SUCCESS;
+	status = S_OK;
 	if (new_redirect->op == AST_HEREDOC)
 		status = read_heredoc(new_redirect);
 	return (status);

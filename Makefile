@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/12 17:54:36 by amakinen         ###   ########.fr        #
+#    Updated: 2025/05/12 17:54:52 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	tokenizer.c \
 	ast/ast_free.c \
 	builtin/builtin.c \
+	builtin/builtin_cmd_exit.c \
 	parser/parser.c \
 	parser/parser_syntax_error.c \
 	parser/parser_list.c \

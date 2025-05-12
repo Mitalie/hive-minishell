@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:19:21 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 15:26:25 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 16:06:28 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "libft.h"
 
 static const struct s_builtin_func_reg	g_builtins[] = {
+{builtin_cmd_exit, "exit"},
 };
 
 t_builtin_func	*builtin_get_func(const char *name)

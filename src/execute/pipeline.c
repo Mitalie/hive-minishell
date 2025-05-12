@@ -6,11 +6,11 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/21 18:30:58 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:36:45 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipeline_internal.h"
+#include "execute_internal.h"
 #include "execute.h"
 
 #include <stdbool.h>

@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 12:20:42 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/01 22:17:52 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 19:00:09 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,8 @@ static void	test_env_array(t_env *env)
 {
 	char	**env_array;
 
-	printf("\n5. Testing env_get_array (showing first 10 items):\n");
-	env_array = env_get_array(env);
+	printf("\n5. Testing env array (showing first 10 items):\n");
+	env_array = env->env_array;
 	print_array_items(env_array, 10);
 	printf("... (and more)\n");
 }

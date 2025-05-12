@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:02:43 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 16:55:11 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 18:59:13 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ static int	try_path_execve(char *path_list, char **argv, char **envp)
 */
 void	handle_absolute_path(char **argv, t_env *env, int *exit_code)
 {
-	execve(argv[0], argv, env_get_array(env));
+	execve(argv[0], argv, env->env_array);
 	if (errno == EACCES)
 		*exit_code = 126;
 	else
@@ -144,7 +144,7 @@ void	handle_path_search(char **argv, t_env *env, int *exit_code)
 		*exit_code = 127;
 		return ;
 	}
-	*exit_code = try_path_execve(path_copy, argv, env_get_array(env));
+	*exit_code = try_path_execve(path_copy, argv, env->env_array);
 	if (*exit_code == 126)
 		status_err(S_COMM_ERR, argv[0], "Permission denied", 0);
 	else

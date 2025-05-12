@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simple_command.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/10 23:42:23 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:56:02 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <errno.h>
 #include "libft.h"
 #include "ast.h"
+#include "builtin.h"
 #include "status.h"
 #include "env.h"
 
@@ -112,8 +113,9 @@ static char	**build_argv(struct s_ast_command_word *args)
 */
 void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 {
-	char	**argv;
-	int		exit_code;
+	char			**argv;
+	t_builtin_func	*builtin;
+	int				exit_code;
 
 	apply_redirects(command->redirs);
 	if (!command->args)
@@ -121,6 +123,13 @@ void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
 	argv = build_argv(command->args);
 	if (!argv)
 		return ;
+	builtin = builtin_get_func(argv[0]);
+	if (builtin)
+	{
+		builtin(argv, env, &exit_code, 1);
+		free(argv);
+		exit(exit_code);
+	}
 	handle_path_search(argv, env, &exit_code);
 	free(argv);
 	exit(exit_code);

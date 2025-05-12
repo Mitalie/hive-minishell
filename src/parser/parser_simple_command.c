@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:53:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 21:41:14 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:31:09 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ t_status	parser_simple_command(
 
 	new_command = malloc(sizeof(*new_command));
 	if (!new_command)
-		return (S_EXIT_ERR);
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	*simple_command = new_command;
 	new_command->next = NULL;
 	new_command->args = NULL;

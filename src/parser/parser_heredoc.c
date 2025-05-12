@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 21:51:52 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:26:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static t_status	add_line_to_heredoc(
 
 	new_line = malloc(sizeof(*new_line));
 	if (!new_line)
-		return (S_EXIT_ERR);
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	new_line->word = line;
 	new_line->next = NULL;
 	**lines_append = new_line;

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 14:22:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 21:41:00 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:26:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static t_status	parser_list_entry(
 
 	new_entry = malloc(sizeof(*new_entry));
 	if (!new_entry)
-		return (S_EXIT_ERR);
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	*list_append = new_entry;
 	new_entry->next = NULL;
 	if (state->curr_tok.type == TOK_GROUP_START)

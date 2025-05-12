@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 20:20:15 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:51:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,11 @@ static t_status	process_heredoc_line(
 {
 	t_status	status;
 
+	status = S_OK;
 	if (!params->quoted)
-		params->line = word_heredoc_line(params->line);
-	if (!params->line)
-		return (S_EXIT_ERR);
-	status = add_line_to_heredoc(&params->lines_append, params->line);
+		status = word_heredoc_line(&params->line);
+	if (status == S_OK)
+		status = add_line_to_heredoc(&params->lines_append, params->line);
 	if (status != S_OK)
 		free(params->line);
 	return (status);

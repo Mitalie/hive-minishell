@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:50:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/09 18:22:33 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:49:37 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,6 @@ struct s_word_field
 t_status	word_expand(char *word, struct s_word_field **fields_out);
 
 bool		word_heredoc_delimiter(char *word);
-char		*word_heredoc_line(char *line);
+t_status	word_heredoc_line(char **line);
 
 #endif

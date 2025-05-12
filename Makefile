@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
+#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/12 16:54:30 by josmanov         ###   ########.fr        #
+#    Updated: 2025/05/12 17:54:13 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	execute/list.c \
 	execute/heredoc.c \
 	util/util_char.c \
+	util/util_parse_int.c \
 	util/util_write.c \
 	util/util_itoa.c \
 	word/word.c \

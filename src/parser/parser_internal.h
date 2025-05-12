@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 16:49:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 21:39:07 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:43:47 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,6 @@ t_status	read_heredoc(struct s_ast_redirect *redirect);
 
 /* Error handling helper */
 
-void		parser_syntax_error(const char *message);
+t_status	parser_syntax_error(const char *message);
 
 #endif

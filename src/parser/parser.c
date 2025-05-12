@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 20:21:41 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:44:04 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,6 @@ t_status	parser_parse(char *line, struct s_ast_list_entry **root)
 	if (state.curr_tok.type != TOK_END)
 		status = parser_list(&state, root);
 	if (status == S_OK && state.curr_tok.type != TOK_END)
-	{
-		parser_syntax_error("unexpected token");
-		status = S_RESET_SYNTAX;
-	}
+		return (parser_syntax_error("unexpected token"));
 	return (status);
 }

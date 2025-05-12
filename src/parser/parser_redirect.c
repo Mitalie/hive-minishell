@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:32:25 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:43:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,15 @@ t_status	parser_redirect(
 	new_redirect = malloc(sizeof(*new_redirect));
 	if (!new_redirect)
 		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
+	*redirect = new_redirect;
 	new_redirect->next = NULL;
 	new_redirect->heredoc_lines = NULL;
 	new_redirect->op = redirect_token_to_op(state->curr_tok.type);
 	parser_next_token(state);
 	if (state->curr_tok.type != TOK_WORD)
-	{
-		free(new_redirect);
-		parser_syntax_error("expected word after redirect");
-		return (S_RESET_SYNTAX);
-	}
+		return (parser_syntax_error("expected word after redirect"));
 	new_redirect->word = state->curr_tok.word_content;
 	parser_next_token(state);
-	*redirect = new_redirect;
 	status = S_OK;
 	if (new_redirect->op == AST_HEREDOC)
 		status = read_heredoc(new_redirect);

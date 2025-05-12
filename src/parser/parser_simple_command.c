@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:53:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:31:09 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:43:59 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,9 +86,6 @@ t_status	parser_simple_command(
 	if (status != S_OK)
 		return (status);
 	if (new_command->args == NULL && new_command->redirs == NULL)
-	{
-		parser_syntax_error("expected word or redirect");
-		return (S_RESET_SYNTAX);
-	}
+		return (parser_syntax_error("expected word or redirect"));
 	return (S_OK);
 }

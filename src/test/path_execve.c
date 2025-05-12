@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:30:33 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 17:29:38 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 19:15:57 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,69 +64,69 @@ static int	test_in_child(char **argv, t_env *env)
 
 static void	test_not_found(void)
 {
-	t_env	*env;
+	t_env	env;
 	char	*path_list;
 	char	*argv[2];
 	int		exit_code;
 
 	printf("\n%sTesting command not found%s\n", YELLOW, RESET);
 	path_list = strdup("/bin:/usr/bin:/usr/local/bin");
-	env = env_init();
-	env_set(env, "PATH", path_list);
+	env_init(&env);
+	env_set(&env, "PATH", path_list);
 	argv[0] = "nonexistentcommand123456789";
 	argv[1] = NULL;
 	printf("  Command: %s\n", argv[0]);
 	printf("  PATH: %s\n", path_list);
-	exit_code = test_in_child(argv, env);
+	exit_code = test_in_child(argv, &env);
 	printf("  Exit code: %d\n", exit_code);
 	print_result("command_not_found_returns_127", exit_code == 127);
-	env_free(env);
+	env_free(&env);
 	free(path_list);
 }
 
 static void	test_found(void)
 {
-	t_env	*env;
+	t_env	env;
 	char	*path_list;
 	char	*argv[3];
 	int		exit_code;
 
 	printf("\n%sTesting command found%s\n", YELLOW, RESET);
 	path_list = strdup("/bin:/usr/bin:/usr/local/bin");
-	env = env_init();
-	env_set(env, "PATH", path_list);
+	env_init(&env);
+	env_set(&env, "PATH", path_list);
 	argv[0] = "echo";
 	argv[1] = "test";
 	argv[2] = NULL;
 	printf("  Command: %s %s\n", argv[0], argv[1]);
 	printf("  PATH: %s\n", path_list);
-	exit_code = test_in_child(argv, env);
+	exit_code = test_in_child(argv, &env);
 	printf("  Exit code: %d\n", exit_code);
 	print_result("command_found_executes", exit_code == 0);
-	env_free(env);
+	env_free(&env);
 	free(path_list);
 }
 
 static void	test_absolute(void)
 {
-	t_env	*env;
+	t_env	env;
 	char	*path_list;
 	char	*argv[3];
 	int		exit_code;
 
 	printf("\n%sTesting absolute path%s\n", YELLOW, RESET);
 	path_list = strdup("/bin:/usr/bin:/usr/local/bin");
-	env = env_init();
-	env_set(env, "PATH", path_list);
+	env_init(&env);
+	env_set(&env, "PATH", path_list);
 	argv[0] = "/bin/echo";
 	argv[1] = "test";
 	argv[2] = NULL;
 	printf("  Command: %s %s\n", argv[0], argv[1]);
 	printf("  PATH: %s\n", path_list);
-	exit_code = test_in_child(argv, env);
+	exit_code = test_in_child(argv, &env);
 	printf("  Exit code: %d\n", exit_code);
 	print_result("absolute_path_executes", exit_code == 0);
-	env_free(env);
+	env_free(&env);
 	free(path_list);
 }
 

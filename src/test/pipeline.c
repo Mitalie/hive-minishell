@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:35:02 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/21 18:50:20 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/01 22:18:34 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 #include "ast.h"
 #include "execute.h"
+#include "env.h"
+#include "status.h"
 
 /*
 	/bin/echo -e first\n\n\ntest > test_pipeline_tmpout |
@@ -84,12 +86,13 @@ struct s_ast_simple_command	*g_test_pipeline
 
 int	main(void)
 {
-	t_env	*env;
+	t_env		env;
+	t_status	status;
 
-	env = env_init();
-	if (!env)
+	status = env_init(&env);
+	if (status != S_OK)
 		return (1);
-	execute_pipeline(g_test_pipeline, env);
+	execute_pipeline(g_test_pipeline, &env);
 	write(STDERR_FILENO, "execute_pipeline returned\n", 26);
-	env_free(env);
+	env_free(&env);
 }

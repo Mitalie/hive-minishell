@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_set.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 02:15:43 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 19:33:57 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:10:04 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ t_status	env_set(t_env *env, const char *key, const char *value)
 	value_len = ft_strlen(value);
 	new_entry = create_env_string(key, key_len, value, value_len);
 	if (!new_entry)
-		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	if (env_find_index(env, key, key_len, &index))
 		return (update_existing_entry(env, index, new_entry));
 	return (add_new_entry(env, new_entry));

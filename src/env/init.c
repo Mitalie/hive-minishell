@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 19:45:34 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:11:02 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static t_status	copy_environ_to_env(t_env *env)
 	{
 		value = ft_strdup_env(environ[i]);
 		if (!value)
-			return (status_err(S_RESET_ERR, "malloc", NULL, 0));
+			return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 		status = env_resize(env);
 		if (status != S_OK)
 		{

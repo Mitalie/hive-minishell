@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:54:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 19:45:43 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:15:04 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,11 @@ bool	env_find_index(t_env *env, const char *key,
 	return (false);
 }
 
+/*
+	Allocate a string for an environment value. Due to limit of four arguments,
+	returns a pointer (NULL on allocation failure) instead of t_status. Caller
+	must check the pointer and report allocation error if it is NULL.
+*/
 char	*create_env_string(const char *key, size_t key_len,
 		const char *value, size_t value_len)
 {
@@ -61,16 +66,11 @@ t_status	env_resize(t_env *env)
 	new_size = env->array_size * 2;
 	new_array = malloc(sizeof(char *) * (new_size + 1));
 	if (!new_array)
-		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	ft_memcpy(new_array, env->env_array, sizeof(char *) * env->used_size);
 	new_array[env->used_size] = NULL;
 	free(env->env_array);
 	env->env_array = new_array;
 	env->array_size = new_size;
 	return (S_OK);
-}
-
-char	**env_get_array(t_env *env)
-{
-	return (env->env_array);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 19:45:34 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:15:38 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,31 +33,20 @@ static t_status	init_env_array(t_env *env, int size)
 	return (S_OK);
 }
 
-static char	*ft_strdup_env(const char *s)
-{
-	char	*new;
-	size_t	len;
-
-	len = ft_strlen(s);
-	new = malloc(len + 1);
-	if (!new)
-		return (NULL);
-	ft_memcpy(new, s, len + 1);
-	return (new);
-}
-
 static t_status	copy_environ_to_env(t_env *env)
 {
 	int			i;
 	char		*value;
 	t_status	status;
 
+	if (!environ)
+		return (S_OK);
 	i = 0;
 	while (environ[i])
 	{
-		value = ft_strdup_env(environ[i]);
+		value = ft_strdup(environ[i]);
 		if (!value)
-			return (status_err(S_RESET_ERR, "malloc", NULL, 0));
+			return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 		status = env_resize(env);
 		if (status != S_OK)
 		{

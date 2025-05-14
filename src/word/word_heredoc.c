@@ -6,14 +6,17 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 13:56:32 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/16 16:37:32 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:00:10 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "word.h"
 #include "word_internal.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
+
+#include "status.h"
 
 static size_t	word_heredoc_line_scan(char *scan, char *out, bool *had_exp);
 
@@ -45,26 +48,27 @@ bool	word_heredoc_delimiter(char *word)
 
 /*
 	Process parameter expansions on a heredoc line. If any expansions are done,
-	allocates a new string and frees the original. In case of malloc failure, a
-	null pointer is returned and the original string is freed.
+	allocates a new string and frees the original. If no expansions are done or
+	memory allocation fails, the original remains unchanged.
 */
-char	*word_heredoc_line(char *line)
+t_status	word_heredoc_line(char **line)
 {
 	char	*out;
 	size_t	out_len;
 	bool	had_exp;
 
 	had_exp = false;
-	out_len = word_heredoc_line_scan(line, NULL, &had_exp);
+	out_len = word_heredoc_line_scan(*line, NULL, &had_exp);
 	if (!had_exp)
-		return (line);
+		return (S_OK);
 	out = malloc(out_len + 1);
-	if (out)
-		word_heredoc_line_scan(line, out, &had_exp);
-	if (out)
-		out[out_len] = '\0';
-	free(line);
-	return (out);
+	if (!out)
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
+	word_heredoc_line_scan(*line, out, &had_exp);
+	out[out_len] = '\0';
+	free(*line);
+	*line = out;
+	return (S_OK);
 }
 
 /*

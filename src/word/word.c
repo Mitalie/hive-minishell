@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/11 17:37:50 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 19:10:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,36 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "status.h"
+
 /*
 	Perform all word expansions on the given word and return the resulting field
-	list.
+	list. In case of an error, fields may be allocated and must be freed, but
+	their content is undefined.
 */
-struct s_word_field	*word_expand(char *word)
+t_status	word_expand(char *word, struct s_word_field **fields_out)
 {
 	struct s_word_state	state;
-	struct s_word_field	*first;
+	t_status			status;
 
-	first = NULL;
+	*fields_out = NULL;
 	state.word = word;
 	state.out = NULL;
-	state.out_append = &first;
+	state.out_append = fields_out;
 	state.out_idx = 0;
 	state.out_has_quotes = false;
 	state.out_has_escape = false;
 	state.out_has_wildcard = false;
-	word_scan(&state);
+	status = word_scan(&state);
+	if (status != S_OK)
+		return (status);
 	state.word = word;
-	state.out = first;
-	state.out_append = &first;
-	word_scan(&state);
-	return (first);
+	state.out = *fields_out;
+	state.out_append = fields_out;
+	status = word_scan(&state);
+	if (status != S_OK)
+		return (status);
+	return (S_OK);
 }
 
 /*
@@ -68,25 +75,29 @@ void	word_out_char(struct s_word_state *state, char c, bool quoted)
 	free the pattern. Otherwise, or with no matches, unescape the field value
 	and add it to the fields list.
 */
-static void	word_out_finalize_field(struct s_word_state *state)
+static t_status	word_out_finalize_field(struct s_word_state *state)
 {
 	struct s_word_field	*current;
 	bool				had_matches;
+	t_status			status;
 
 	current = state->out;
 	state->out = current->next;
 	current->value[state->out_idx] = '\0';
 	if (state->out_has_wildcard)
-		word_filename(current->value, &state->out_append, &had_matches);
-	if (state->out_has_wildcard && had_matches)
-		free(current);
-	else
 	{
-		if (state->out_has_escape)
-			word_unescape(current->value);
-		*state->out_append = current;
-		state->out_append = &current->next;
+		status = word_filename(current->value, &state->out_append,
+				&had_matches);
+		if (had_matches)
+			free(current);
+		if (had_matches || status != S_OK)
+			return (status);
 	}
+	if (state->out_has_escape)
+		word_unescape(current->value);
+	*state->out_append = current;
+	state->out_append = &current->next;
+	return (S_OK);
 }
 
 /*
@@ -95,23 +106,31 @@ static void	word_out_finalize_field(struct s_word_state *state)
 	During second pass, finalize current field and add it to final linked list.
 	Empty fields are not stored unless input had quotes (quoted empty strings).
 */
-void	word_out_split(struct s_word_state *state)
+t_status	word_out_split(struct s_word_state *state)
 {
 	struct s_word_field	*new_field;
+	t_status			status;
 
 	if (state->out_idx == 0 && !state->out_has_quotes)
-		return ;
+		return (S_OK);
 	if (!state->out)
 	{
 		new_field = malloc(sizeof(*new_field) + state->out_idx + 1);
+		if (!new_field)
+			return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 		new_field->next = NULL;
 		*state->out_append = new_field;
 		state->out_append = &new_field->next;
 	}
 	else
-		word_out_finalize_field(state);
+	{
+		status = word_out_finalize_field(state);
+		if (status != S_OK)
+			return (status);
+	}
 	state->out_idx = 0;
 	state->out_has_quotes = false;
 	state->out_has_escape = false;
 	state->out_has_wildcard = false;
+	return (S_OK);
 }

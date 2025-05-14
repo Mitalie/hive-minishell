@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:54:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/14 18:10:05 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:15:04 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,4 @@ t_status	env_resize(t_env *env)
 	env->env_array = new_array;
 	env->array_size = new_size;
 	return (S_OK);
-}
-
-char	**env_get_array(t_env *env)
-{
-	return (env->env_array);
 }

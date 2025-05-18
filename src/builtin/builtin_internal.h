@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:19:36 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 21:03:26 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:05:33 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,14 @@ t_status	builtin_cmd_exit(char	**argv, t_env *env,
 t_status	builtin_cmd_echo(char **argv, t_env *env,
 				int *exit_code, int stdout_fd);
 t_status	builtin_cmd_pwd(char	**argv, t_env *env,
+				int *exit_code, int stdout_fd);
+t_status	builtin_cmd_cd(char **argv, t_env *env,
+				int *exit_code, int stdout_fd);
+t_status	builtin_cmd_env(char **argv, t_env *env,
+				int *exit_code, int stdout_fd);
+t_status	builtin_cmd_export(char **argv, t_env *env,
+				int *exit_code, int stdout_fd);
+t_status	builtin_cmd_unset(char **argv, t_env *env,
 				int *exit_code, int stdout_fd);
 
 #endif

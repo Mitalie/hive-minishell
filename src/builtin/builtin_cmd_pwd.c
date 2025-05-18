@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:54:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 21:10:51 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/18 06:01:53 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,7 @@
 #include "libft.h"
 
 /*
-	TO DO:
-	* Add error handling for util_write_all functions
-	* Add handling for the case when no arguments are provided
+ 	Prints the current working directory
 */
 t_status	builtin_cmd_pwd(char	**argv, t_env *env,
 	int *exit_code, int stdout_fd)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:19:21 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 16:06:28 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:05:45 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,12 @@
 
 static const struct s_builtin_func_reg	g_builtins[] = {
 {builtin_cmd_exit, "exit"},
+{builtin_cmd_echo, "echo"},
+{builtin_cmd_pwd, "pwd"},
+{builtin_cmd_cd, "cd"},
+{builtin_cmd_env, "env"},
+{builtin_cmd_export, "export"},
+{builtin_cmd_unset, "unset"},
 };
 
 t_builtin_func	*builtin_get_func(const char *name)

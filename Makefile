@@ -6,7 +6,7 @@
 #    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/12 21:04:59 by josmanov         ###   ########.fr        #
+#    Updated: 2025/05/18 06:16:04 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,11 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	builtin/builtin_cmd_exit.c \
 	builtin/builtin_cmd_echo.c \
 	builtin/builtin_cmd_pwd.c \
+	builtin/builtin_cmd_cd.c \
+	builtin/builtin_cmd_env.c \
+	builtin/builtin_cmd_export.c \
+	builtin/builtin_cmd_export_utils.c \
+	builtin/builtin_cmd_unset.c \
 	parser/parser.c \
 	parser/parser_syntax_error.c \
 	parser/parser_list.c \

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_cmd_echo.c                                 :+:      :+:    :+:   */
+/*   builtin_cmd_env.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/12 20:09:35 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/18 06:04:03 by josmanov         ###   ########.fr       */
+/*   Created: 2025/05/14 23:15:02 by josmanov          #+#    #+#             */
+/*   Updated: 2025/05/18 06:03:49 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,31 +18,22 @@
 #include "libft.h"
 
 /*
-	echo builtin command - displays a line of text
+	Prints all environment variables in the format KEY=VALUE
 */
-t_status	builtin_cmd_echo(char **argv, t_env *env,
+t_status	builtin_cmd_env(char **argv, t_env *env,
 	int *exit_code, int stdout_fd)
 {
-	bool	newline;
-	int		i;
+	size_t	i;
 
+	(void)argv;
 	*exit_code = 0;
-	i = 1;
-	(void)env;
-	newline = true;
-	if (argv[i] && ft_strncmp(argv[i], "-n", 3) == 0)
+	i = 0;
+	while (i < env->used_size)
 	{
-		newline = false;
-		i++;
-	}
-	while (argv[i])
-	{
-		util_write_all(stdout_fd, argv[i], ft_strlen(argv[i]));
-		if (argv[i + 1])
-			util_write_all(stdout_fd, " ", 1);
-		i++;
-	}
-	if (newline)
+		util_write_all(stdout_fd, env->env_array[i],
+			ft_strlen(env->env_array[i]));
 		util_write_all(stdout_fd, "\n", 1);
+		i++;
+	}
 	return (S_OK);
 }

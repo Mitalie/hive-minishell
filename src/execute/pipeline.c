@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 17:36:45 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/21 03:54:04 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include <unistd.h>
 
 #include "ast.h"
+#include "env.h"
+#include "status.h"
 
 /*
 	Create a pipe if necessary and determine input/output FDs for the current
@@ -83,36 +85,34 @@ static void	pipeline_cleanup_parent(struct s_pipeline_fds *fds)
 		close(fds->out);
 }
 
-static int	pipeline_wait_for_children(int num_children, pid_t last_child)
+static t_status	pipeline_wait_for_children(int num_children, pid_t last_child,
+	int	*exit_code)
 {
-	int		pipeline_status;
 	int		wait_status;
 	pid_t	waited_child;
 
-	pipeline_status = 0;
 	while (num_children--)
 	{
 		waited_child = wait(&wait_status);
 		if (waited_child == last_child)
 		{
 			if (WIFEXITED(wait_status))
-				pipeline_status = WEXITSTATUS(wait_status);
+				*exit_code = WEXITSTATUS(wait_status);
 			else if (WIFSIGNALED(wait_status))
-				pipeline_status = 128 + WTERMSIG(wait_status);
+				*exit_code = 128 + WTERMSIG(wait_status);
 		}
 	}
-	return (pipeline_status);
+	return (S_OK);
 }
 
 /*
 	Execute all commands in a pipeline in parallel, connecting the stdout of
 	each command to the stdin of the next one.
 	TODO: handle fork() error
-	TODO: in child, cleanup and exit with correct exit code after empty command
-	or builtin (no execve)
 	TODO: handle single builtin in main process
 */
-int	execute_pipeline(struct s_ast_simple_command *pipeline_head, t_env *env)
+t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
+	t_env *env, int *exit_code)
 {
 	pid_t					child;
 	bool					first;
@@ -130,13 +130,13 @@ int	execute_pipeline(struct s_ast_simple_command *pipeline_head, t_env *env)
 		if (child == 0)
 		{
 			pipeline_cleanup_child(&fds);
-			execute_simple_command(pipeline_head, env);
-			exit(0);
+			execute_simple_command(pipeline_head, env, exit_code);
+			return (S_EXIT_OK);
 		}
 		else
 			pipeline_cleanup_parent(&fds);
 		pipeline_head = pipeline_head->next;
 		first = false;
 	}
-	return (pipeline_wait_for_children(num_children, child));
+	return (pipeline_wait_for_children(num_children, child, exit_code));
 }

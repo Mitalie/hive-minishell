@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/21 03:26:47 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/21 04:01:05 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static t_status	minishell_do_line(t_env *env, int *exit_code)
 		add_history(line);
 	free(line);
 	if (status == S_OK)
-		*exit_code = execute_list(ast, env);
+		status = execute_list(ast, env, exit_code);
 	free_ast(ast);
 	if (status == S_EXIT_ERR || status == S_RESET_ERR)
 		*exit_code = 1;

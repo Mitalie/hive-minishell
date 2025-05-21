@@ -6,21 +6,22 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 17:56:02 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/21 03:42:29 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "execute.h"
 #include "execute_internal.h"
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
-#include "libft.h"
+
 #include "ast.h"
 #include "builtin.h"
-#include "status.h"
 #include "env.h"
+#include "status.h"
 
 int	process_heredoc(struct s_ast_redirect *redirect);
 
@@ -111,26 +112,25 @@ static char	**build_argv(struct s_ast_command_word *args)
 	Exits with appropriate status code based on command execution result
 	TODO: handle builtins
 */
-void	execute_simple_command(struct s_ast_simple_command *command, t_env *env)
+t_status	execute_simple_command(struct s_ast_simple_command *command,
+	t_env *env, int *exit_code)
 {
+	t_status		status;
 	char			**argv;
 	t_builtin_func	*builtin;
-	int				exit_code;
 
 	apply_redirects(command->redirs);
 	if (!command->args)
-		return ;
+		return (S_OK);
 	argv = build_argv(command->args);
 	if (!argv)
-		return ;
+		return (S_EXIT_ERR);
 	builtin = builtin_get_func(argv[0]);
+	status = S_OK;
 	if (builtin)
-	{
-		builtin(argv, env, &exit_code, 1);
-		free(argv);
-		exit(exit_code);
-	}
-	handle_path_search(argv, env, &exit_code);
+		status = builtin(argv, env, exit_code, 1);
+	else
+		handle_path_search(argv, env, exit_code);
 	free(argv);
-	exit(exit_code);
+	return (status);
 }

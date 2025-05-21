@@ -3,18 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:35:02 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/01 22:18:34 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/21 04:13:20 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include <unistd.h>
 
 #include "ast.h"
-#include "execute.h"
 #include "env.h"
+#include "execute.h"
 #include "status.h"
 
 /*
@@ -88,11 +89,16 @@ int	main(void)
 {
 	t_env		env;
 	t_status	status;
+	int			exit_code;
 
 	status = env_init(&env);
 	if (status != S_OK)
 		return (1);
-	execute_pipeline(g_test_pipeline, &env);
-	write(STDERR_FILENO, "execute_pipeline returned\n", 26);
+	exit_code = -1;
+	status = execute_pipeline(g_test_pipeline, &env, &exit_code);
+	dprintf(STDERR_FILENO,
+		"execute_pipeline returned internal status %d, exit code %d\n",
+		status, exit_code);
 	env_free(&env);
+	return (exit_code);
 }

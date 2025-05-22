@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:24:21 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/09 18:17:44 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:27:53 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ struct	s_word_state
 	char				*word;
 	struct s_word_field	*out;
 	struct s_word_field	**out_append;
+	size_t				num_fields;
 	size_t				out_idx;
 	bool				out_has_quotes;
 	bool				out_has_escape;

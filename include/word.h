@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:50:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 21:49:37 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:11:01 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define WORD_H
 
 # include <stdbool.h>
+# include <stddef.h>
 
 # include "status.h"
 
@@ -27,7 +28,8 @@ struct s_word_field
 	char				value[];
 };
 
-t_status	word_expand(char *word, struct s_word_field **fields_out);
+t_status	word_expand(char *word,
+				struct s_word_field ***fields_append, size_t *num_fields);
 
 bool		word_heredoc_delimiter(char *word);
 t_status	word_heredoc_line(char **line);

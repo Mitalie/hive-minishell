@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:10:22 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/10 22:38:00 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/26 22:45:22 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,33 +14,62 @@
 #include "execute.h"
 #include "ast.h"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "libft.h"
 #include "status.h"
 #include "util.h"
 
-/*
-	Create a temporary file using O_TMPFILE
-	Returns the file descriptor or -1 on error
-*/
-static int	create_tmpfile(void)
-{
-	int	fd;
+#define TMP_FILE_PATH "/tmp"
 
-	fd = open("/tmp", O_TMPFILE | O_RDWR, 0600);
-	if (fd == -1)
+/*
+	Create a temporary file using O_TMPFILE.
+	Reopen it for reading using /proc/self/fd/.
+	On error, no file descriptors are left open.
+
+	The reopen is necessary as writing the heredoc data into the file leaves the
+	file offset at the end of the file, so programs that attempt to read from it
+	would not read anything and think they've reached EOF. The project doesn't
+	allow using lseek to reset the offset, so reopen is the only option.
+
+	O_TMPFILE and /proc/self/fd are Linux-specific, and the latter requires
+	procfs being mounted at /proc. If these aren't available, we could use a
+	named temporary file or a pipe (with a child process for writes, in case
+	data is larger than the pipe buffer).
+*/
+static t_status	execute_heredoc_create(int *writefd_out, int *readfd_out)
+{
+	int		writefd;
+	int		readfd;
+	char	proc_path[32];
+
+	writefd = open(TMP_FILE_PATH, O_TMPFILE | O_WRONLY, 0600);
+	if (writefd == -1)
+		return (status_err(S_COMM_ERR, "execute_heredoc",
+				"Failed to create temporary file", errno));
+	ft_strlcpy(proc_path, "/proc/self/fd/", 32);
+	util_itoa_base(writefd, "0123456789", proc_path + 14);
+	readfd = open(proc_path, O_RDONLY);
+	if (readfd == -1)
 	{
-		status_err(S_COMM_ERR, "Failed to create temporary file", NULL, 0);
-		return (-1);
+		close(writefd);
+		return (status_err(S_COMM_ERR, "execute_heredoc",
+				"Failed to reopen temporary file", errno));
 	}
-	return (fd);
+	*writefd_out = writefd;
+	*readfd_out = readfd;
+	return (S_OK);
 }
 
 /*
-	Write heredoc lines to the temporary file
+	Write heredoc lines to the temporary file.
+
+	Write doesn't need a null terminator, so we can insert the newline in its
+	place and not need a separate write call. Put the terminator back afterwards
+	in case some other code tries to process the string after this function.
 */
-static int	write_heredoc_lines(int fd, struct s_ast_command_word *lines)
+static t_status	execute_heredoc_write(int fd, struct s_ast_command_word *lines)
 {
 	struct s_ast_command_word	*current;
 	size_t						len;
@@ -49,39 +78,16 @@ static int	write_heredoc_lines(int fd, struct s_ast_command_word *lines)
 	while (current)
 	{
 		len = ft_strlen(current->word);
-		if (write(fd, current->word, len) == -1)
+		current->word[len] = '\n';
+		if (!util_write_all(fd, current->word, len + 1))
 		{
-			status_err(S_COMM_ERR, "Failed to write to temporary file",
-				NULL, 0);
-			return (-1);
+			return (status_err(S_COMM_ERR, "execute_heredoc",
+					"Failed to write to temporary file", errno));
 		}
-		if (write(fd, "\n", 1) == -1)
-		{
-			status_err(S_COMM_ERR, "Failed to write to temporary file",
-				NULL, 0);
-			return (-1);
-		}
+		current->word[len] = '\0';
 		current = current->next;
 	}
-	return (0);
-}
-
-/*
-	Reopen the temporary file for reading using /proc/self/fd/
-	Returns the new file descriptor or -1 on error
-*/
-static int	reopen_tmpfile(int fd)
-{
-	int		new_fd;
-	char	proc_path[32];
-
-	ft_strlcpy(proc_path, "/proc/self/fd/", 32);
-	util_itoa_base(fd, "0123456789", proc_path + 14);
-	new_fd = open(proc_path, O_RDONLY);
-	if (new_fd == -1)
-		status_err(S_COMM_ERR, "Failed to reopen temporary file", NULL, 0);
-	close(fd);
-	return (new_fd);
+	return (S_OK);
 }
 
 /*
@@ -89,24 +95,20 @@ static int	reopen_tmpfile(int fd)
 	Creates a temporary file, writes the heredoc content, and sets up redirection
 	Returns the file descriptor or -1 on error
 */
-int	process_heredoc(struct s_ast_redirect *redirect)
+t_status	execute_prepare_heredoc(struct s_ast_redirect *redirect, int *fd_out)
 {
-	int	fd;
-	int	read_fd;
+	t_status	status;
+	int			writefd;
+	int			readfd;
 
-	if (!redirect || !redirect->heredoc_lines)
-	{
-		status_err(S_COMM_ERR, "Invalid heredoc redirect", NULL, 0);
-		return (-1);
-	}
-	fd = create_tmpfile();
-	if (fd == -1)
-		return (-1);
-	if (write_heredoc_lines(fd, redirect->heredoc_lines) == -1)
-	{
-		close(fd);
-		return (-1);
-	}
-	read_fd = reopen_tmpfile(fd);
-	return (read_fd);
+	status = execute_heredoc_create(&writefd, &readfd);
+	if (status != S_OK)
+		return (status);
+	status = execute_heredoc_write(writefd, redirect->heredoc_lines);
+	if (close(writefd) < 0 && status == S_OK)
+		status = status_err(S_COMM_ERR, "execute_heredoc",
+				"Error closing the heredoc after writing", errno);
+	if (status == S_OK)
+		*fd_out = readfd;
+	return (status);
 }

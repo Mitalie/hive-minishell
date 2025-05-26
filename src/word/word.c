@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/22 15:29:52 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/26 18:51:06 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,20 @@
 #include "status.h"
 
 /*
-	Perform all word expansions on the given word and return the resulting field
-	list. In case of an error, fields may be allocated and must be freed, but
-	their content is undefined.
+	Perform all word expansions on the given word and append the resulting
+	fields to the given append pointer.
+
+	In case of an error, fields may be allocated and appended, and must be freed
+	by the caller, but their content is undefined. The append pointer itself is
+	updated past the new fields only on success.
 */
-t_status	word_expand(char *word, struct s_word_field **fields_out)
+t_status	word_expand(char *word, struct s_word_field ***fields_append)
 {
 	struct s_word_state	state;
+	struct s_word_field	**fields_out;
 	t_status			status;
 
-	*fields_out = NULL;
+	fields_out = *fields_append;
 	state.word = word;
 	state.out = NULL;
 	state.out_append = fields_out;
@@ -45,6 +49,7 @@ t_status	word_expand(char *word, struct s_word_field **fields_out)
 	status = word_scan(&state);
 	if (status != S_OK)
 		return (status);
+	*fields_append = state.out_append;
 	return (S_OK);
 }
 

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/26 18:51:06 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:28:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,18 @@
 #include <stdlib.h>
 
 #include "status.h"
+
+void	word_free(struct s_word_field *fields)
+{
+	struct s_word_field	*next;
+
+	while (fields)
+	{
+		next = fields->next;
+		free(fields);
+		fields = next;
+	}
+}
 
 /*
 	Perform all word expansions on the given word and append the resulting

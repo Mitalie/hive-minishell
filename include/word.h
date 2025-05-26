@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:50:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/26 18:35:33 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:29:31 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ struct s_word_field
 	struct s_word_field	*next;
 	char				value[];
 };
+
+void		word_free(struct s_word_field *fields);
 
 t_status	word_expand(char *word, struct s_word_field ***fields_append);
 

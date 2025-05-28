@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 16:17:11 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/07 17:02:32 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:32:40 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <readline/readline.h>
 
 #include "ast.h"
+#include "status.h"
 #include "parser.h"
 
 #define INDENT_STEP 4
@@ -101,7 +102,7 @@ static void	print_list(struct s_ast_list_entry *list, int indent)
 
 int	main(void)
 {
-	enum e_parser_status	ps;
+	t_status				status;
 	struct s_ast_list_entry	*root;
 	char					*line;
 
@@ -110,14 +111,11 @@ int	main(void)
 		line = readline("input parser> ");
 		if (!line)
 			break ;
-		ps = parser_parse(line, &root);
-		if (ps == PARSER_ERR_MALLOC)
-		{
-			printf("malloc error\n");
-			return (1);
-		}
-		if (ps == PARSER_ERR_SYNTAX)
+		status = parser_parse(line, &root);
+		if (status == S_RESET_SYNTAX || status == S_RESET_SIGINT)
 			printf("try again\n");
+		else if (status != S_OK)
+			return (1);
 		else if (!root)
 			printf("empty command\n");
 		else

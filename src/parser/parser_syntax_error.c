@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:22:58 by josmanov          #+#    #+#             */
-/*   Updated: 2025/03/31 20:47:55 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:44:01 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,14 @@
 
 #include <stdio.h>
 
-void	parser_syntax_error(const char *message)
+#include "status.h"
+
+/*
+	Report a syntax error.
+
+	TODO: print expected and actual tokens, or position in input
+*/
+t_status	parser_syntax_error(const char *message)
 {
-	fprintf(stderr, "minishell: syntax error: %s\n", message);
+	return (status_err(S_RESET_SYNTAX, "syntax error", message, 0));
 }

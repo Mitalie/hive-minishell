@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/01 22:19:37 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 20:28:40 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,11 @@ int	main(void)
 {
 	char					*line;
 	struct s_ast_list_entry	*ast;
-	enum e_parser_status	status;
+	t_status				status;
 	t_env					env;
-	t_status				env_status;
 
-	env_status = env_init(&env);
-	if (env_status != S_OK)
+	status = env_init(&env);
+	if (status != S_OK)
 		return (1);
 	while (1)
 	{
@@ -43,13 +42,13 @@ int	main(void)
 		if (!line)
 			break ;
 		status = parser_parse(line, &ast);
-		if (status == PARSER_SUCCESS && ast)
+		if (status == S_OK && ast)
 			add_history(line);
 		free(line);
-		if (status == PARSER_SUCCESS)
+		if (status == S_OK)
 			execute_list(ast, &env);
 		free_ast(ast);
-		if (status == PARSER_ERR_MALLOC)
+		if (status == S_EXIT_ERR)
 			return (1);
 	}
 	env_free(&env);

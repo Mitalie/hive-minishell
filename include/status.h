@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 21:50:28 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/27 21:40:16 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 19:06:48 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,12 @@ typedef enum e_status
 	S_RESET_SIGINT,
 	S_COMM_ERR,
 }	t_status;
+
+/*
+	Predefined error messages that are used in many places in the codebase.
+*/
+
+# define ERRMSG_MALLOC "memory allocation failed"
 
 /*
 	Print an error message to stderr and return a status code. Useful for

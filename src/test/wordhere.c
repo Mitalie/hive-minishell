@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:51:26 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/16 16:35:25 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:56:10 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 
+#include "status.h"
 #include "word.h"
 
 #define RLYELLOW "\001\e[33m\002"
@@ -45,14 +46,15 @@ static void	heredoc_loop(char *delimiter, bool quoted)
 			printf(GREEN "Found delimiter, exiting" RESETNL);
 			return ;
 		}
-		if (!quoted)
-			line = word_heredoc_line(line);
-		if (!line)
-			error_exit("Malloc failed in word_heredoc_line");
 		if (quoted)
 			printf(GREEN "Received line >" BRED "%s" GREEN "<" RESETNL, line);
-		else
+		else if (word_heredoc_line(&line) == S_OK)
 			printf(GREEN "Expanded line >" BRED "%s" GREEN "<" RESETNL, line);
+		else
+		{
+			free(line);
+			error_exit("Error in word_heredoc_line");
+		}
 		free(line);
 	}
 }

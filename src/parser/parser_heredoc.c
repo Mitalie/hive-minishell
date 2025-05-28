@@ -3,18 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   parser_heredoc.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/10 22:42:03 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:26:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser_internal.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
+
 #include "libft.h"
+#include "status.h"
 #include "word.h"
 
 /*
@@ -31,7 +34,7 @@ static bool	is_delimiter(char *line, char *delimiter, size_t delim_len)
 /*
 	Add a line to the heredoc lines list
 */
-static enum e_parser_status	add_line_to_heredoc(
+static t_status	add_line_to_heredoc(
 	struct s_ast_command_word ***lines_append,
 	char *line)
 {
@@ -39,28 +42,28 @@ static enum e_parser_status	add_line_to_heredoc(
 
 	new_line = malloc(sizeof(*new_line));
 	if (!new_line)
-		return (PARSER_ERR_MALLOC);
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	new_line->word = line;
 	new_line->next = NULL;
 	**lines_append = new_line;
 	*lines_append = &new_line->next;
-	return (PARSER_SUCCESS);
+	return (S_OK);
 }
 
 /*
 	Process a line for the heredoc
 */
-static enum e_parser_status	process_heredoc_line(
+static t_status	process_heredoc_line(
 	struct s_heredoc_params *params)
 {
-	enum e_parser_status	status;
+	t_status	status;
 
+	status = S_OK;
 	if (!params->quoted)
-		params->line = word_heredoc_line(params->line);
-	if (!params->line)
-		return (PARSER_ERR_MALLOC);
-	status = add_line_to_heredoc(&params->lines_append, params->line);
-	if (status != PARSER_SUCCESS)
+		status = word_heredoc_line(&params->line);
+	if (status == S_OK)
+		status = add_line_to_heredoc(&params->lines_append, params->line);
+	if (status != S_OK)
 		free(params->line);
 	return (status);
 }
@@ -69,18 +72,18 @@ static enum e_parser_status	process_heredoc_line(
 	Read heredoc content from stdin until the delimiter is encountered.
 	Store the content as a linked list of lines in the redirect node.
 */
-enum e_parser_status	read_heredoc(struct s_ast_redirect *redirect)
+t_status	read_heredoc(struct s_ast_redirect *redirect)
 {
-	struct s_heredoc_params		params;
-	enum e_parser_status		status;
+	struct s_heredoc_params	params;
+	t_status				status;
 
 	redirect->heredoc_lines = NULL;
 	params.lines_append = &redirect->heredoc_lines;
 	params.quoted = word_heredoc_delimiter(redirect->word);
 	params.delimiter = redirect->word;
 	params.delim_len = ft_strlen(redirect->word);
-	status = PARSER_SUCCESS;
-	while (status == PARSER_SUCCESS)
+	status = S_OK;
+	while (status == S_OK)
 	{
 		params.line = readline("> ");
 		if (!params.line)

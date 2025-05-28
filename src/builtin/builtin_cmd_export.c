@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/18 06:05:59 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/28 11:01:44 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,33 +22,20 @@
 #include "builtin_cmd_export_utils.h"
 
 /*
-	Extracts key and value from an export argument
+	Extracts key and value from an export argument using argv modification
 */
 static t_status	extract_key_value(char *arg, char **key_out,
 	char **value_out, int *exit_code)
 {
 	char	*equal_sign;
-	char	*key;
-	char	*value;
 
+	(void)exit_code;
 	equal_sign = ft_strchr(arg, '=');
 	if (!equal_sign)
 		return (S_OK);
-	key = ft_substr(arg, 0, equal_sign - arg);
-	if (!key)
-	{
-		*exit_code = 1;
-		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
-	}
-	value = ft_strdup(equal_sign + 1);
-	if (!value)
-	{
-		free(key);
-		*exit_code = 1;
-		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
-	}
-	*key_out = key;
-	*value_out = value;
+	*equal_sign = '\0';
+	*key_out = arg;
+	*value_out = equal_sign + 1;
 	return (S_OK);
 }
 
@@ -73,7 +60,7 @@ static t_status	handle_export_arg(char *arg, t_env *env, int *exit_code)
 	status = extract_key_value(arg, &key, &value, exit_code);
 	if (status != S_OK)
 		return (status);
-	return (set_env_var(key, value, env));
+	return (env_set(env, key, value));
 }
 
 /*
@@ -88,7 +75,11 @@ t_status	builtin_cmd_export(char **argv, t_env *env,
 	*exit_code = 0;
 	if (!argv[1])
 	{
-		print_exports(env, stdout_fd);
+		if (!print_exports(env, stdout_fd))
+		{
+			*exit_code = 1;
+			return (S_COMM_ERR);
+		}
 		return (S_OK);
 	}
 	i = 1;

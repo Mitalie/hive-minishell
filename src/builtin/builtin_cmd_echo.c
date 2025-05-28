@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:09:35 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/27 13:12:22 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/28 18:48:02 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,33 +17,30 @@
 #include "util.h"
 #include "libft.h"
 
+#include <stdio.h>
+
 /*
 	Writes arguments with spaces between them
 */
-static t_status	write_args(char **argv, int start_idx, int stdout_fd,
-	int *exit_code)
+static bool	write_args(char **argv, int stdout_fd,
+	bool newline_for_last)
 {
-	int	i;
+	int		i;
+	size_t	len;
 
-	i = start_idx;
+	i = 0;
 	while (argv[i])
 	{
-		if (!util_write_all(stdout_fd, argv[i], ft_strlen(argv[i])))
-		{
-			*exit_code = 1;
-			return (S_COMM_ERR);
-		}
+		len = ft_strlen(argv[i]);
 		if (argv[i + 1])
-		{
-			if (!util_write_all(stdout_fd, " ", 1))
-			{
-				*exit_code = 1;
-				return (S_COMM_ERR);
-			}
-		}
+			argv[i][len++] = ' ';
+		else if (newline_for_last)
+			argv[i][len++] = '\n';
+		if (!util_write_all(stdout_fd, argv[i], ft_strlen(argv[i])))
+			return (false);
 		i++;
 	}
-	return (S_OK);
+	return (true);
 }
 
 /*
@@ -53,25 +50,19 @@ t_status	builtin_cmd_echo(char **argv, t_env *env,
 	int *exit_code, int stdout_fd)
 {
 	bool		newline;
-	int			i;
-	t_status	status;
 
 	*exit_code = 0;
-	i = 1;
 	(void)env;
 	newline = true;
-	if (argv[i] && ft_strncmp(argv[i], "-n", 3) == 0)
+	argv++;
+	if (*argv && ft_strncmp(*argv, "-n", 3) == 0)
 	{
 		newline = false;
-		i++;
+		argv++;
 	}
-	status = write_args(argv, i, stdout_fd, exit_code);
-	if (status != S_OK)
-		return (status);
-	if (newline && !util_write_all(stdout_fd, "\n", 1))
-	{
+	if (!write_args(argv, stdout_fd, false))
 		*exit_code = 1;
-		return (S_COMM_ERR);
-	}
+	if (newline && !util_write_all(stdout_fd, "\n", 1))
+		*exit_code = 1;
 	return (S_OK);
 }

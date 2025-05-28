@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/18 06:03:14 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/27 15:12:35 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,34 +22,99 @@
 #include "builtin_cmd_export_utils.h"
 
 /*
+	Helper function to print a single export line
+*/
+static bool	print_single_export(char *env_str, char *equal_sign,
+	char *buffer, int stdout_fd)
+{
+	size_t	pos;
+
+	pos = 0;
+	ft_memcpy(buffer + pos, "declare -x ", 11);
+	pos += 11;
+	if (equal_sign)
+	{
+		ft_memcpy(buffer + pos, env_str, equal_sign - env_str);
+		pos += equal_sign - env_str;
+		ft_memcpy(buffer + pos, "=\"", 2);
+		pos += 2;
+		ft_memcpy(buffer + pos, equal_sign + 1, ft_strlen(equal_sign + 1));
+		pos += ft_strlen(equal_sign + 1);
+		buffer[pos++] = '"';
+	}
+	else
+	{
+		ft_memcpy(buffer + pos, env_str, ft_strlen(env_str));
+		pos += ft_strlen(env_str);
+	}
+	buffer[pos++] = '\n';
+	return (util_write_all(stdout_fd, buffer, pos));
+}
+
+/*
+	Ensures buffer is large enough, reallocates if needed
+*/
+static char	*ensure_buffer_size(char *buffer, size_t *buffer_size,
+	size_t needed_len)
+{
+	char	*new_buffer;
+
+	if (needed_len <= *buffer_size)
+		return (buffer);
+	free(buffer);
+	*buffer_size = needed_len + 256;
+	new_buffer = malloc(*buffer_size);
+	return (new_buffer);
+}
+
+/*
+	Processes a single environment variable for export printing
+*/
+static bool	process_export_entry(char *env_str, char **buffer,
+	size_t *buffer_size, int stdout_fd)
+{
+	char	*equal_sign;
+	size_t	needed_len;
+
+	equal_sign = ft_strchr(env_str, '=');
+	if (equal_sign)
+		needed_len = 11 + (equal_sign - env_str) + 2
+			+ ft_strlen(equal_sign + 1) + 2;
+	else
+		needed_len = 11 + ft_strlen(env_str) + 1;
+	*buffer = ensure_buffer_size(*buffer, buffer_size, needed_len);
+	if (!*buffer)
+		return (false);
+	return (print_single_export(env_str, equal_sign, *buffer, stdout_fd));
+}
+
+/*
 	Prints all environment variables in the format "declare -x KEY="VALUE""
 	For variables without values, prints just "declare -x KEY"
 */
-void	print_exports(t_env *env, int stdout_fd)
+bool	print_exports(t_env *env, int stdout_fd)
 {
 	size_t	i;
-	char	*equal_sign;
+	char	*buffer;
+	size_t	buffer_size;
 
+	buffer_size = 1024;
+	buffer = malloc(buffer_size);
+	if (!buffer)
+		return (false);
 	i = 0;
 	while (i < env->used_size)
 	{
-		util_write_all(stdout_fd, "declare -x ", 11);
-		equal_sign = ft_strchr(env->env_array[i], '=');
-		if (equal_sign)
+		if (!process_export_entry(env->env_array[i], &buffer,
+				&buffer_size, stdout_fd))
 		{
-			util_write_all(stdout_fd, env->env_array[i],
-				equal_sign - env->env_array[i]);
-			util_write_all(stdout_fd, "=\"", 2);
-			util_write_all(stdout_fd, equal_sign + 1,
-				ft_strlen(equal_sign + 1));
-			util_write_all(stdout_fd, "\"", 1);
+			free(buffer);
+			return (false);
 		}
-		else
-			util_write_all(stdout_fd, env->env_array[i],
-				ft_strlen(env->env_array[i]));
-		util_write_all(stdout_fd, "\n", 1);
 		i++;
 	}
+	free(buffer);
+	return (true);
 }
 
 /*
@@ -57,6 +122,7 @@ void	print_exports(t_env *env, int stdout_fd)
 	Must start with a letter or underscore (not a digit)
 	Can only contain letters, digits, or underscores
 	Cannot be empty
+	Cannot contain '=' character
 */
 bool	is_valid_identifier(const char *str)
 {
@@ -65,24 +131,11 @@ bool	is_valid_identifier(const char *str)
 	if (!util_isname(*str) || util_isdigit(*str))
 		return (false);
 	str++;
-	while (*str && *str != '=')
+	while (*str)
 	{
-		if (!util_isname(*str))
+		if (!util_isname(*str) || *str == '=')
 			return (false);
 		str++;
 	}
 	return (true);
-}
-
-/*
-	Sets an environment variable and frees the key and value strings
-*/
-t_status	set_env_var(char *key, char *value, t_env *env)
-{
-	t_status	status;
-
-	status = env_set(env, key, value);
-	free(key);
-	free(value);
-	return (status);
 }

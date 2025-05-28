@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:54:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 19:45:43 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/27 15:03:06 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ bool	env_find_index(t_env *env, const char *key,
 	while (i < env->used_size)
 	{
 		if (ft_strncmp(env->env_array[i], key, key_len) == 0
-			&& env->env_array[i][key_len] == '=')
+			&& (env->env_array[i][key_len] == '='
+			|| env->env_array[i][key_len] == '\0'))
 		{
 			*idx_out = i;
 			return (true);

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
+#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/18 06:16:04 by josmanov         ###   ########.fr        #
+#    Updated: 2025/06/03 18:25:17 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_redirect.c \
 	parser/parser_word.c \
 	parser/parser_heredoc.c \
+	execute/execute_redirect.c \
 	execute/simple_command.c \
 	execute/path.c \
 	execute/pipeline.c \

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 21:36:25 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/29 21:43:29 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ static t_status	execute_pipeline_create_pipe_and_fork(
 
 /*
 	Move the input and output pipes to correct FD numbers, close the read end of
-	the output pipe, and execute the command. Set the status to exit from the
-	child process if the command didn't execve.
+	the output pipe, and execute the command. execute_simple_command ensures the
+	child process returns with an exiting status.
 
 	We don't need to check for close() errors here. They are only useful for
 	reporting potential data loss in case of a delayed write error, or reporting
@@ -87,8 +87,8 @@ static t_status	execute_pipeline_child(struct s_pipeline_fds *fds,
 		close(fds->out);
 	}
 	if (status == S_OK)
-		status = execute_simple_command(child_command, env, exit_code);
-	return (status_force_exit(status, exit_code));
+		status = execute_simple_command(child_command, env, exit_code, true);
+	return (status);
 }
 
 /*
@@ -154,7 +154,6 @@ static t_status	execute_pipeline_wait_for_children(
 /*
 	Execute all commands in a pipeline in parallel, connecting the stdout of
 	each command to the stdin of the next one.
-	TODO: handle single builtin in main process
 */
 t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
 	t_env *env, int *exit_code)
@@ -167,6 +166,8 @@ t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
 	status = S_OK;
 	first = true;
 	child = 0;
+	if (pipeline_head && !pipeline_head->next)
+		return (execute_simple_command(pipeline_head, env, exit_code, false));
 	while (pipeline_head)
 	{
 		status = execute_pipeline_create_pipe_and_fork(

@@ -6,10 +6,11 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:11:56 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/21 04:12:47 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:32:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -52,7 +53,7 @@ int	main(void)
 	if (status != S_OK)
 		return (1);
 	exit_code = -1;
-	status = execute_simple_command(g_test_command, &env, &exit_code);
+	status = execute_simple_command(g_test_command, &env, &exit_code, false);
 	dprintf(STDERR_FILENO,
 		"execute_simple_command returned internal status %d, exit code %d\n",
 		status, exit_code);

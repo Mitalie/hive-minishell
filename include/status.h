@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 21:50:28 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 19:06:48 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/29 18:38:05 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,16 @@ t_status	status_err(t_status status,
 	- If `errnum` is not 0, `": "` and `strerror(errnum)` are printed
 */
 void		status_warn(const char *msg, const char *extra, int errnum);
+
+/*
+	Set the appropriate exit code if the status implies one.
+*/
+void		status_set_exit_code(t_status status, int *exit_code);
+
+/*
+	Set the appropriate exit code if the status implies one, and replace the
+	status with S_EXIT_OK.
+*/
+t_status	status_force_exit(t_status status, int *exit_code);
 
 #endif

@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/05/12 17:54:52 by amakinen         ###   ########.fr        #
+#    Updated: 2025/05/28 17:53:28 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	parser/parser_redirect.c \
 	parser/parser_word.c \
 	parser/parser_heredoc.c \
+	execute/execute_redirect.c \
 	execute/simple_command.c \
 	execute/path.c \
 	execute/pipeline.c \

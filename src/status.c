@@ -6,12 +6,13 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:11:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/14 18:55:48 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/29 18:38:31 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "status.h"
 
+#include <signal.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -73,4 +74,20 @@ void	status_warn(const char *msg, const char *extra, int errnum)
 	}
 	buf[len++] = '\n';
 	util_write_all(STDERR_FILENO, buf, len);
+}
+
+void	status_set_exit_code(t_status status, int *exit_code)
+{
+	if (status == S_EXIT_ERR || status == S_RESET_ERR || status == S_COMM_ERR)
+		*exit_code = 1;
+	else if (status == S_RESET_SYNTAX)
+		*exit_code = 2;
+	else if (status == S_RESET_SIGINT)
+		*exit_code = 128 + SIGINT;
+}
+
+t_status	status_force_exit(t_status status, int *exit_code)
+{
+	status_set_exit_code(status, exit_code);
+	return (S_EXIT_OK);
 }

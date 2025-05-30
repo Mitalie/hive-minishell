@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:49 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/09 18:35:56 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/26 18:42:19 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	main(int argc, char **argv)
 {
 	int					i;
 	struct s_word_field	*fields;
+	struct s_word_field	**fields_append;
 	struct s_word_field	*next;
 	t_status			status;
 
@@ -27,7 +28,8 @@ int	main(int argc, char **argv)
 	while (i < argc)
 	{
 		printf("\e[31mWord  : \e[91m%s\e[0m\n", argv[i]);
-		status = word_expand(argv[i], &fields);
+		fields_append = &fields;
+		status = word_expand(argv[i], &fields_append);
 		while (fields)
 		{
 			if (status == S_OK)

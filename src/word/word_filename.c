@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:48:35 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 19:09:13 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/22 15:28:44 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,9 @@ static t_status	word_filename_scandir(DIR *dir, struct s_word_pattern *pattern,
 /*
 	Match a pattern against files in the current directory and append matching
 	file names as fields to the given append pointer.
+
+	`had_matches` is set to true if and only if any fields are appended, even in
+	case of error.
 */
 t_status	word_filename(char *pattern_str,
 	struct s_word_field ***matches_append, bool *had_matches)

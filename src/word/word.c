@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 19:10:49 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:28:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,33 @@
 
 #include "status.h"
 
+void	word_free(struct s_word_field *fields)
+{
+	struct s_word_field	*next;
+
+	while (fields)
+	{
+		next = fields->next;
+		free(fields);
+		fields = next;
+	}
+}
+
 /*
-	Perform all word expansions on the given word and return the resulting field
-	list. In case of an error, fields may be allocated and must be freed, but
-	their content is undefined.
+	Perform all word expansions on the given word and append the resulting
+	fields to the given append pointer.
+
+	In case of an error, fields may be allocated and appended, and must be freed
+	by the caller, but their content is undefined. The append pointer itself is
+	updated past the new fields only on success.
 */
-t_status	word_expand(char *word, struct s_word_field **fields_out)
+t_status	word_expand(char *word, struct s_word_field ***fields_append)
 {
 	struct s_word_state	state;
+	struct s_word_field	**fields_out;
 	t_status			status;
 
-	*fields_out = NULL;
+	fields_out = *fields_append;
 	state.word = word;
 	state.out = NULL;
 	state.out_append = fields_out;
@@ -45,6 +61,7 @@ t_status	word_expand(char *word, struct s_word_field **fields_out)
 	status = word_scan(&state);
 	if (status != S_OK)
 		return (status);
+	*fields_append = state.out_append;
 	return (S_OK);
 }
 
@@ -72,8 +89,14 @@ void	word_out_char(struct s_word_state *state, char c, bool quoted)
 /*
 	Finalize a field after its value has been filled in, and move to next field.
 	If current field is a pattern, add matched filenames to the fields list and
-	free the pattern. Otherwise, or with no matches, unescape the field value
-	and add it to the fields list.
+	remove and free the pattern. Otherwise, or with no matches, unescape the
+	field value and retain it in the fields list.
+
+	If any matches are found in word_filename, the previous field's next pointer
+	is overwritten via the append pointer. This unlinks the pattern field which
+	we free, but we must relink the next field to prevent leaking the tail in
+	case of an error. If no matches are added, the links are intact but the
+	append pointer needs to be advanced.
 */
 static t_status	word_out_finalize_field(struct s_word_state *state)
 {
@@ -89,21 +112,23 @@ static t_status	word_out_finalize_field(struct s_word_state *state)
 		status = word_filename(current->value, &state->out_append,
 				&had_matches);
 		if (had_matches)
+		{
+			*state->out_append = current->next;
 			free(current);
+		}
 		if (had_matches || status != S_OK)
 			return (status);
 	}
 	if (state->out_has_escape)
 		word_unescape(current->value);
-	*state->out_append = current;
 	state->out_append = &current->next;
 	return (S_OK);
 }
 
 /*
 	End the current field and prepare for the next one. During first pass,
-	allocate memory for the current field and add it to preliminary linked list.
-	During second pass, finalize current field and add it to final linked list.
+	allocate memory for the current field and add it to the linked list. During
+	second pass, finalize current field with filename expansion or unescaping.
 	Empty fields are not stored unless input had quotes (quoted empty strings).
 */
 t_status	word_out_split(struct s_word_state *state)

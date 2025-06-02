@@ -6,13 +6,17 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/16 17:07:39 by amakinen          #+#    #+#              #
-#    Updated: 2024/06/26 14:00:43 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/02 15:49:16 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 BUILDDIR = build
 
-_CFLAGS = -Wall -Wextra -Werror $(CFLAGS)
+_CFLAGS = -Wall -Wextra -Werror
+ifneq (,$(strip $(SANITIZE)))
+	_CFLAGS += -fsanitize=$(SANITIZE)
+endif
+_CFLAGS += $(CFLAGS)
 _CPPFLAGS = -MMD -MP $(CPPFLAGS)
 CC ?= cc
 AR ?= ar

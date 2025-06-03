@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   status.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 21:50:28 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 18:38:05 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/03 14:57:24 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@
 	then request more input if interactive and exit if non-interactive.
 	- `S_COMM_ERR` indicates the current command can not be executed due to an
 	error, but processing of the current input shall continue.
+	- `S_BUILTIN_ERR` and `S_BUILTIN_ARG` are used to abort the execution of a
+	built-in command without considering it an error of the shell. The shell
+	shall set exit status of 1 for errors and 2 for invalid arguments.
 */
 typedef enum e_status
 {
@@ -42,6 +45,8 @@ typedef enum e_status
 	S_RESET_SYNTAX,
 	S_RESET_SIGINT,
 	S_COMM_ERR,
+	S_BUILTIN_ERR,
+	S_BUILTIN_ARG,
 }	t_status;
 
 /*

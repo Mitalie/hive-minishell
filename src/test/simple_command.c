@@ -3,18 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   simple_command.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:11:56 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/01 22:18:16 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:32:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #include "ast.h"
-#include "execute.h"
 #include "env.h"
+#include "execute.h"
 #include "status.h"
 
 /*
@@ -45,11 +47,16 @@ int	main(void)
 {
 	t_env		env;
 	t_status	status;
+	int			exit_code;
 
 	status = env_init(&env);
 	if (status != S_OK)
 		return (1);
-	execute_simple_command(g_test_command, &env);
-	write(STDERR_FILENO, "execute_simple_command returned\n", 32);
+	exit_code = -1;
+	status = execute_simple_command(g_test_command, &env, &exit_code, false);
+	dprintf(STDERR_FILENO,
+		"execute_simple_command returned internal status %d, exit code %d\n",
+		status, exit_code);
 	env_free(&env);
+	return (exit_code);
 }

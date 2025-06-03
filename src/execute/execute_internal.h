@@ -3,25 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   execute_internal.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 17:38:26 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:19:38 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXECUTE_INTERNAL_H
 # define EXECUTE_INTERNAL_H
 
+# include <stdbool.h>
+
+# include "ast.h"
 # include "env.h"
+# include "status.h"
 
 /*
 	Internal functions for command execution
 	These functions handle the finding and executing external commands
 */
-void	handle_absolute_path(char **argv, t_env *env, int *exit_code);
+void		handle_absolute_path(char **argv, t_env *env, int *exit_code);
 
-void	handle_path_search(char **argv, t_env *env, int *exit_code);
+void		handle_path_search(char **argv, t_env *env, int *exit_code);
 
 struct	s_pipeline_fds
 {
@@ -31,5 +35,17 @@ struct	s_pipeline_fds
 };
 
 # define NO_PIPE -1
+
+struct s_redir_fds
+{
+	int	in;
+	int	out;
+};
+
+# define NO_REDIR -1
+
+t_status	execute_redirect_prepare(struct s_redir_fds *fds,
+				struct s_ast_redirect *redirs);
+t_status	execute_redirect_finish(struct s_redir_fds *fds, bool apply);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:35:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/04/21 18:49:16 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/21 03:59:59 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,43 +15,46 @@
 #include <stdbool.h>
 
 #include "ast.h"
-/*
-    Execute a single list entry (pipeline or group)
-    Returns the exit status of the executed entry
-*/
-static int	execute_list_entry(struct s_ast_list_entry *entry, t_env *env)
-{
-	int	status;
+#include "env.h"
+#include "status.h"
 
+/*
+	Execute a single list entry (pipeline or group)
+
+	The error case should be impossible to hit if the parser works correctly.
+*/
+static t_status	execute_list_entry(struct s_ast_list_entry *entry,
+	t_env *env, int *exit_code)
+{
 	if (entry->type == AST_LIST_PIPELINE)
-		status = execute_pipeline(entry->pipeline, env);
+		return (execute_pipeline(entry->pipeline, env, exit_code));
 	else if (entry->type == AST_LIST_GROUP)
-		status = execute_list(entry->group, env);
+		return (execute_list(entry->group, env, exit_code));
 	else
-		status = 1;
-	return (status);
+		return (status_err(S_EXIT_ERR, "execute_list: internal error",
+				"invalid ast_list_entry type", 0));
 }
 
 /*
-    Execute a command list, handling logical operators && and ||
-    Commands are executed left to right, evaluating each action for AND/OR
-    Returns the exit status of the last executed command
+	Execute a command list, handling logical operators && and ||
+	Commands are executed left to right, evaluating each action for AND/OR
 */
-int	execute_list(struct s_ast_list_entry *list_head, t_env *env)
+t_status	execute_list(struct s_ast_list_entry *list_head,
+	t_env *env, int *exit_code)
 {
-	int		status;
-	bool	execute_next;
+	t_status	status;
+	bool		execute_next;
 
 	if (!list_head)
-		return (0);
-	status = execute_list_entry(list_head, env);
-	while (list_head->next)
+		return (S_OK);
+	status = execute_list_entry(list_head, env, exit_code);
+	while (list_head->next && status == S_OK)
 	{
-		execute_next = (list_head->next_op == AST_LIST_AND && status == 0)
-			|| (list_head->next_op == AST_LIST_OR && status != 0);
+		execute_next = (list_head->next_op == AST_LIST_AND && *exit_code == 0)
+			|| (list_head->next_op == AST_LIST_OR && *exit_code != 0);
 		list_head = list_head->next;
 		if (execute_next)
-			status = execute_list_entry(list_head, env);
+			status = execute_list_entry(list_head, env, exit_code);
 	}
 	return (status);
 }

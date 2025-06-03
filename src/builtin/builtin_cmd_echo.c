@@ -6,23 +6,23 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:09:35 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/30 21:53:14 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/03 15:20:39 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_internal.h"
 
+#include <errno.h>
+
 #include "env.h"
+#include "libft.h"
 #include "status.h"
 #include "util.h"
-#include "libft.h"
-
-#include <stdio.h>
 
 /*
 	Writes arguments with spaces between them
 */
-static bool	write_args(char **argv, int stdout_fd,
+static t_status	write_args(char **argv, int stdout_fd,
 	bool newline_for_last)
 {
 	int		i;
@@ -37,16 +37,10 @@ static bool	write_args(char **argv, int stdout_fd,
 		else if (newline_for_last)
 			argv[i][len++] = '\n';
 		if (!util_write_all(stdout_fd, argv[i], len))
-		{
-			if (argv[i + 1])
-				argv[i][len - 1] = '\0';
-			return (false);
-		}
-		if (argv[i + 1])
-			argv[i][len - 1] = '\0';
+			return (status_err(S_BUILTIN_ERR, "echo", "write failed", errno));
 		i++;
 	}
-	return (true);
+	return (S_OK);
 }
 
 /*
@@ -55,7 +49,7 @@ static bool	write_args(char **argv, int stdout_fd,
 t_status	builtin_cmd_echo(char **argv, t_env *env,
 	int *exit_code, int stdout_fd)
 {
-	bool		newline;
+	bool	newline;
 
 	*exit_code = 0;
 	(void)env;
@@ -66,7 +60,5 @@ t_status	builtin_cmd_echo(char **argv, t_env *env,
 		newline = false;
 		argv++;
 	}
-	if (!write_args(argv, stdout_fd, newline))
-		*exit_code = 1;
-	return (S_OK);
+	return (write_args(argv, stdout_fd, newline));
 }

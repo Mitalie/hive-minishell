@@ -6,16 +6,18 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:15:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/30 09:43:49 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/03 15:05:32 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_internal.h"
 
+#include <errno.h>
+
 #include "env.h"
+#include "libft.h"
 #include "status.h"
 #include "util.h"
-#include "libft.h"
 
 /*
 	Prints all environment variables in the format KEY=VALUE
@@ -38,8 +40,7 @@ t_status	builtin_cmd_env(char **argv, t_env *env,
 		if (!util_write_all(stdout_fd, s, len + 1))
 		{
 			s[len] = '\0';
-			*exit_code = 1;
-			return (S_OK);
+			return (status_err(S_BUILTIN_ERR, "env", "write failed", errno));
 		}
 		s[len] = '\0';
 		i++;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   status.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:11:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 18:38:31 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/03 14:58:09 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,10 @@ void	status_warn(const char *msg, const char *extra, int errnum)
 
 void	status_set_exit_code(t_status status, int *exit_code)
 {
-	if (status == S_EXIT_ERR || status == S_RESET_ERR || status == S_COMM_ERR)
+	if (status == S_EXIT_ERR || status == S_RESET_ERR || status == S_COMM_ERR
+		|| status == S_BUILTIN_ERR)
 		*exit_code = 1;
-	else if (status == S_RESET_SYNTAX)
+	else if (status == S_RESET_SYNTAX || status == S_BUILTIN_ARG)
 		*exit_code = 2;
 	else if (status == S_RESET_SIGINT)
 		*exit_code = 128 + SIGINT;

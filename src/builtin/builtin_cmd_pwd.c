@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:54:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/27 15:04:30 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/30 11:04:18 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static t_status	write_cwd(char *cwd, int stdout_fd, int *exit_code)
 	{
 		cwd[len] = '\0';
 		*exit_code = 1;
-		return (S_COMM_ERR);
+		return (S_OK);
 	}
 	cwd[len] = '\0';
 	return (S_OK);
@@ -57,7 +57,7 @@ t_status	builtin_cmd_pwd(char	**argv, t_env *env,
 	{
 		status_warn("pwd: getcwd failed", NULL, 0);
 		*exit_code = 1;
-		return (S_COMM_ERR);
+		return (S_OK);
 	}
 	status = write_cwd(cwd, stdout_fd, exit_code);
 	free(cwd);

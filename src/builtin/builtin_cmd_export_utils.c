@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/27 15:12:35 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/30 08:05:28 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,19 +69,25 @@ static char	*ensure_buffer_size(char *buffer, size_t *buffer_size,
 
 /*
 	Processes a single environment variable for export printing
+	prefix_len value 11 = "declare -x"
+	quotes_len value 3 = "..."
 */
 static bool	process_export_entry(char *env_str, char **buffer,
 	size_t *buffer_size, int stdout_fd)
 {
 	char	*equal_sign;
 	size_t	needed_len;
+	size_t	prefix_len;
+	size_t	quotes_len;
 
 	equal_sign = ft_strchr(env_str, '=');
+	prefix_len = 11;
+	quotes_len = 3;
 	if (equal_sign)
-		needed_len = 11 + (equal_sign - env_str) + 2
-			+ ft_strlen(equal_sign + 1) + 2;
+		needed_len = prefix_len + (equal_sign - env_str)
+			+ quotes_len + ft_strlen(equal_sign + 1);
 	else
-		needed_len = 11 + ft_strlen(env_str) + 1;
+		needed_len = prefix_len + ft_strlen(env_str) + 1;
 	*buffer = ensure_buffer_size(*buffer, buffer_size, needed_len);
 	if (!*buffer)
 		return (false);
@@ -122,7 +128,6 @@ bool	print_exports(t_env *env, int stdout_fd)
 	Must start with a letter or underscore (not a digit)
 	Can only contain letters, digits, or underscores
 	Cannot be empty
-	Cannot contain '=' character
 */
 bool	is_valid_identifier(const char *str)
 {
@@ -133,7 +138,7 @@ bool	is_valid_identifier(const char *str)
 	str++;
 	while (*str)
 	{
-		if (!util_isname(*str) || *str == '=')
+		if (!util_isname(*str))
 			return (false);
 		str++;
 	}

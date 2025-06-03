@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/28 11:01:44 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/30 10:04:09 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,22 @@ static t_status	handle_export_arg(char *arg, t_env *env, int *exit_code)
 	char		*value;
 	t_status	status;
 
-	if (!is_valid_identifier(arg))
-	{
-		status_warn("export: not a valid identifier", arg, 0);
-		*exit_code = 2;
-		return (S_COMM_ERR);
-	}
-	if (!ft_strchr(arg, '='))
-		return (S_OK);
+	key = NULL;
+	value = NULL;
 	status = extract_key_value(arg, &key, &value, exit_code);
 	if (status != S_OK)
 		return (status);
-	return (env_set(env, key, value));
+	if (!key)
+		key = arg;
+	if (!is_valid_identifier(key))
+	{
+		status_warn("export: not a valid identifier", key, 0);
+		*exit_code = 2;
+		return (S_OK);
+	}
+	if (value)
+		return (env_set(env, key, value));
+	return (S_OK);
 }
 
 /*
@@ -78,7 +82,7 @@ t_status	builtin_cmd_export(char **argv, t_env *env,
 		if (!print_exports(env, stdout_fd))
 		{
 			*exit_code = 1;
-			return (S_COMM_ERR);
+			return (S_OK);
 		}
 		return (S_OK);
 	}

@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:45:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/28 12:03:08 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/30 10:05:12 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static t_status	unset_single_var(char *var, t_env *env, int *exit_code)
 	{
 		status_warn("unset: not a valid identifier", var, 0);
 		*exit_code = 2;
-		return (S_COMM_ERR);
+		return (S_OK);
 	}
 	status = env_unset(env, var);
 	if (status != S_OK)
@@ -50,11 +50,9 @@ t_status	builtin_cmd_unset(char **argv, t_env *env,
 {
 	int			i;
 	t_status	status;
-	t_status	final_status;
 
 	(void)stdout_fd;
 	*exit_code = 0;
-	final_status = S_OK;
 	if (!argv[1])
 		return (S_OK);
 	i = 1;
@@ -62,9 +60,9 @@ t_status	builtin_cmd_unset(char **argv, t_env *env,
 	{
 		status = unset_single_var(argv[i], env, exit_code);
 		if (status != S_OK)
-			final_status = status;
+			return (status);
 		i++;
 	}
 	execve("/bin/env", (char *[]){"/bin/env", NULL}, env->env_array);
-	return (final_status);
+	return (S_OK);
 }

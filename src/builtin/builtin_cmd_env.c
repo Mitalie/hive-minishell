@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:15:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/27 14:59:14 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/30 09:43:49 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ t_status	builtin_cmd_env(char **argv, t_env *env,
 		{
 			s[len] = '\0';
 			*exit_code = 1;
-			return (S_COMM_ERR);
+			return (S_OK);
 		}
 		s[len] = '\0';
 		i++;

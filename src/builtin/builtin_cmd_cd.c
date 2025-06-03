@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 22:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/18 06:10:31 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/01 07:02:14 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,12 @@ t_status	builtin_cmd_cd(char **argv, t_env *env,
 	*exit_code = 0;
 	path = get_cd_path(argv, env, exit_code);
 	if (!path)
-		return (S_COMM_ERR);
+		return (S_OK);
 	if (chdir(path) != 0)
 	{
-		status_err(S_COMM_ERR, "cd", path, errno);
+		status_warn("cd", path, errno);
 		*exit_code = 2;
-		return (S_COMM_ERR);
+		return (S_OK);
 	}
 	execve("/bin/pwd", (char *[]){"/bin/pwd", NULL}, env->env_array);
 	return (S_OK);

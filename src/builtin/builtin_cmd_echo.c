@@ -6,7 +6,7 @@
 /*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:09:35 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/28 18:48:02 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/05/30 21:53:14 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,14 @@ static bool	write_args(char **argv, int stdout_fd,
 			argv[i][len++] = ' ';
 		else if (newline_for_last)
 			argv[i][len++] = '\n';
-		if (!util_write_all(stdout_fd, argv[i], ft_strlen(argv[i])))
+		if (!util_write_all(stdout_fd, argv[i], len))
+		{
+			if (argv[i + 1])
+				argv[i][len - 1] = '\0';
 			return (false);
+		}
+		if (argv[i + 1])
+			argv[i][len - 1] = '\0';
 		i++;
 	}
 	return (true);
@@ -60,9 +66,7 @@ t_status	builtin_cmd_echo(char **argv, t_env *env,
 		newline = false;
 		argv++;
 	}
-	if (!write_args(argv, stdout_fd, false))
-		*exit_code = 1;
-	if (newline && !util_write_all(stdout_fd, "\n", 1))
+	if (!write_args(argv, stdout_fd, newline))
 		*exit_code = 1;
 	return (S_OK);
 }

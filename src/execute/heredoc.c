@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:10:22 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 22:57:06 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:28:06 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static t_status	execute_heredoc_create(int *writefd_out, int *readfd_out)
 	in case some other code tries to process the string after this function.
 */
 static t_status	execute_heredoc_write(int fd, bool quoted,
-	struct s_ast_command_word *lines)
+	struct s_ast_command_word *lines, t_shenv *env)
 {
 	t_status					status;
 	struct s_ast_command_word	*current;
@@ -86,7 +86,7 @@ static t_status	execute_heredoc_write(int fd, bool quoted,
 	{
 		if (!quoted)
 		{
-			status = word_heredoc_line(&current->word);
+			status = word_heredoc_line(&current->word, env);
 			if (status != S_OK)
 				return (status);
 		}
@@ -111,7 +111,7 @@ static t_status	execute_heredoc_write(int fd, bool quoted,
 	file descriptor for the redirection.
 */
 t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
-	struct s_redir_fds *fds)
+	struct s_redir_fds *fds, t_shenv *env)
 {
 	t_status	status;
 	int			writefd;
@@ -123,7 +123,7 @@ t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
 	if (status != S_OK)
 		return (status);
 	status = execute_heredoc_write(writefd, redirect->heredoc_quoted,
-			redirect->heredoc_lines);
+			redirect->heredoc_lines, env);
 	if (close(writefd) < 0)
 		if (status == S_OK)
 			status = status_err(S_COMM_ERR, "execute_heredoc",

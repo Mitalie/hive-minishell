@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 14:12:48 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/16 15:15:01 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:36:58 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 
+#include "shenv.h"
 #include "util.h"
 
 /*
@@ -22,7 +23,7 @@
 
 	TODO: implement correct value for `$?`.
 */
-char	*word_exp_parse(char **word)
+char	*word_exp_parse(char **word, t_shenv *env)
 {
 	char	*name_start;
 	char	*value;
@@ -40,7 +41,7 @@ char	*word_exp_parse(char **word)
 			(*word)++;
 		name_end_tmp = **word;
 		**word = '\0';
-		value = getenv(name_start);
+		value = shenv_var_get(env, name_start);
 		**word = name_end_tmp;
 		if (!value)
 			value = "";

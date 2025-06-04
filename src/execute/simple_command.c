@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:46:25 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:42:42 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static t_status	execute_arg_fields_to_argv(
 	are set to null pointers.
 */
 static t_status	execute_expand_args(struct s_ast_command_word *args,
-	struct s_word_field **fields_out, char ***argv_out)
+	struct s_word_field **fields_out, char ***argv_out, t_shenv *env)
 {
 	t_status			status;
 	struct s_word_field	**fields_append;
@@ -82,7 +82,7 @@ static t_status	execute_expand_args(struct s_ast_command_word *args,
 	fields_append = fields_out;
 	while (args)
 	{
-		status = word_expand(args->word, &fields_append);
+		status = word_expand(args->word, &fields_append, env);
 		if (status != S_OK)
 			return (status);
 		args = args->next;
@@ -139,7 +139,7 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	t_builtin_func		*builtin;
 	bool				is_external;
 
-	status = execute_redirect_prepare(&fds, redirs);
+	status = execute_redirect_prepare(&fds, redirs, env);
 	if (status != S_OK)
 		return (status);
 	builtin = NULL;
@@ -175,7 +175,7 @@ t_status	execute_simple_command(struct s_ast_simple_command *command,
 	char				**argv;
 	bool				need_child;
 
-	status = execute_expand_args(command->args, &arg_fields, &argv);
+	status = execute_expand_args(command->args, &arg_fields, &argv, env);
 	if (status == S_OK)
 		need_child = argv && !builtin_get_func(argv[0]);
 	if (status == S_OK && need_child && !is_child)

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:24:21 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/09 18:17:44 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:37:19 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdbool.h>
 # include <stddef.h>
 
+# include "shenv.h"
 # include "status.h"
 
 # define INTERNAL_ESCAPE '\001'
@@ -24,6 +25,7 @@ struct	s_word_field;
 
 struct	s_word_state
 {
+	t_shenv				*env;
 	char				*word;
 	struct s_word_field	*out;
 	struct s_word_field	**out_append;
@@ -41,7 +43,7 @@ struct	s_word_pattern
 	size_t	prefix_len;
 };
 
-char		*word_exp_parse(char **word);
+char		*word_exp_parse(char **word, t_shenv *env);
 
 t_status	word_filename(char *pattern, struct s_word_field ***matches_append,
 				bool *had_matches);

@@ -6,30 +6,32 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:49 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/26 18:42:19 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:29:00 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "shenv.h"
 #include "status.h"
 #include "word.h"
 
 int	main(int argc, char **argv)
 {
-	int					i;
 	struct s_word_field	*fields;
 	struct s_word_field	**fields_append;
 	struct s_word_field	*next;
 	t_status			status;
+	t_shenv				env;
 
-	i = 1;
-	while (i < argc)
+	shenv_init(&env);
+	(void)argc;
+	while (*++argv)
 	{
-		printf("\e[31mWord  : \e[91m%s\e[0m\n", argv[i]);
+		printf("\e[31mWord  : \e[91m%s\e[0m\n", *argv);
 		fields_append = &fields;
-		status = word_expand(argv[i], &fields_append);
+		status = word_expand(*argv, &fields_append, &env);
 		while (fields)
 		{
 			if (status == S_OK)
@@ -40,6 +42,5 @@ int	main(int argc, char **argv)
 		}
 		if (status != S_OK)
 			return (1);
-		i++;
 	}
 }

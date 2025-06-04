@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 13:56:32 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 22:00:10 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:37:12 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "shenv.h"
 #include "status.h"
 
-static size_t	word_heredoc_line_scan(char *scan, char *out, bool *had_exp);
+static size_t	word_heredoc_line_scan(char *scan, char *out, bool *had_exp,
+					t_shenv *env);
 
 /*
 	Process heredoc delimiter by removing quotes that are not themselves quoted.
@@ -51,20 +53,20 @@ bool	word_heredoc_delimiter(char *word)
 	allocates a new string and frees the original. If no expansions are done or
 	memory allocation fails, the original remains unchanged.
 */
-t_status	word_heredoc_line(char **line)
+t_status	word_heredoc_line(char **line, t_shenv *env)
 {
 	char	*out;
 	size_t	out_len;
 	bool	had_exp;
 
 	had_exp = false;
-	out_len = word_heredoc_line_scan(*line, NULL, &had_exp);
+	out_len = word_heredoc_line_scan(*line, NULL, &had_exp, env);
 	if (!had_exp)
 		return (S_OK);
 	out = malloc(out_len + 1);
 	if (!out)
 		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
-	word_heredoc_line_scan(*line, out, &had_exp);
+	word_heredoc_line_scan(*line, out, &had_exp, env);
 	out[out_len] = '\0';
 	free(*line);
 	*line = out;
@@ -76,7 +78,8 @@ t_status	word_heredoc_line(char **line)
 	If out is not null, copy characters to output. Set had_exp to true if an
 	expansion is found.
 */
-static size_t	word_heredoc_line_scan(char *scan, char *out, bool *had_exp)
+static size_t	word_heredoc_line_scan(char *scan, char *out, bool *had_exp,
+	t_shenv *env)
 {
 	char	c;
 	char	*value;
@@ -87,7 +90,7 @@ static size_t	word_heredoc_line_scan(char *scan, char *out, bool *had_exp)
 	{
 		c = *scan++;
 		if (c == '$')
-			value = word_exp_parse(&scan);
+			value = word_exp_parse(&scan, env);
 		if (c == '$' && value)
 		{
 			while (out && *value)

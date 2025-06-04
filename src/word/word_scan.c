@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:18:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/09 18:31:22 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:35:10 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ t_status	word_scan_expansion(struct s_word_state *state, bool quoted)
 	char		c;
 	t_status	status;
 
-	value = word_exp_parse(&state->word);
+	value = word_exp_parse(&state->word, state->env);
 	if (!value)
 	{
 		word_out_char(state, '$', quoted);

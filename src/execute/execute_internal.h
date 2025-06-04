@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 22:39:58 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:27:47 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,10 @@ struct s_redir_fds
 # define NO_REDIR -1
 
 t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
-				struct s_redir_fds *fds);
+				struct s_redir_fds *fds, t_shenv *env);
 
 t_status	execute_redirect_prepare(struct s_redir_fds *fds,
-				struct s_ast_redirect *redirs);
+				struct s_ast_redirect *redirs, t_shenv *env);
 t_status	execute_redirect_finish(struct s_redir_fds *fds, bool apply);
 
 #endif

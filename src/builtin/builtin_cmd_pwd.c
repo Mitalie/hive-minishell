@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:54:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,20 +39,19 @@ static t_status	write_cwd(char *cwd, int stdout_fd)
  	Prints the current working directory
 	Note: getcwd(NULL, 0) is a glibc extension, not POSIX standard
 */
-t_status	builtin_cmd_pwd(char **argv, t_shenv *env,
-	int *exit_code, int stdout_fd)
+t_status	builtin_cmd_pwd(char **argv, t_shenv *env, int stdout_fd)
 {
 	char		*cwd;
 	t_status	status;
 
 	(void)argv;
 	(void)env;
-	*exit_code = 0;
+	env->exit_code = 0;
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
 	{
 		status_warn("pwd: getcwd failed", NULL, errno);
-		*exit_code = 1;
+		env->exit_code = 1;
 		return (S_OK);
 	}
 	status = write_cwd(cwd, stdout_fd);

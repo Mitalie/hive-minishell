@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:30:33 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:50:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 #include "shenv.h"
 
-void	handle_path_search(char **argv, t_shenv *env, int *exit_code);
+void	handle_path_search(char **argv, t_shenv *env);
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -37,30 +37,26 @@ static void	print_result(const char *name, bool passed)
 		printf("[%sFAIL%s] %s%s%s\n", RED, RESET, CYAN, name, RESET);
 }
 
-static int	test_in_child(char **argv, t_shenv *env)
+static void	test_in_child(char **argv, t_shenv *env)
 {
 	pid_t	child_pid;
 	int		status;
-	int		exit_code;
 
+	env->exit_code = -1;
 	child_pid = fork();
 	if (child_pid == -1)
 	{
 		perror("fork");
-		return (-1);
+		return ;
 	}
 	if (child_pid == 0)
 	{
-		handle_path_search(argv, env, &exit_code);
-		exit(exit_code);
+		handle_path_search(argv, env);
+		exit(env->exit_code);
 	}
 	waitpid(child_pid, &status, 0);
 	if (WIFEXITED(status))
-	{
-		exit_code = WEXITSTATUS(status);
-		return (exit_code);
-	}
-	return (-1);
+		env->exit_code = WEXITSTATUS(status);
 }
 
 static void	test_not_found(void)
@@ -68,7 +64,6 @@ static void	test_not_found(void)
 	t_shenv	env;
 	char	*path_list;
 	char	*argv[2];
-	int		exit_code;
 
 	printf("\n%sTesting command not found%s\n", YELLOW, RESET);
 	path_list = strdup("/bin:/usr/bin:/usr/local/bin");
@@ -78,9 +73,9 @@ static void	test_not_found(void)
 	argv[1] = NULL;
 	printf("  Command: %s\n", argv[0]);
 	printf("  PATH: %s\n", path_list);
-	exit_code = test_in_child(argv, &env);
-	printf("  Exit code: %d\n", exit_code);
-	print_result("command_not_found_returns_127", exit_code == 127);
+	test_in_child(argv, &env);
+	printf("  Exit code: %d\n", env.exit_code);
+	print_result("command_not_found_returns_127", env.exit_code == 127);
 	shenv_free(&env);
 	free(path_list);
 }
@@ -90,7 +85,6 @@ static void	test_found(void)
 	t_shenv	env;
 	char	*path_list;
 	char	*argv[3];
-	int		exit_code;
 
 	printf("\n%sTesting command found%s\n", YELLOW, RESET);
 	path_list = strdup("/bin:/usr/bin:/usr/local/bin");
@@ -101,9 +95,9 @@ static void	test_found(void)
 	argv[2] = NULL;
 	printf("  Command: %s %s\n", argv[0], argv[1]);
 	printf("  PATH: %s\n", path_list);
-	exit_code = test_in_child(argv, &env);
-	printf("  Exit code: %d\n", exit_code);
-	print_result("command_found_executes", exit_code == 0);
+	test_in_child(argv, &env);
+	printf("  Exit code: %d\n", env.exit_code);
+	print_result("command_found_executes", env.exit_code == 0);
 	shenv_free(&env);
 	free(path_list);
 }
@@ -113,7 +107,6 @@ static void	test_absolute(void)
 	t_shenv	env;
 	char	*path_list;
 	char	*argv[3];
-	int		exit_code;
 
 	printf("\n%sTesting absolute path%s\n", YELLOW, RESET);
 	path_list = strdup("/bin:/usr/bin:/usr/local/bin");
@@ -124,9 +117,9 @@ static void	test_absolute(void)
 	argv[2] = NULL;
 	printf("  Command: %s %s\n", argv[0], argv[1]);
 	printf("  PATH: %s\n", path_list);
-	exit_code = test_in_child(argv, &env);
-	printf("  Exit code: %d\n", exit_code);
-	print_result("absolute_path_executes", exit_code == 0);
+	test_in_child(argv, &env);
+	printf("  Exit code: %d\n", env.exit_code);
+	print_result("absolute_path_executes", env.exit_code == 0);
 	shenv_free(&env);
 	free(path_list);
 }

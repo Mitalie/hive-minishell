@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:15:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,14 @@
 /*
 	Prints all environment variables in the format KEY=VALUE
 */
-t_status	builtin_cmd_env(char **argv, t_shenv *env,
-	int *exit_code, int stdout_fd)
+t_status	builtin_cmd_env(char **argv, t_shenv *env, int stdout_fd)
 {
 	size_t	i;
 	size_t	len;
 	char	*s;
 
 	(void)argv;
-	*exit_code = 0;
+	env->exit_code = 0;
 	i = 0;
 	while (i < env->var_array_used)
 	{

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:17:47 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:18:45 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ t_status	shenv_init(t_shenv *env)
 	t_status	status;
 	size_t		count;
 
+	env->exit_code = 0;
 	count = 0;
 	while (environ && environ[count])
 		count++;

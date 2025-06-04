@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:45:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,13 @@
 /*
 	unset builtin command - removes environment variables
 */
-t_status	builtin_cmd_unset(char **argv, t_shenv *env,
-	int *exit_code, int stdout_fd)
+t_status	builtin_cmd_unset(char **argv, t_shenv *env, int stdout_fd)
 {
 	int			i;
 	t_status	status;
 
 	(void)stdout_fd;
-	*exit_code = 0;
+	env->exit_code = 0;
 	if (!argv[1])
 		return (S_OK);
 	i = 1;

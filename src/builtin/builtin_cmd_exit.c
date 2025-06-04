@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:26:54 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@
 #include "status.h"
 #include "util.h"
 
-t_status	builtin_cmd_exit(char	**argv, t_shenv *env,
-	int *exit_code, int stdout_fd)
+t_status	builtin_cmd_exit(char	**argv, t_shenv *env, int stdout_fd)
 {
 	size_t		parsed_len;
 	int			parsed_value;
@@ -30,7 +29,7 @@ t_status	builtin_cmd_exit(char	**argv, t_shenv *env,
 	if (argv[2])
 	{
 		status_warn("exit: too many arguments", NULL, 0);
-		*exit_code = 2;
+		env->exit_code = 2;
 	}
 	else if (!util_parse_int(argv[1], &parsed_len, &parsed_value)
 		|| argv[1][parsed_len] != '\0'
@@ -38,9 +37,9 @@ t_status	builtin_cmd_exit(char	**argv, t_shenv *env,
 		|| parsed_value > 255)
 	{
 		status_warn("exit: argument out of range (0-255)", NULL, 0);
-		*exit_code = 2;
+		env->exit_code = 2;
 	}
 	else
-		*exit_code = parsed_value;
+		env->exit_code = parsed_value;
 	return (S_EXIT_OK);
 }

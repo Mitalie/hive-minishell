@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:02:55 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include "shenv.h"
 #include "status.h"
 
-static t_status	minishell_do_line(t_shenv *env, int *exit_code)
+static t_status	minishell_do_line(t_shenv *env)
 {
 	t_status				status;
 	char					*line;
@@ -35,9 +35,9 @@ static t_status	minishell_do_line(t_shenv *env, int *exit_code)
 		add_history(line);
 	free(line);
 	if (status == S_OK)
-		status = execute_list(ast, env, exit_code);
+		status = execute_list(ast, env);
 	free_ast(ast);
-	status_set_exit_code(status, exit_code);
+	status_set_exit_code(status, env);
 	return (status);
 }
 
@@ -45,14 +45,12 @@ int	main(void)
 {
 	t_status	status;
 	t_shenv		env;
-	int			exit_code;
 
-	exit_code = 0;
 	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);
 	while (status != S_EXIT_ERR && status != S_EXIT_OK)
-		status = minishell_do_line(&env, &exit_code);
+		status = minishell_do_line(&env);
 	shenv_free(&env);
-	return (exit_code);
+	return (env.exit_code);
 }

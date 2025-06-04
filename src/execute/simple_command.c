@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:46:25 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ static t_status	execute_expand_args(struct s_ast_command_word *args,
 	sets is_child and returns, while main process waits for child to exit and
 	stores its exit status in exit_code.
 */
-static t_status	execute_command_fork(bool *is_child, int *exit_code)
+static t_status	execute_command_fork(bool *is_child, t_shenv *env)
 {
 	pid_t	child_pid;
 	int		wait_status;
@@ -119,9 +119,9 @@ static t_status	execute_command_fork(bool *is_child, int *exit_code)
 				"wait() failed", errno));
 	}
 	if (WIFEXITED(wait_status))
-		*exit_code = WEXITSTATUS(wait_status);
+		env->exit_code = WEXITSTATUS(wait_status);
 	else if (WIFSIGNALED(wait_status))
-		*exit_code = 128 + WTERMSIG(wait_status);
+		env->exit_code = 128 + WTERMSIG(wait_status);
 	return (S_OK);
 }
 
@@ -132,7 +132,7 @@ static t_status	execute_command_fork(bool *is_child, int *exit_code)
 	and close them afterwards.
 */
 static t_status	execute_command_execute(struct s_ast_redirect *redirs,
-	char **argv, t_shenv *env, int *exit_code)
+	char **argv, t_shenv *env)
 {
 	t_status			status;
 	struct s_redir_fds	fds;
@@ -149,11 +149,11 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	if (is_external)
 		status = execute_redirect_finish(&fds, true);
 	if (is_external && status == S_OK)
-		handle_path_search(argv, env, exit_code);
+		handle_path_search(argv, env);
 	if (builtin && fds.out == NO_REDIR)
-		status = builtin(argv, env, exit_code, STDOUT_FILENO);
+		status = builtin(argv, env, STDOUT_FILENO);
 	else if (builtin)
-		status = builtin(argv, env, exit_code, fds.out);
+		status = builtin(argv, env, fds.out);
 	if (!is_external)
 		execute_redirect_finish(&fds, false);
 	return (status);
@@ -168,7 +168,7 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	process to exit instead of staying around as a duplicate shell instance.
 */
 t_status	execute_simple_command(struct s_ast_simple_command *command,
-	t_shenv *env, int *exit_code, bool is_child)
+	t_shenv *env, bool is_child)
 {
 	t_status			status;
 	struct s_word_field	*arg_fields;
@@ -179,11 +179,11 @@ t_status	execute_simple_command(struct s_ast_simple_command *command,
 	if (status == S_OK)
 		need_child = argv && !builtin_get_func(argv[0]);
 	if (status == S_OK && need_child && !is_child)
-		status = execute_command_fork(&is_child, exit_code);
+		status = execute_command_fork(&is_child, env);
 	if (status == S_OK && (!need_child || is_child))
-		status = execute_command_execute(command->redirs, argv, env, exit_code);
+		status = execute_command_execute(command->redirs, argv, env);
 	if (is_child)
-		status = status_force_exit(status, exit_code);
+		status = status_force_exit(status, env);
 	free(argv);
 	word_free(arg_fields);
 	return (status);

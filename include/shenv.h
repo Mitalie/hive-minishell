@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 13:24:48 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:58 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:38:00 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct s_shenv
 	char	**var_array;
 	size_t	var_array_size;
 	size_t	var_array_used;
+	int		exit_code;
 }	t_shenv;
 
 /* Initialize environment from extern environ */

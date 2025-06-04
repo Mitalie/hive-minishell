@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:35:02 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:47:37 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,16 +89,15 @@ int	main(void)
 {
 	t_shenv		env;
 	t_status	status;
-	int			exit_code;
 
 	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);
-	exit_code = -1;
-	status = execute_pipeline(g_test_pipeline, &env, &exit_code);
+	env.exit_code = -1;
+	status = execute_pipeline(g_test_pipeline, &env);
 	dprintf(STDERR_FILENO,
 		"execute_pipeline returned internal status %d, exit code %d\n",
-		status, exit_code);
+		status, env.exit_code);
 	shenv_free(&env);
-	return (exit_code);
+	return (env.exit_code);
 }

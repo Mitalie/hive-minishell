@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:09:35 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,11 @@ static t_status	write_args(char **argv, int stdout_fd,
 /*
 	echo builtin command - displays a line of text
 */
-t_status	builtin_cmd_echo(char **argv, t_shenv *env,
-	int *exit_code, int stdout_fd)
+t_status	builtin_cmd_echo(char **argv, t_shenv *env, int stdout_fd)
 {
 	bool	newline;
 
-	*exit_code = 0;
+	env->exit_code = 0;
 	(void)env;
 	newline = true;
 	argv++;

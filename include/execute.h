@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:28:43 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:37:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ struct	s_ast_list_entry;
 struct	s_ast_redirect;
 
 t_status	execute_simple_command(struct s_ast_simple_command *command,
-				t_shenv *env, int *exit_code, bool is_child);
+				t_shenv *env, bool is_child);
 t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
-				t_shenv *env, int *exit_code);
+				t_shenv *env);
 t_status	execute_list(struct s_ast_list_entry *list_head,
-				t_shenv *env, int *exit_code);
+				t_shenv *env);
 int			process_heredoc(struct s_ast_redirect *redirect);
 
 #endif

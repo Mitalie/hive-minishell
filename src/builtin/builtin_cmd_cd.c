@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_cd.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 22:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/03 16:11:01 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:56:23 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ t_status	builtin_cmd_cd(char **argv, t_env *env,
 	(void)stdout_fd;
 	*exit_code = 0;
 	status = get_cd_path(argv, env, &path);
-	if (!path)
-		return (S_OK);
+	if (status != S_OK)
+		return (status);
 	if (chdir(path) != 0)
 		return (status_err(S_BUILTIN_ERR, "cd", path, errno));
 	return (S_OK);

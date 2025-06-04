@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ast.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:07:51 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/10 22:23:45 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:56:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef AST_H
 # define AST_H
+
+# include <stdbool.h>
 
 /*
 AST for the following grammar:
@@ -52,6 +54,7 @@ struct s_ast_redirect
 {
 	enum e_ast_redirect_op		op;
 	char						*word;
+	bool						heredoc_quoted;
 	struct s_ast_command_word	*heredoc_lines;
 	struct s_ast_redirect		*next;
 };

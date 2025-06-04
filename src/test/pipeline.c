@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:35:02 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:47:37 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:20:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,12 @@
 #include "execute.h"
 #include "shenv.h"
 #include "status.h"
+
+/*
+	We're testing internal function of execute module - just forward declare it.
+*/
+t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
+				t_shenv *env);
 
 /*
 	/bin/echo -e first\n\n\ntest > test_pipeline_tmpout |

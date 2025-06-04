@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 10:32:56 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 20:22:02 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:22:31 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,10 @@
 #define CYAN "\033[0;36m"
 #define RESET "\033[0m"
 
-/* Function declarations */
+/* Declare internal functions from parser and execute modules */
+
 t_status	read_heredoc(struct s_ast_redirect *redirect);
+int			process_heredoc(struct s_ast_redirect *redirect);
 
 /* Print test result */
 static void	print_result(const char *name, bool passed)

@@ -6,11 +6,12 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:35:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:43:05 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:19:05 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "execute.h"
+#include "execute_internal.h"
 
 #include <stdbool.h>
 

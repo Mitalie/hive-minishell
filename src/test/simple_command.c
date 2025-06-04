@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:11:56 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:47:58 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:20:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,12 @@
 #include "execute.h"
 #include "shenv.h"
 #include "status.h"
+
+/*
+	We're testing internal function of execute module - just forward declare it.
+*/
+t_status	execute_simple_command(struct s_ast_simple_command *command,
+				t_shenv *env, bool is_child);
 
 /*
 	/bin/echo hello world! > test_simple_trunc_nooutput >> test_simple_app

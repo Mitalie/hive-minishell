@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:37:58 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:18:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,14 @@ struct	s_pipeline_fds
 };
 
 # define NO_PIPE -1
+
+t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
+				t_shenv *env);
+
+t_status	execute_simple_command(struct s_ast_simple_command *command,
+				t_shenv *env, bool is_child);
+
+int			process_heredoc(struct s_ast_redirect *redirect);
 
 struct s_redir_fds
 {

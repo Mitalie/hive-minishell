@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_export_utils.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/03 16:26:26 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "env.h"
 #include "libft.h"
+#include "shenv.h"
 #include "status.h"
 #include "util.h"
 
@@ -106,7 +106,7 @@ static t_status	process_export_entry(char *env_str, char **buffer,
 	Prints all environment variables in the format "declare -x KEY="VALUE""
 	For variables without values, prints just "declare -x KEY"
 */
-t_status	print_exports(t_env *env, int stdout_fd)
+t_status	print_exports(t_shenv *env, int stdout_fd)
 {
 	t_status	status;
 	size_t		i;
@@ -117,9 +117,9 @@ t_status	print_exports(t_env *env, int stdout_fd)
 	buffer = NULL;
 	i = 0;
 	status = S_OK;
-	while (i < env->used_size && status == S_OK)
+	while (i < env->var_array_used && status == S_OK)
 	{
-		status = process_export_entry(env->env_array[i], &buffer,
+		status = process_export_entry(env->var_array[i], &buffer,
 				&buffer_size, stdout_fd);
 		i++;
 	}

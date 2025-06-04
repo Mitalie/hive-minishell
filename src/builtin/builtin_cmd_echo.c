@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_echo.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:09:35 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/03 15:20:39 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 #include <errno.h>
 
-#include "env.h"
 #include "libft.h"
+#include "shenv.h"
 #include "status.h"
 #include "util.h"
 
@@ -46,7 +46,7 @@ static t_status	write_args(char **argv, int stdout_fd,
 /*
 	echo builtin command - displays a line of text
 */
-t_status	builtin_cmd_echo(char **argv, t_env *env,
+t_status	builtin_cmd_echo(char **argv, t_shenv *env,
 	int *exit_code, int stdout_fd)
 {
 	bool	newline;

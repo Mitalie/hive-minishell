@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_export.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/03 16:11:14 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_internal.h"
 #include "builtin_cmd_export_utils.h"
 
-#include "env.h"
 #include "libft.h"
+#include "shenv.h"
 #include "status.h"
 
 /*
@@ -40,7 +40,7 @@ static bool	extract_key_value(char *arg, char **key_out,
 	Handles a single export argument
 	Validates the identifier
 */
-static t_status	handle_export_arg(char *arg, t_env *env, int *exit_code)
+static t_status	handle_export_arg(char *arg, t_shenv *env, int *exit_code)
 {
 	char		*key;
 	char		*value;
@@ -53,13 +53,13 @@ static t_status	handle_export_arg(char *arg, t_env *env, int *exit_code)
 		*exit_code = 2;
 		return (S_OK);
 	}
-	return (env_set(env, key, value));
+	return (shenv_var_set(env, key, value));
 }
 
 /*
 	export builtin command - sets environment variables
 */
-t_status	builtin_cmd_export(char **argv, t_env *env,
+t_status	builtin_cmd_export(char **argv, t_shenv *env,
 	int *exit_code, int stdout_fd)
 {
 	int			i;

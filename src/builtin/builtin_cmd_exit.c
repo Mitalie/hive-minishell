@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:26:54 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 16:06:30 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 #include <stddef.h>
 
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 #include "util.h"
 
-t_status	builtin_cmd_exit(char	**argv, t_env *env,
+t_status	builtin_cmd_exit(char	**argv, t_shenv *env,
 	int *exit_code, int stdout_fd)
 {
 	size_t		parsed_len;

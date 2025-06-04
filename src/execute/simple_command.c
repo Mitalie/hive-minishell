@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 20:09:55 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 
 #include "ast.h"
 #include "builtin.h"
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 #include "word.h"
 
@@ -132,7 +132,7 @@ static t_status	execute_command_fork(bool *is_child, int *exit_code)
 	and close them afterwards.
 */
 static t_status	execute_command_execute(struct s_ast_redirect *redirs,
-	char **argv, t_env *env, int *exit_code)
+	char **argv, t_shenv *env, int *exit_code)
 {
 	t_status			status;
 	struct s_redir_fds	fds;
@@ -168,7 +168,7 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	process to exit instead of staying around as a duplicate shell instance.
 */
 t_status	execute_simple_command(struct s_ast_simple_command *command,
-	t_env *env, int *exit_code, bool is_child)
+	t_shenv *env, int *exit_code, bool is_child)
 {
 	t_status			status;
 	struct s_word_field	*arg_fields;

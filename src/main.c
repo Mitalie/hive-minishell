@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 21:22:04 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@
 #include "ast.h"
 #include "parser.h"
 #include "execute.h"
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 
-static t_status	minishell_do_line(t_env *env, int *exit_code)
+static t_status	minishell_do_line(t_shenv *env, int *exit_code)
 {
 	t_status				status;
 	char					*line;
@@ -44,15 +44,15 @@ static t_status	minishell_do_line(t_env *env, int *exit_code)
 int	main(void)
 {
 	t_status	status;
-	t_env		env;
+	t_shenv		env;
 	int			exit_code;
 
 	exit_code = 0;
-	status = env_init(&env);
+	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);
 	while (status != S_EXIT_ERR && status != S_EXIT_OK)
 		status = minishell_do_line(&env, &exit_code);
-	env_free(&env);
+	shenv_free(&env);
 	return (exit_code);
 }

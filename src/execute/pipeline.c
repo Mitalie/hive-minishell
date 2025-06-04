@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 21:43:29 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 #include "ast.h"
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 
 /*
@@ -65,7 +65,7 @@ static t_status	execute_pipeline_create_pipe_and_fork(
 	written anything yet anyway.
 */
 static t_status	execute_pipeline_child(struct s_pipeline_fds *fds,
-	struct s_ast_simple_command *child_command, t_env *env, int *exit_code)
+	struct s_ast_simple_command *child_command, t_shenv *env, int *exit_code)
 {
 	t_status	status;
 
@@ -156,7 +156,7 @@ static t_status	execute_pipeline_wait_for_children(
 	each command to the stdin of the next one.
 */
 t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
-	t_env *env, int *exit_code)
+	t_shenv *env, int *exit_code)
 {
 	t_status				status;
 	pid_t					child;

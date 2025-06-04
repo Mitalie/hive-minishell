@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:35:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/21 03:59:59 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <stdbool.h>
 
 #include "ast.h"
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 
 /*
@@ -24,7 +24,7 @@
 	The error case should be impossible to hit if the parser works correctly.
 */
 static t_status	execute_list_entry(struct s_ast_list_entry *entry,
-	t_env *env, int *exit_code)
+	t_shenv *env, int *exit_code)
 {
 	if (entry->type == AST_LIST_PIPELINE)
 		return (execute_pipeline(entry->pipeline, env, exit_code));
@@ -40,7 +40,7 @@ static t_status	execute_list_entry(struct s_ast_list_entry *entry,
 	Commands are executed left to right, evaluating each action for AND/OR
 */
 t_status	execute_list(struct s_ast_list_entry *list_head,
-	t_env *env, int *exit_code)
+	t_shenv *env, int *exit_code)
 {
 	t_status	status;
 	bool		execute_next;

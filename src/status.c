@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #include "libft.h"
+#include "shenv.h"
 #include "util.h"
 
 t_status	status_err(t_status status,

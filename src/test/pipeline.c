@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:35:02 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/21 04:13:20 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #include <unistd.h>
 
 #include "ast.h"
-#include "env.h"
 #include "execute.h"
+#include "shenv.h"
 #include "status.h"
 
 /*
@@ -87,11 +87,11 @@ struct s_ast_simple_command	*g_test_pipeline
 
 int	main(void)
 {
-	t_env		env;
+	t_shenv		env;
 	t_status	status;
 	int			exit_code;
 
-	status = env_init(&env);
+	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);
 	exit_code = -1;
@@ -99,6 +99,6 @@ int	main(void)
 	dprintf(STDERR_FILENO,
 		"execute_pipeline returned internal status %d, exit code %d\n",
 		status, exit_code);
-	env_free(&env);
+	shenv_free(&env);
 	return (exit_code);
 }

@@ -3,22 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_unset.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:45:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/03 16:42:49 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_internal.h"
 
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 
 /*
 	unset builtin command - removes environment variables
 */
-t_status	builtin_cmd_unset(char **argv, t_env *env,
+t_status	builtin_cmd_unset(char **argv, t_shenv *env,
 	int *exit_code, int stdout_fd)
 {
 	int			i;
@@ -31,7 +31,7 @@ t_status	builtin_cmd_unset(char **argv, t_env *env,
 	i = 1;
 	while (argv[i])
 	{
-		status = env_unset(env, argv[i]);
+		status = shenv_var_unset(env, argv[i]);
 		if (status != S_OK)
 			return (status);
 		i++;

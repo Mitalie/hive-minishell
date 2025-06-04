@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/06/03 18:25:17 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/04 20:10:15 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,9 +58,9 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	word/word_pattern.c \
 	word/word_scan.c \
 	word/word_unescape.c \
-	env/init.c \
-	env/get_set.c \
-	env/utils.c \
+	shenv/init.c \
+	shenv/get_set.c \
+	shenv/utils.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

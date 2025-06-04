@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 21:43:29 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:45:58 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 #include "ast.h"
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 
 /*
@@ -65,7 +65,7 @@ static t_status	execute_pipeline_create_pipe_and_fork(
 	written anything yet anyway.
 */
 static t_status	execute_pipeline_child(struct s_pipeline_fds *fds,
-	struct s_ast_simple_command *child_command, t_env *env, int *exit_code)
+	struct s_ast_simple_command *child_command, t_shenv *env)
 {
 	t_status	status;
 
@@ -87,7 +87,7 @@ static t_status	execute_pipeline_child(struct s_pipeline_fds *fds,
 		close(fds->out);
 	}
 	if (status == S_OK)
-		status = execute_simple_command(child_command, env, exit_code, true);
+		status = execute_simple_command(child_command, env, true);
 	return (status);
 }
 
@@ -124,7 +124,7 @@ static void	execute_pipeline_cleanup(struct s_pipeline_fds *fds, bool had_error)
 	error case should be impossible to hit, but no harm in checking.
 */
 static t_status	execute_pipeline_wait_for_children(
-	t_status status, pid_t last_child, int *exit_code)
+	t_status status, pid_t last_child, t_shenv *env)
 {
 	int		wait_status;
 	pid_t	waited_child;
@@ -144,9 +144,9 @@ static t_status	execute_pipeline_wait_for_children(
 		if (waited_child == last_child)
 		{
 			if (WIFEXITED(wait_status))
-				*exit_code = WEXITSTATUS(wait_status);
+				env->exit_code = WEXITSTATUS(wait_status);
 			else if (WIFSIGNALED(wait_status))
-				*exit_code = 128 + WTERMSIG(wait_status);
+				env->exit_code = 128 + WTERMSIG(wait_status);
 		}
 	}
 }
@@ -156,7 +156,7 @@ static t_status	execute_pipeline_wait_for_children(
 	each command to the stdin of the next one.
 */
 t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
-	t_env *env, int *exit_code)
+	t_shenv *env)
 {
 	t_status				status;
 	pid_t					child;
@@ -167,19 +167,18 @@ t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
 	first = true;
 	child = 0;
 	if (pipeline_head && !pipeline_head->next)
-		return (execute_simple_command(pipeline_head, env, exit_code, false));
+		return (execute_simple_command(pipeline_head, env, false));
 	while (pipeline_head)
 	{
 		status = execute_pipeline_create_pipe_and_fork(
 				&fds, first, !pipeline_head->next, &child);
 		if (status == S_OK && child == 0)
-			return (execute_pipeline_child(&fds, pipeline_head, env,
-					exit_code));
+			return (execute_pipeline_child(&fds, pipeline_head, env));
 		execute_pipeline_cleanup(&fds, status != S_OK);
 		if (status != S_OK)
 			break ;
 		pipeline_head = pipeline_head->next;
 		first = false;
 	}
-	return (execute_pipeline_wait_for_children(status, child, exit_code));
+	return (execute_pipeline_wait_for_children(status, child, env));
 }

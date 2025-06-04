@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 16:54:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/26 19:28:54 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:37:41 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "shenv.h"
 #include "status.h"
 
 void	word_free(struct s_word_field *fields)
@@ -38,13 +39,15 @@ void	word_free(struct s_word_field *fields)
 	by the caller, but their content is undefined. The append pointer itself is
 	updated past the new fields only on success.
 */
-t_status	word_expand(char *word, struct s_word_field ***fields_append)
+t_status	word_expand(char *word, struct s_word_field ***fields_append,
+	t_shenv *env)
 {
 	struct s_word_state	state;
 	struct s_word_field	**fields_out;
 	t_status			status;
 
 	fields_out = *fields_append;
+	state.env = env;
 	state.word = word;
 	state.out = NULL;
 	state.out_append = fields_out;

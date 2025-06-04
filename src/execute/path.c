@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:02:43 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 18:59:13 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:44:30 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "env.h"
-#include "status.h"
 #include "libft.h"
+#include "shenv.h"
+#include "status.h"
 
 /*
 	Constructs a full path by joining a directory and command name
@@ -108,13 +108,13 @@ static int	try_path_execve(char *path_list, char **argv, char **envp)
 	Sets exit_code to 126 for permission denied, 127 for other errors
 	Reports appropriate error message using status_err
 */
-void	handle_absolute_path(char **argv, t_env *env, int *exit_code)
+void	handle_absolute_path(char **argv, t_shenv *env)
 {
-	execve(argv[0], argv, env->env_array);
+	execve(argv[0], argv, env->var_array);
 	if (errno == EACCES)
-		*exit_code = 126;
+		env->exit_code = 126;
 	else
-		*exit_code = 127;
+		env->exit_code = 127;
 	status_err(S_COMM_ERR, argv[0], NULL, errno);
 }
 
@@ -123,29 +123,29 @@ void	handle_absolute_path(char **argv, t_env *env, int *exit_code)
 	Sets exit_code to 126 for permission denied, 127 for command not found
 	Reports appropriate error message using status_err
 */
-void	handle_path_search(char **argv, t_env *env, int *exit_code)
+void	handle_path_search(char **argv, t_shenv *env)
 {
 	char	*path_var;
 	char	*path_copy;
 
 	if (ft_strchr(argv[0], '/'))
-		return (handle_absolute_path(argv, env, exit_code));
-	path_var = env_get(env, "PATH");
+		return (handle_absolute_path(argv, env));
+	path_var = shenv_var_get(env, "PATH");
 	if (!path_var)
 	{
 		status_err(S_COMM_ERR, argv[0], "command not found", 0);
-		*exit_code = 127;
+		env->exit_code = 127;
 		return ;
 	}
 	path_copy = ft_strdup(path_var);
 	if (!path_copy)
 	{
 		status_err(S_COMM_ERR, "malloc", NULL, errno);
-		*exit_code = 127;
+		env->exit_code = 127;
 		return ;
 	}
-	*exit_code = try_path_execve(path_copy, argv, env->env_array);
-	if (*exit_code == 126)
+	env->exit_code = try_path_execve(path_copy, argv, env->var_array);
+	if (env->exit_code == 126)
 		status_err(S_COMM_ERR, argv[0], "Permission denied", 0);
 	else
 		status_err(S_COMM_ERR, argv[0], "command not found", 0);

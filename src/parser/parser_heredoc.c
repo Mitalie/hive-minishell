@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:26:54 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:56:37 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,49 +51,30 @@ static t_status	add_line_to_heredoc(
 }
 
 /*
-	Process a line for the heredoc
-*/
-static t_status	process_heredoc_line(
-	struct s_heredoc_params *params)
-{
-	t_status	status;
-
-	status = S_OK;
-	if (!params->quoted)
-		status = word_heredoc_line(&params->line);
-	if (status == S_OK)
-		status = add_line_to_heredoc(&params->lines_append, params->line);
-	if (status != S_OK)
-		free(params->line);
-	return (status);
-}
-
-/*
 	Read heredoc content from stdin until the delimiter is encountered.
 	Store the content as a linked list of lines in the redirect node.
 */
 t_status	read_heredoc(struct s_ast_redirect *redirect)
 {
-	struct s_heredoc_params	params;
-	t_status				status;
+	t_status					status;
+	struct s_ast_command_word	**lines_append;
+	char						*delimiter;
+	size_t						delim_len;
+	char						*line;
 
 	redirect->heredoc_lines = NULL;
-	params.lines_append = &redirect->heredoc_lines;
-	params.quoted = word_heredoc_delimiter(redirect->word);
-	params.delimiter = redirect->word;
-	params.delim_len = ft_strlen(redirect->word);
+	lines_append = &redirect->heredoc_lines;
+	redirect->heredoc_quoted = word_heredoc_delimiter(redirect->word);
+	delimiter = redirect->word;
+	delim_len = ft_strlen(redirect->word);
 	status = S_OK;
 	while (status == S_OK)
 	{
-		params.line = readline("> ");
-		if (!params.line)
+		line = readline("> ");
+		if (is_delimiter(line, delimiter, delim_len))
 			break ;
-		if (is_delimiter(params.line, params.delimiter, params.delim_len))
-		{
-			free(params.line);
-			break ;
-		}
-		status = process_heredoc_line(&params);
+		status = add_line_to_heredoc(&lines_append, line);
 	}
+	free(line);
 	return (status);
 }

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 18:35:02 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/21 04:13:20 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:20:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,15 @@
 #include <unistd.h>
 
 #include "ast.h"
-#include "env.h"
 #include "execute.h"
+#include "shenv.h"
 #include "status.h"
+
+/*
+	We're testing internal function of execute module - just forward declare it.
+*/
+t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
+				t_shenv *env);
 
 /*
 	/bin/echo -e first\n\n\ntest > test_pipeline_tmpout |
@@ -87,18 +93,17 @@ struct s_ast_simple_command	*g_test_pipeline
 
 int	main(void)
 {
-	t_env		env;
+	t_shenv		env;
 	t_status	status;
-	int			exit_code;
 
-	status = env_init(&env);
+	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);
-	exit_code = -1;
-	status = execute_pipeline(g_test_pipeline, &env, &exit_code);
+	env.exit_code = -1;
+	status = execute_pipeline(g_test_pipeline, &env);
 	dprintf(STDERR_FILENO,
 		"execute_pipeline returned internal status %d, exit code %d\n",
-		status, exit_code);
-	env_free(&env);
-	return (exit_code);
+		status, env.exit_code);
+	shenv_free(&env);
+	return (env.exit_code);
 }

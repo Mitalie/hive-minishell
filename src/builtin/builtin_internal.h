@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_internal.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:19:36 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/17 20:05:33 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:40:31 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "builtin.h"
 
-# include "env.h"
+# include "shenv.h"
 # include "status.h"
 
 struct s_builtin_func_reg
@@ -24,19 +24,12 @@ struct s_builtin_func_reg
 	const char		*name;
 };
 
-t_status	builtin_cmd_exit(char	**argv, t_env *env,
-				int *exit_code, int stdout_fd);
-t_status	builtin_cmd_echo(char **argv, t_env *env,
-				int *exit_code, int stdout_fd);
-t_status	builtin_cmd_pwd(char	**argv, t_env *env,
-				int *exit_code, int stdout_fd);
-t_status	builtin_cmd_cd(char **argv, t_env *env,
-				int *exit_code, int stdout_fd);
-t_status	builtin_cmd_env(char **argv, t_env *env,
-				int *exit_code, int stdout_fd);
-t_status	builtin_cmd_export(char **argv, t_env *env,
-				int *exit_code, int stdout_fd);
-t_status	builtin_cmd_unset(char **argv, t_env *env,
-				int *exit_code, int stdout_fd);
+t_status	builtin_cmd_exit(char **argv, t_shenv *env, int stdout_fd);
+t_status	builtin_cmd_echo(char **argv, t_shenv *env, int stdout_fd);
+t_status	builtin_cmd_pwd(char **argv, t_shenv *env, int stdout_fd);
+t_status	builtin_cmd_cd(char **argv, t_shenv *env, int stdout_fd);
+t_status	builtin_cmd_env(char **argv, t_shenv *env, int stdout_fd);
+t_status	builtin_cmd_export(char **argv, t_shenv *env, int stdout_fd);
+t_status	builtin_cmd_unset(char **argv, t_shenv *env, int stdout_fd);
 
 #endif

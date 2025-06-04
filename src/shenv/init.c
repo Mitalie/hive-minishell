@@ -6,12 +6,12 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/14 18:15:38 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:18:45 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "env.h"
-#include "env_internal.h"
+#include "shenv.h"
+#include "shenv_internal.h"
 
 #include <stdlib.h>
 
@@ -19,21 +19,21 @@
 
 extern char	**environ;
 
-static t_status	init_env_array(t_env *env, int size)
+static t_status	init_env_array(t_shenv *env, int size)
 {
 	if (size > 0)
-		env->array_size = size * 2;
+		env->var_array_size = size * 2;
 	else
-		env->array_size = 10;
-	env->used_size = 0;
-	env->env_array = malloc(sizeof(char *) * (env->array_size + 1));
-	if (!env->env_array)
+		env->var_array_size = 10;
+	env->var_array_used = 0;
+	env->var_array = malloc(sizeof(char *) * (env->var_array_size + 1));
+	if (!env->var_array)
 		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
-	env->env_array[0] = NULL;
+	env->var_array[0] = NULL;
 	return (S_OK);
 }
 
-static t_status	copy_environ_to_env(t_env *env)
+static t_status	copy_environ_to_env(t_shenv *env)
 {
 	int			i;
 	char		*value;
@@ -47,24 +47,25 @@ static t_status	copy_environ_to_env(t_env *env)
 		value = ft_strdup(environ[i]);
 		if (!value)
 			return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
-		status = env_resize(env);
+		status = shenv_var_array_resize(env);
 		if (status != S_OK)
 		{
 			free(value);
 			return (status);
 		}
-		env->env_array[env->used_size++] = value;
-		env->env_array[env->used_size] = NULL;
+		env->var_array[env->var_array_used++] = value;
+		env->var_array[env->var_array_used] = NULL;
 		i++;
 	}
 	return (S_OK);
 }
 
-t_status	env_init(t_env *env)
+t_status	shenv_init(t_shenv *env)
 {
 	t_status	status;
 	size_t		count;
 
+	env->exit_code = 0;
 	count = 0;
 	while (environ && environ[count])
 		count++;
@@ -74,26 +75,26 @@ t_status	env_init(t_env *env)
 	status = copy_environ_to_env(env);
 	if (status != S_OK)
 	{
-		env_free(env);
+		shenv_free(env);
 		return (status);
 	}
 	return (S_OK);
 }
 
-void	env_free(t_env *env)
+void	shenv_free(t_shenv *env)
 {
 	size_t	i;
 
 	if (!env)
 		return ;
-	if (env->env_array)
+	if (env->var_array)
 	{
 		i = 0;
-		while (i < env->used_size)
+		while (i < env->var_array_used)
 		{
-			free(env->env_array[i]);
+			free(env->var_array[i]);
 			i++;
 		}
-		free(env->env_array);
+		free(env->var_array);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 23:14:19 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/21 04:13:10 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:46:57 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #include <unistd.h>
 
 #include "ast.h"
-#include "env.h"
 #include "execute.h"
+#include "shenv.h"
 #include "status.h"
 
 /*
@@ -67,17 +67,16 @@ struct s_ast_list_entry	*g_test_list
 
 int	main(void)
 {
-	t_env		env;
+	t_shenv		env;
 	t_status	status;
-	int			exit_code;
 
-	status = env_init(&env);
+	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);
-	exit_code = -1;
-	status = execute_list(g_test_list, &env, &exit_code);
+	env.exit_code = -1;
+	status = execute_list(g_test_list, &env);
 	dprintf(STDERR_FILENO,
 		"execute_list returned internal status %d, exit code %d\n",
-		status, exit_code);
-	env_free(&env);
+		status, env.exit_code);
+	shenv_free(&env);
 }

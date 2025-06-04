@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 20:09:55 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 21:42:42 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 
 #include "ast.h"
 #include "builtin.h"
-#include "env.h"
+#include "shenv.h"
 #include "status.h"
 #include "word.h"
 
@@ -72,7 +72,7 @@ static t_status	execute_arg_fields_to_argv(
 	are set to null pointers.
 */
 static t_status	execute_expand_args(struct s_ast_command_word *args,
-	struct s_word_field **fields_out, char ***argv_out)
+	struct s_word_field **fields_out, char ***argv_out, t_shenv *env)
 {
 	t_status			status;
 	struct s_word_field	**fields_append;
@@ -82,7 +82,7 @@ static t_status	execute_expand_args(struct s_ast_command_word *args,
 	fields_append = fields_out;
 	while (args)
 	{
-		status = word_expand(args->word, &fields_append);
+		status = word_expand(args->word, &fields_append, env);
 		if (status != S_OK)
 			return (status);
 		args = args->next;
@@ -97,7 +97,7 @@ static t_status	execute_expand_args(struct s_ast_command_word *args,
 	sets is_child and returns, while main process waits for child to exit and
 	stores its exit status in exit_code.
 */
-static t_status	execute_command_fork(bool *is_child, int *exit_code)
+static t_status	execute_command_fork(bool *is_child, t_shenv *env)
 {
 	pid_t	child_pid;
 	int		wait_status;
@@ -119,9 +119,9 @@ static t_status	execute_command_fork(bool *is_child, int *exit_code)
 				"wait() failed", errno));
 	}
 	if (WIFEXITED(wait_status))
-		*exit_code = WEXITSTATUS(wait_status);
+		env->exit_code = WEXITSTATUS(wait_status);
 	else if (WIFSIGNALED(wait_status))
-		*exit_code = 128 + WTERMSIG(wait_status);
+		env->exit_code = 128 + WTERMSIG(wait_status);
 	return (S_OK);
 }
 
@@ -132,14 +132,14 @@ static t_status	execute_command_fork(bool *is_child, int *exit_code)
 	and close them afterwards.
 */
 static t_status	execute_command_execute(struct s_ast_redirect *redirs,
-	char **argv, t_env *env, int *exit_code)
+	char **argv, t_shenv *env)
 {
 	t_status			status;
 	struct s_redir_fds	fds;
 	t_builtin_func		*builtin;
 	bool				is_external;
 
-	status = execute_redirect_prepare(&fds, redirs);
+	status = execute_redirect_prepare(&fds, redirs, env);
 	if (status != S_OK)
 		return (status);
 	builtin = NULL;
@@ -149,11 +149,11 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	if (is_external)
 		status = execute_redirect_finish(&fds, true);
 	if (is_external && status == S_OK)
-		handle_path_search(argv, env, exit_code);
+		handle_path_search(argv, env);
 	if (builtin && fds.out == NO_REDIR)
-		status = builtin(argv, env, exit_code, STDOUT_FILENO);
+		status = builtin(argv, env, STDOUT_FILENO);
 	else if (builtin)
-		status = builtin(argv, env, exit_code, fds.out);
+		status = builtin(argv, env, fds.out);
 	if (!is_external)
 		execute_redirect_finish(&fds, false);
 	return (status);
@@ -168,22 +168,22 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	process to exit instead of staying around as a duplicate shell instance.
 */
 t_status	execute_simple_command(struct s_ast_simple_command *command,
-	t_env *env, int *exit_code, bool is_child)
+	t_shenv *env, bool is_child)
 {
 	t_status			status;
 	struct s_word_field	*arg_fields;
 	char				**argv;
 	bool				need_child;
 
-	status = execute_expand_args(command->args, &arg_fields, &argv);
+	status = execute_expand_args(command->args, &arg_fields, &argv, env);
 	if (status == S_OK)
 		need_child = argv && !builtin_get_func(argv[0]);
 	if (status == S_OK && need_child && !is_child)
-		status = execute_command_fork(&is_child, exit_code);
+		status = execute_command_fork(&is_child, env);
 	if (status == S_OK && (!need_child || is_child))
-		status = execute_command_execute(command->redirs, argv, env, exit_code);
+		status = execute_command_execute(command->redirs, argv, env);
 	if (is_child)
-		status = status_force_exit(status, exit_code);
+		status = status_force_exit(status, env);
 	free(argv);
 	word_free(arg_fields);
 	return (status);

@@ -3,40 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 12:20:42 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 19:00:09 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
-#include "env.h"
+
+#include "shenv.h"
 #include "status.h"
 
-static void	print_env_variable(t_env *env, const char *var_name)
+static void	print_env_variable(t_shenv *env, const char *var_name)
 {
 	char	*value;
 
-	value = env_get(env, var_name);
+	value = shenv_var_get(env, var_name);
 	if (value)
 		printf("%s=%s\n", var_name, value);
 	else
 		printf("%s=(null)\n", var_name);
 }
 
-static void	test_env_get(t_env *env)
+static void	test_env_get(t_shenv *env)
 {
-	printf("\n1. Testing env_get for HOME:\n");
+	printf("\n1. Testing shenv_var_get for HOME:\n");
 	print_env_variable(env, "HOME");
 }
 
-static void	test_env_set_new(t_env *env)
+static void	test_env_set_new(t_shenv *env)
 {
 	t_status	result;
 
-	printf("\n2. Testing env_set for new variable TEST_VAR:\n");
-	result = env_set(env, "TEST_VAR", "Hello World");
+	printf("\n2. Testing shenv_var_set for new variable TEST_VAR:\n");
+	result = shenv_var_set(env, "TEST_VAR", "Hello World");
 	if (result == S_OK)
 		printf("Successfully set TEST_VAR\n");
 	else
@@ -44,14 +45,14 @@ static void	test_env_set_new(t_env *env)
 	print_env_variable(env, "TEST_VAR");
 }
 
-static void	test_env_set_existing(t_env *env)
+static void	test_env_set_existing(t_shenv *env)
 {
 	t_status	result;
 
-	printf("\n3. Testing env_set to modify existing variable HOME:\n");
+	printf("\n3. Testing shenv_var_set to modify existing variable HOME:\n");
 	printf("Before: ");
 	print_env_variable(env, "HOME");
-	result = env_set(env, "HOME", "/temp/home");
+	result = shenv_var_set(env, "HOME", "/temp/home");
 	if (result == S_OK)
 		printf("Successfully modified HOME\n");
 	else
@@ -60,14 +61,14 @@ static void	test_env_set_existing(t_env *env)
 	print_env_variable(env, "HOME");
 }
 
-static void	test_env_unset(t_env *env)
+static void	test_env_unset(t_shenv *env)
 {
 	t_status	result;
 
-	printf("\n4. Testing env_unset for TEST_VAR:\n");
+	printf("\n4. Testing shenv_var_unset for TEST_VAR:\n");
 	printf("Before: ");
 	print_env_variable(env, "TEST_VAR");
-	result = env_unset(env, "TEST_VAR");
+	result = shenv_var_unset(env, "TEST_VAR");
 	if (result == S_OK)
 		printf("Successfully unset TEST_VAR\n");
 	else
@@ -88,24 +89,24 @@ static void	print_array_items(char **array, int count)
 	}
 }
 
-static void	test_env_array(t_env *env)
+static void	test_env_array(t_shenv *env)
 {
-	char	**env_array;
+	char	**var_array;
 
 	printf("\n5. Testing env array (showing first 10 items):\n");
-	env_array = env->env_array;
-	print_array_items(env_array, 10);
+	var_array = env->var_array;
+	print_array_items(var_array, 10);
 	printf("... (and more)\n");
 }
 
 int	main(void)
 {
-	t_env		env;
+	t_shenv		env;
 	t_status	status;
 
 	printf("--- Testing Environment Functions ---\n\n");
 	printf("Initializing environment...\n");
-	status = env_init(&env);
+	status = shenv_init(&env);
 	if (status != S_OK)
 	{
 		printf("Failed to initialize environment\n");
@@ -117,7 +118,7 @@ int	main(void)
 	test_env_unset(&env);
 	test_env_array(&env);
 	printf("\nCleaning up environment...\n");
-	env_free(&env);
+	shenv_free(&env);
 	printf("Test completed.\n");
 	return (0);
 }

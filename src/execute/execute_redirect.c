@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 17:47:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 19:19:38 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:27:37 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,31 +20,14 @@
 #include <unistd.h>
 
 #include "ast.h"
+#include "shenv.h"
 #include "status.h"
 #include "word.h"
 
 /*
-	TODO (entire file): Does close error need handling? Store path with fds for
-	close error?
+	TODO: Does close error need handling? Store path with fds for
+	close error? Also applies to execute_redirect_heredoc.
 */
-
-/*
-	Prepare heredoc for redirection and store the file descriptor in the correct
-	fds field. If the field holds another file descriptor, close it first.
-
-	No error message printed here, because process_heredoc prints its own.
-	TODO: Refactor heredoc handling to skip this wrapper.
-*/
-static t_status	execute_redirect_heredoc(struct s_ast_redirect *redir,
-	struct s_redir_fds *fds)
-{
-	if (fds->in != NO_REDIR)
-		close(fds->in);
-	fds->in = process_heredoc(redir);
-	if (fds->in == -1)
-		return (S_COMM_ERR);
-	return (S_OK);
-}
 
 /*
 	Open a path for redirection and store the file descriptor in the correct
@@ -75,7 +58,7 @@ static t_status	execute_redirect_open(enum e_ast_redirect_op op,
 	doesn't generate exactly one field, an error is reported instead.
 */
 static t_status	execute_redirect_file(struct s_ast_redirect *redir,
-	struct s_redir_fds *fds)
+	struct s_redir_fds *fds, t_shenv *env)
 {
 	t_status			status;
 	struct s_word_field	*expanded;
@@ -83,7 +66,7 @@ static t_status	execute_redirect_file(struct s_ast_redirect *redir,
 
 	expanded = NULL;
 	exp_append = &expanded;
-	status = word_expand(redir->word, &exp_append);
+	status = word_expand(redir->word, &exp_append, env);
 	if (status == S_OK && expanded && !expanded->next)
 		status = execute_redirect_open(redir->op, expanded->value, fds);
 	else if (status == S_OK)
@@ -128,7 +111,7 @@ t_status	execute_redirect_finish(struct s_redir_fds *fds, bool apply)
 	undefined.
 */
 t_status	execute_redirect_prepare(struct s_redir_fds *fds,
-	struct s_ast_redirect *redirs)
+	struct s_ast_redirect *redirs, t_shenv *env)
 {
 	t_status				status;
 	enum e_ast_redirect_op	op;
@@ -140,9 +123,9 @@ t_status	execute_redirect_prepare(struct s_redir_fds *fds,
 	{
 		op = redirs->op;
 		if (op == AST_REDIR_IN || op == AST_REDIR_OUT || op == AST_REDIR_APP)
-			status = execute_redirect_file(redirs, fds);
+			status = execute_redirect_file(redirs, fds, env);
 		else if (op == AST_HEREDOC)
-			status = execute_redirect_heredoc(redirs, fds);
+			status = execute_redirect_heredoc(redirs, fds, env);
 		else
 			status = status_err(S_EXIT_ERR, "execute_redirect: internal error",
 					"invalid ast_redirect type", 0);

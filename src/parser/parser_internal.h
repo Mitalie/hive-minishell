@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 16:49:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 22:43:47 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:24:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,6 @@ t_status	parser_list(
 t_status	parser_group(
 				struct s_parser_state *state,
 				struct s_ast_list_entry **group_head);
-
-/* Heredoc handling */
-struct s_heredoc_params
-{
-	struct s_ast_command_word	**lines_append;
-	char						*line;
-	char						*delimiter;
-	int							quoted;
-	size_t						delim_len;
-};
 
 t_status	read_heredoc(struct s_ast_redirect *redirect);
 

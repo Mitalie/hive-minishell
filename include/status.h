@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   status.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 21:50:28 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/03 14:57:24 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:41:05 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STATUS_H
 # define STATUS_H
+
+typedef struct s_shenv	t_shenv;
 
 /*
 	Functions that might fail should return one of these status codes. Errors
@@ -77,12 +79,12 @@ void		status_warn(const char *msg, const char *extra, int errnum);
 /*
 	Set the appropriate exit code if the status implies one.
 */
-void		status_set_exit_code(t_status status, int *exit_code);
+void		status_set_exit_code(t_status status, t_shenv *env);
 
 /*
 	Set the appropriate exit code if the status implies one, and replace the
 	status with S_EXIT_OK.
 */
-t_status	status_force_exit(t_status status, int *exit_code);
+t_status	status_force_exit(t_status status, t_shenv *env);
 
 #endif

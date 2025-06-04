@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_env.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:15:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/03 15:05:32 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,26 @@
 
 #include <errno.h>
 
-#include "env.h"
 #include "libft.h"
+#include "shenv.h"
 #include "status.h"
 #include "util.h"
 
 /*
 	Prints all environment variables in the format KEY=VALUE
 */
-t_status	builtin_cmd_env(char **argv, t_env *env,
-	int *exit_code, int stdout_fd)
+t_status	builtin_cmd_env(char **argv, t_shenv *env, int stdout_fd)
 {
 	size_t	i;
 	size_t	len;
 	char	*s;
 
 	(void)argv;
-	*exit_code = 0;
+	env->exit_code = 0;
 	i = 0;
-	while (i < env->used_size)
+	while (i < env->var_array_used)
 	{
-		s = env->env_array[i];
+		s = env->var_array[i];
 		len = ft_strlen(s);
 		s[len] = '\n';
 		if (!util_write_all(stdout_fd, s, len + 1))

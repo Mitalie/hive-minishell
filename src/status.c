@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   status.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:11:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/03 14:58:09 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:45:24 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "shenv.h"
 #include "libft.h"
+#include "shenv.h"
 #include "util.h"
 
 t_status	status_err(t_status status,
@@ -76,19 +78,19 @@ void	status_warn(const char *msg, const char *extra, int errnum)
 	util_write_all(STDERR_FILENO, buf, len);
 }
 
-void	status_set_exit_code(t_status status, int *exit_code)
+void	status_set_exit_code(t_status status, t_shenv *env)
 {
 	if (status == S_EXIT_ERR || status == S_RESET_ERR || status == S_COMM_ERR
 		|| status == S_BUILTIN_ERR)
-		*exit_code = 1;
+		env->exit_code = 1;
 	else if (status == S_RESET_SYNTAX || status == S_BUILTIN_ARG)
-		*exit_code = 2;
+		env->exit_code = 2;
 	else if (status == S_RESET_SIGINT)
-		*exit_code = 128 + SIGINT;
+		env->exit_code = 128 + SIGINT;
 }
 
-t_status	status_force_exit(t_status status, int *exit_code)
+t_status	status_force_exit(t_status status, t_shenv *env)
 {
-	status_set_exit_code(status, exit_code);
+	status_set_exit_code(status, env);
 	return (S_EXIT_OK);
 }

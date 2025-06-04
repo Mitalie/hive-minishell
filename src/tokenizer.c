@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/11 19:24:41 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:53:13 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 // processed from end to start
 // op that is prefix of another op must be listed first (processed last)
-const t_operator_def	g_ops[] = {
+static const t_operator_def	g_ops[] = {
 {"<", TOK_REDIR_IN},
 {">", TOK_REDIR_OUT},
 {">>", TOK_REDIR_APP},

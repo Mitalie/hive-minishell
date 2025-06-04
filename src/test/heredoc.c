@@ -6,22 +6,21 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 10:32:56 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 22:22:31 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 23:18:47 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <stdbool.h>
-#include <fcntl.h>
 #include <readline/readline.h>
 
 #include "ast.h"
-#include "parser.h"
-#include "execute.h"
-#include "libft.h"
 #include "status.h"
+#include "word.h"
 
 #define RED "\033[0;31m"
 #define GREEN "\033[0;32m"
@@ -31,10 +30,17 @@
 #define CYAN "\033[0;36m"
 #define RESET "\033[0m"
 
-/* Declare internal functions from parser and execute modules */
+/* Declare internal structs and functions from parser and execute modules */
+
+struct s_redir_fds
+{
+	int	in;
+	int	out;
+};
 
 t_status	read_heredoc(struct s_ast_redirect *redirect);
-int			process_heredoc(struct s_ast_redirect *redirect);
+t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
+				struct s_redir_fds *fds);
 
 /* Print test result */
 static void	print_result(const char *name, bool passed)
@@ -91,34 +97,33 @@ static void	handle_heredoc_lines(
 /* Test heredoc execution */
 static void	test_heredoc_execution(struct s_ast_redirect *redirect)
 {
-	int		fd;
-	bool	success;
-	char	buffer[4096];
-	ssize_t	bytes_read;
+	t_status			status;
+	struct s_redir_fds	fds;
+	char				buffer[4096];
+	ssize_t				bytes_read;
 
 	printf("\n%sTesting heredoc execution%s\n", YELLOW, RESET);
-	fd = process_heredoc(redirect);
-	success = (fd != -1);
-	print_result("heredoc_temp_file_created", success);
-	if (!success)
+	status = execute_redirect_heredoc(redirect, &fds);
+	print_result("heredoc_temp_file_created", status == S_OK);
+	if (status != S_OK)
 		return ;
-	bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+	bytes_read = read(fds.in, buffer, sizeof(buffer) - 1);
 	if (bytes_read > 0)
 		buffer[bytes_read] = '\0';
 	else
 		buffer[0] = '\0';
-	success = (bytes_read > 0);
-	print_result("heredoc_content_readable", success);
+	print_result("heredoc_content_readable", bytes_read >= 0);
 	printf("\n%sContent from file:%s\n", YELLOW, RESET);
 	printf("----------------------------------------\n%s", buffer);
 	printf("----------------------------------------\n");
-	close(fd);
+	close(fds.in);
 }
 
 /* Setup heredoc test */
 static char	*setup_heredoc_test(struct s_ast_redirect *redirect)
 {
 	char	*delimiter;
+	char	*parsed;
 
 	printf("\n%sTesting heredoc parser - INTERACTIVE TEST%s\n", YELLOW, RESET);
 	printf("%sPlease enter a delimiter (e.g. EOF):%s ", MAGENTA, RESET);
@@ -129,7 +134,10 @@ static char	*setup_heredoc_test(struct s_ast_redirect *redirect)
 		free(delimiter);
 		return (NULL);
 	}
-	printf("%sEnter lines. Type '%s' to end.%s\n", MAGENTA, delimiter, RESET);
+	parsed = strdup(delimiter);
+	word_heredoc_delimiter(parsed);
+	printf("%sEnter lines. Type '%s' to end.%s\n", MAGENTA, parsed, RESET);
+	free(parsed);
 	redirect->op = AST_HEREDOC;
 	redirect->word = delimiter;
 	redirect->heredoc_lines = NULL;
@@ -151,7 +159,7 @@ static void	test_heredoc_parser(void)
 	status = read_heredoc(&redirect);
 	success = (status == S_OK);
 	print_result("heredoc_parser", success);
-	if (!success || !redirect.heredoc_lines)
+	if (!success)
 	{
 		free(delimiter);
 		return ;

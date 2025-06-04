@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 17:47:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/29 19:19:38 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:37:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,27 +24,9 @@
 #include "word.h"
 
 /*
-	TODO (entire file): Does close error need handling? Store path with fds for
-	close error?
+	TODO: Does close error need handling? Store path with fds for
+	close error? Also applies to execute_redirect_heredoc.
 */
-
-/*
-	Prepare heredoc for redirection and store the file descriptor in the correct
-	fds field. If the field holds another file descriptor, close it first.
-
-	No error message printed here, because process_heredoc prints its own.
-	TODO: Refactor heredoc handling to skip this wrapper.
-*/
-static t_status	execute_redirect_heredoc(struct s_ast_redirect *redir,
-	struct s_redir_fds *fds)
-{
-	if (fds->in != NO_REDIR)
-		close(fds->in);
-	fds->in = process_heredoc(redir);
-	if (fds->in == -1)
-		return (S_COMM_ERR);
-	return (S_OK);
-}
 
 /*
 	Open a path for redirection and store the file descriptor in the correct

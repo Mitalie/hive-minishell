@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 22:18:36 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:39:58 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
 t_status	execute_simple_command(struct s_ast_simple_command *command,
 				t_shenv *env, bool is_child);
 
-int			process_heredoc(struct s_ast_redirect *redirect);
-
 struct s_redir_fds
 {
 	int	in;
@@ -51,6 +49,9 @@ struct s_redir_fds
 };
 
 # define NO_REDIR -1
+
+t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
+				struct s_redir_fds *fds);
 
 t_status	execute_redirect_prepare(struct s_redir_fds *fds,
 				struct s_ast_redirect *redirs);

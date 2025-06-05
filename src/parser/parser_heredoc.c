@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 22:56:37 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/05 22:16:40 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 
+#include "input.h"
 #include "libft.h"
 #include "status.h"
 #include "word.h"
@@ -54,7 +55,9 @@ static t_status	add_line_to_heredoc(
 	Read heredoc content from stdin until the delimiter is encountered.
 	Store the content as a linked list of lines in the redirect node.
 */
-t_status	read_heredoc(struct s_ast_redirect *redirect)
+t_status	read_heredoc(
+	struct s_parser_state *state,
+	struct s_ast_redirect *redirect)
 {
 	t_status					status;
 	struct s_ast_command_word	**lines_append;
@@ -70,7 +73,9 @@ t_status	read_heredoc(struct s_ast_redirect *redirect)
 	status = S_OK;
 	while (status == S_OK)
 	{
-		line = readline("> ");
+		status = input_get_line(state->input, &line);
+		if (status != S_OK)
+			break ;
 		if (is_delimiter(line, delimiter, delim_len))
 			break ;
 		status = add_line_to_heredoc(&lines_append, line);

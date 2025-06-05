@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 16:49:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 23:24:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/05 22:15:56 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stddef.h>
 
 # include "ast.h"
+# include "input.h"
 # include "status.h"
 # include "tokenizer.h"
 
@@ -23,6 +24,7 @@ struct	s_parser_state
 {
 	struct s_token				curr_tok;
 	struct s_tokenizer_state	tok_state;
+	t_input						*input;
 };
 
 void		parser_next_token(struct s_parser_state *state);
@@ -48,7 +50,9 @@ t_status	parser_group(
 				struct s_parser_state *state,
 				struct s_ast_list_entry **group_head);
 
-t_status	read_heredoc(struct s_ast_redirect *redirect);
+t_status	read_heredoc(
+				struct s_parser_state *state,
+				struct s_ast_redirect *redirect);
 
 /* Error handling helper */
 

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:44:04 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/05 22:14:35 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,13 @@ void	parser_next_token(struct s_parser_state *state)
 	Top-level parsing function. Parses a complete command line.
 	Stores the created AST in the pointer pointed to by `root`.
 */
-t_status	parser_parse(char *line, struct s_ast_list_entry **root)
+t_status	parser_parse(char *line, struct s_ast_list_entry **root,
+	t_input *input)
 {
 	t_status				status;
 	struct s_parser_state	state;
 
+	state.input = input;
 	state.tok_state.line_pos = line;
 	parser_next_token(&state);
 	*root = NULL;

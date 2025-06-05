@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:43:52 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/05 22:16:17 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,6 @@ t_status	parser_redirect(
 	parser_next_token(state);
 	status = S_OK;
 	if (new_redirect->op == AST_HEREDOC)
-		status = read_heredoc(new_redirect);
+		status = read_heredoc(state, new_redirect);
 	return (status);
 }

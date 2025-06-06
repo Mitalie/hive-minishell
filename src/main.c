@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/06 18:08:36 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/09 03:44:04 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "input.h"
 #include "parser.h"
 #include "shenv.h"
+#include "signals.h"
 #include "status.h"
 
 static t_status	minishell_do_line(t_shenv *env)
@@ -47,6 +48,7 @@ int	main(void)
 	t_status	status;
 	t_shenv		env;
 
+	signals_set_handlers();
 	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);

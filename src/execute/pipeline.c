@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:45:58 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/09 01:12:54 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include "ast.h"
+#include "signals.h"
 #include "shenv.h"
 #include "status.h"
 
@@ -50,6 +51,8 @@ static t_status	execute_pipeline_create_pipe_and_fork(
 	if (*fork_result < 0)
 		return (status_err(S_RESET_ERR, "execute_pipeline",
 				"fork() failed", errno));
+	if (*fork_result == 0)
+		signals_clear_handlers();
 	return (S_OK);
 }
 

@@ -6,10 +6,11 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/06 19:28:11 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/06 20:04:26 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "ast.h"
@@ -28,7 +29,12 @@ static t_status	minishell_do_line(t_shenv *env)
 
 	status = input_get_line(&line, "minishell> ");
 	if (status != S_OK)
+	{
+		if (status == S_RESET_SIGINT)
+			printf("\n");
+		status_set_exit_code(status, env);
 		return (status);
+	}
 	if (!line)
 		return (S_EXIT_OK);
 	status = parser_parse(line, &ast);

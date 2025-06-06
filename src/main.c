@@ -6,18 +6,16 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 21:02:55 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/06 18:08:36 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <readline/history.h>
-#include <readline/readline.h>
 
 #include "ast.h"
-#include "parser.h"
 #include "execute.h"
+#include "input.h"
+#include "parser.h"
 #include "shenv.h"
 #include "status.h"
 
@@ -27,12 +25,15 @@ static t_status	minishell_do_line(t_shenv *env)
 	char					*line;
 	struct s_ast_list_entry	*ast;
 
-	line = readline("minishell> ");
-	if (!line)
+	line = NULL;
+	ast = NULL;
+	status = input_get_line(&line, "minishell> ");
+	if (status == S_OK && !line)
 		return (S_EXIT_OK);
-	status = parser_parse(line, &ast);
+	if (status == S_OK)
+		status = parser_parse(line, &ast);
 	if (status == S_OK && ast)
-		add_history(line);
+		input_add_history(line);
 	free(line);
 	if (status == S_OK)
 		status = execute_list(ast, env);
@@ -51,6 +52,7 @@ int	main(void)
 		return (1);
 	while (status != S_EXIT_ERR && status != S_EXIT_OK)
 		status = minishell_do_line(&env);
+	input_clear_history();
 	shenv_free(&env);
 	return (env.exit_code);
 }

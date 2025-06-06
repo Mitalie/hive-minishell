@@ -6,16 +6,17 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 22:56:37 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/06 18:08:00 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser_internal.h"
 
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
-#include <readline/readline.h>
 
+#include "ast.h"
+#include "input.h"
 #include "libft.h"
 #include "status.h"
 #include "word.h"
@@ -70,7 +71,9 @@ t_status	read_heredoc(struct s_ast_redirect *redirect)
 	status = S_OK;
 	while (status == S_OK)
 	{
-		line = readline("> ");
+		status = input_get_line(&line, "> ");
+		if (status != S_OK)
+			return (status);
 		if (is_delimiter(line, delimiter, delim_len))
 			break ;
 		status = add_line_to_heredoc(&lines_append, line);

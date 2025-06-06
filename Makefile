@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/06/06 18:06:00 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/06 18:56:29 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,6 +62,8 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	shenv/init.c \
 	shenv/get_set.c \
 	shenv/utils.c \
+	signals/signals.c \
+	signals/signals_handlers.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

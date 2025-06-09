@@ -6,10 +6,11 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/09 03:44:04 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/09 22:35:44 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "ast.h"
@@ -20,6 +21,12 @@
 #include "signals.h"
 #include "status.h"
 
+/*
+	Read input for one (complex) command and process it.
+
+	Clear previously caught SIGINT before starting - user expects a fresh
+	prompt which we're going to do here anyway.
+*/
 static t_status	minishell_do_line(t_shenv *env)
 {
 	t_status				status;
@@ -28,6 +35,7 @@ static t_status	minishell_do_line(t_shenv *env)
 
 	line = NULL;
 	ast = NULL;
+	signals_check_sigint(true);
 	status = input_get_line(&line, "minishell> ");
 	if (status == S_OK && !line)
 		return (S_EXIT_OK);

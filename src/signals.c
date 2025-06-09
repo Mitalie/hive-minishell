@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:24:56 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/09 08:14:13 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/09 08:37:56 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,30 @@
 
 #include <signal.h>
 #include <stddef.h>
+#include <stdio.h>
+
+#include <readline/readline.h>
 
 static volatile sig_atomic_t	g_signals_caught_signum = 0;
 
 /*
 	Store the caught signal number.
+
+	Also set rl_done to break out of a readline() call. Readline must be in
+	event hook mode (rl_event_hook set) or it won't check rl_done.
 */
 static void	signals_sigint_handler(int signum)
 {
 	if (signum == SIGINT)
+	{
 		g_signals_caught_signum = signum;
+		rl_done = 1;
+	}
 }
 
 /*
-	Use SA_RESTART to avoid needing to handle EINTR everywhere.
+	Use SA_RESTART to avoid needing to handle EINTR everywhere. Readline sets
+	its own signal handlers so this doesn't prevent interrupting readline().
 */
 static void	signals_set_handler(int signum, void handler(int))
 {

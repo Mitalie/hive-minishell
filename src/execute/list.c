@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:35:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 22:19:05 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 21:16:01 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,21 @@
 #include <stdbool.h>
 
 #include "ast.h"
+#include "signals.h"
 #include "shenv.h"
 #include "status.h"
 
 /*
 	Execute a single list entry (pipeline or group)
 
+	Abort execution if SIGINT was caught.
+
 	The error case should be impossible to hit if the parser works correctly.
 */
 static t_status	execute_list_entry(struct s_ast_list_entry *entry, t_shenv *env)
 {
+	if (signals_check_sigint(false))
+		return (S_RESET_SIGINT);
 	if (entry->type == AST_LIST_PIPELINE)
 		return (execute_pipeline(entry->pipeline, env));
 	else if (entry->type == AST_LIST_GROUP)

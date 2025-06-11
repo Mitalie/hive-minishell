@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:26:54 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:05:05 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include "ast.h"
 #include "status.h"
+#include "tokenizer.h"
 
 /*
 	Parses a word and adds it to the AST.
@@ -33,6 +34,5 @@ t_status	parser_word(
 	*word = new_word;
 	new_word->next = NULL;
 	new_word->word = state->curr_tok.word_content;
-	parser_next_token(state);
-	return (S_OK);
+	return (parser_next_token(state));
 }

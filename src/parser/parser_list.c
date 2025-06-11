@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 14:22:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:26:54 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:03:18 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,9 @@ t_status	parser_list(
 			(*list_append)->next_op = AST_LIST_OR;
 		else
 			break ;
-		parser_next_token(state);
+		status = parser_next_token(state);
+		if (status != S_OK)
+			return (status);
 		list_append = &((*list_append)->next);
 	}
 	return (S_OK);

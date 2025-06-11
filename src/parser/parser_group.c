@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:24 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:43:45 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:06:51 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@ t_status	parser_group(
 {
 	t_status	status;
 
-	parser_next_token(state);
+	status = parser_next_token(state);
+	if (status != S_OK)
+		return (status);
 	status = parser_list(state, group_head);
 	if (status != S_OK)
 		return (status);
 	if (state->curr_tok.type != TOK_GROUP_END)
 		return (parser_syntax_error("expected closing parenthesis"));
-	parser_next_token(state);
-	return (S_OK);
+	return (parser_next_token(state));
 }

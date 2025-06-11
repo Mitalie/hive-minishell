@@ -1,0 +1,45 @@
+{
+	readline rl_initialize
+	Memcheck:Leak
+	match-leak-kinds: reachable
+	...
+	fun:rl_initialize
+	fun:readline
+	...
+}
+{
+	readline rl_set_prompt
+	Memcheck:Leak
+	match-leak-kinds: reachable
+	...
+	fun:rl_set_prompt
+	fun:readline
+	...
+}
+{
+	readline readline_internal_setup
+	Memcheck:Leak
+	match-leak-kinds: reachable
+	...
+	fun:readline_internal_setup
+	fun:readline
+	...
+}
+{
+	readline replace_history_entry
+	Memcheck:Leak
+	match-leak-kinds: reachable
+	...
+	fun:replace_history_entry
+	fun:readline_internal_teardown
+	fun:readline
+	...
+}
+{
+	readline history
+	Memcheck:Leak
+	match-leak-kinds: reachable
+	...
+	fun:add_history
+	...
+}

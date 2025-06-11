@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/11 22:05:38 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:38:14 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@
 
 t_status	parser_next_token(struct s_parser_state *state)
 {
-	state->curr_tok = tokenizer_get_next(&state->tok_state);
-	return (S_OK);
+	return (tokenizer_get_next(&state->tok_state, &state->curr_tok));
 }
 
 /*

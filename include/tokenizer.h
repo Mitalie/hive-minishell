@@ -6,12 +6,14 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:50:25 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/07 16:15:59 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:30:57 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TOKENIZER_H
 # define TOKENIZER_H
+
+# include "status.h"
 
 enum	e_token
 {
@@ -45,6 +47,6 @@ typedef struct s_operator_def
 	enum e_token	type;
 }	t_operator_def;
 
-t_token	tokenizer_get_next(t_tokenizer_state *state);
+t_status	tokenizer_get_next(t_tokenizer_state *state, t_token *token);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 19:00:46 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:10:01 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	main(void)
 	status = shenv_init(&env);
 	if (status != S_OK)
 		return (1);
-	while (status != S_EXIT_ERR && status != S_EXIT_OK)
+	while (status != S_EXIT_ERR && status != S_EXIT_OK && !env.is_child)
 		status = minishell_do_line(&env);
 	input_clear_history();
 	if (!env.is_child)

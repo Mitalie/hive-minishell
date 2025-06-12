@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 21:50:28 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 18:57:27 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 21:51:05 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ typedef enum e_status
 	S_RESET_SYNTAX,
 	S_RESET_SIGINT,
 	S_COMM_ERR,
+	S_EXEC_ERR,
+	S_EXEC_NOTFOUND,
 	S_BUILTIN_ERR,
 	S_BUILTIN_ARG,
 }	t_status;

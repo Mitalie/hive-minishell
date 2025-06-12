@@ -6,22 +6,22 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:30:33 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:50:36 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:38:48 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
-#include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
-#include <errno.h>
+#include <unistd.h>
 
 #include "shenv.h"
+#include "status.h"
 
-void	handle_path_search(char **argv, t_shenv *env);
+t_status	execute_external_command(char **argv, t_shenv *env);
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -51,7 +51,8 @@ static void	test_in_child(char **argv, t_shenv *env)
 	}
 	if (child_pid == 0)
 	{
-		handle_path_search(argv, env);
+		status = execute_external_command(argv, env);
+		status_set_exit_code(status, env);
 		exit(env->exit_code);
 	}
 	waitpid(child_pid, &status, 0);

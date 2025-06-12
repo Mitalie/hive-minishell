@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:11:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 19:25:50 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 22:55:13 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "shenv.h"
 #include "libft.h"
 #include "shenv.h"
 #include "util.h"
@@ -85,6 +84,10 @@ void	status_set_exit_code(t_status status, t_shenv *env)
 		env->exit_code = 1;
 	else if (status == S_RESET_SYNTAX || status == S_BUILTIN_ARG)
 		env->exit_code = 2;
+	else if (status == S_EXEC_ERR)
+		env->exit_code = 126;
+	else if (status == S_EXEC_NOTFOUND)
+		env->exit_code = 127;
 	else if (status == S_RESET_SIGINT)
 		env->exit_code = 128 + SIGINT;
 }

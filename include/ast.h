@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:07:51 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 22:56:36 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 22:47:00 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,6 @@ struct s_ast_list_entry
 	Frees the entire AST starting from the root.
 	Takes a pointer to the root list entry.
 */
-void	free_ast(struct s_ast_list_entry *root);
+void	ast_free(struct s_ast_list_entry *root);
 
 #endif

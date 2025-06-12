@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_cd.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 22:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/05 00:02:21 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:56:41 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 /*
 	Determines the target path for cd command
 */
-static t_status	get_cd_path(char **argv, t_shenv *env, char **path)
+static t_status	bi_cd_get_path(char **argv, t_shenv *env, char **path)
 {
 	if (!argv[1])
 	{
@@ -46,7 +46,7 @@ t_status	builtin_cmd_cd(char **argv, t_shenv *env, int stdout_fd)
 
 	(void)stdout_fd;
 	env->exit_code = 0;
-	status = get_cd_path(argv, env, &path);
+	status = bi_cd_get_path(argv, env, &path);
 	if (status != S_OK)
 		return (status);
 	if (chdir(path) != 0)

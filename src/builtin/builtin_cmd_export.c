@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_export.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:44:30 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:59:34 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 /*
 	Extracts key and value from an export argument using argv modification
 */
-static bool	extract_key_value(char *arg, char **key_out,
+static bool	bi_export_split_key_value(char *arg, char **key_out,
 	char **value_out)
 {
 	char	*equal_sign;
@@ -40,14 +40,14 @@ static bool	extract_key_value(char *arg, char **key_out,
 	Handles a single export argument
 	Validates the identifier
 */
-static t_status	handle_export_arg(char *arg, t_shenv *env)
+static t_status	bi_export_handle_assignment(char *arg, t_shenv *env)
 {
 	char		*key;
 	char		*value;
 
-	if (!extract_key_value(arg, &key, &value))
+	if (!bi_export_split_key_value(arg, &key, &value))
 		return (S_OK);
-	if (!is_valid_identifier(key))
+	if (!bi_export_validate_key(key))
 	{
 		status_warn("export: not a valid identifier", key, 0);
 		env->exit_code = 2;
@@ -66,11 +66,11 @@ t_status	builtin_cmd_export(char **argv, t_shenv *env, int stdout_fd)
 
 	env->exit_code = 0;
 	if (!argv[1])
-		return (print_exports(env, stdout_fd));
+		return (bi_export_print_env(env, stdout_fd));
 	i = 1;
 	while (argv[i])
 	{
-		status = handle_export_arg(argv[i], env);
+		status = bi_export_handle_assignment(argv[i], env);
 		if (status != S_OK)
 			return (status);
 		i++;

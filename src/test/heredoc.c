@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 10:32:56 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 23:18:47 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 22:49:52 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ struct s_redir_fds
 	int	out;
 };
 
-t_status	read_heredoc(struct s_ast_redirect *redirect);
+t_status	parser_read_heredoc(struct s_ast_redirect *redirect);
 t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
 				struct s_redir_fds *fds);
 
@@ -156,7 +156,7 @@ static void	test_heredoc_parser(void)
 	delimiter = setup_heredoc_test(&redirect);
 	if (!delimiter)
 		return ;
-	status = read_heredoc(&redirect);
+	status = parser_read_heredoc(&redirect);
 	success = (status == S_OK);
 	print_result("heredoc_parser", success);
 	if (!success)

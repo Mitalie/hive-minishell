@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_echo.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:09:35 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:57:17 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 /*
 	Writes arguments with spaces between them
 */
-static t_status	write_args(char **argv, int stdout_fd,
+static t_status	bi_echo_write_args(char **argv, int stdout_fd,
 	bool newline_for_last)
 {
 	int		i;
@@ -59,5 +59,5 @@ t_status	builtin_cmd_echo(char **argv, t_shenv *env, int stdout_fd)
 		newline = false;
 		argv++;
 	}
-	return (write_args(argv, stdout_fd, newline));
+	return (bi_echo_write_args(argv, stdout_fd, newline));
 }

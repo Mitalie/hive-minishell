@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_simple_command.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:53:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:43:59 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 22:49:27 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "status.h"
 #include "tokenizer.h"
 
-static bool	is_redirect_token(struct s_parser_state *state)
+static bool	parser_is_redirect_token(struct s_parser_state *state)
 {
 	if (state->curr_tok.type == TOK_REDIR_IN)
 		return (true);
@@ -35,7 +35,7 @@ static bool	is_redirect_token(struct s_parser_state *state)
 /*
 	Process elements of a command (words and redirections).
 */
-static t_status	process_command_elements(
+static t_status	parser_process_command_elements(
 	struct s_parser_state *state,
 	struct s_ast_simple_command *new_command)
 {
@@ -45,9 +45,9 @@ static t_status	process_command_elements(
 
 	args_append = &new_command->args;
 	redirs_append = &new_command->redirs;
-	while (is_redirect_token(state) || state->curr_tok.type == TOK_WORD)
+	while (parser_is_redirect_token(state) || state->curr_tok.type == TOK_WORD)
 	{
-		if (is_redirect_token(state))
+		if (parser_is_redirect_token(state))
 		{
 			status = parser_redirect(state, redirs_append);
 			if (status != S_OK)
@@ -82,7 +82,7 @@ t_status	parser_simple_command(
 	new_command->next = NULL;
 	new_command->args = NULL;
 	new_command->redirs = NULL;
-	status = process_command_elements(state, new_command);
+	status = parser_process_command_elements(state, new_command);
 	if (status != S_OK)
 		return (status);
 	if (new_command->args == NULL && new_command->redirs == NULL)

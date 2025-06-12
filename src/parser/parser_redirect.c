@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/11 22:13:17 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 17:04:30 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ t_status	parser_redirect(
 	if (!new_redirect)
 		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	*redirect = new_redirect;
+	new_redirect->word = NULL;
 	new_redirect->next = NULL;
 	new_redirect->heredoc_lines = NULL;
 	new_redirect->op = redirect_token_to_op(state->curr_tok.type);

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:11:15 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:45:24 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 19:25:50 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,4 @@ void	status_set_exit_code(t_status status, t_shenv *env)
 		env->exit_code = 2;
 	else if (status == S_RESET_SIGINT)
 		env->exit_code = 128 + SIGINT;
-}
-
-t_status	status_force_exit(t_status status, t_shenv *env)
-{
-	status_set_exit_code(status, env);
-	return (S_EXIT_OK);
 }

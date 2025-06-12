@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 18:49:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:25:27 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	if (is_external)
 		status = execute_redirect_finish(&fds, true);
 	if (is_external && status == S_OK)
-		handle_path_search(argv, env);
+		status = execute_external_command(argv, env);
 	if (builtin && fds.out == NO_REDIR)
 		status = builtin(argv, env, STDOUT_FILENO);
 	else if (builtin)

@@ -6,13 +6,14 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:02:43 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:44:30 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:39:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "execute_internal.h"
 
 #include <errno.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -21,11 +22,12 @@
 #include "status.h"
 
 /*
-	Constructs a full path by joining a directory and command name
-	Handles cases where directory path may or may not end with a slash
-	Returns a newly allocated string with the full path
+	Construct a full path by joining a directory and command name.
+	Handles cases where directory path may or may not end with a slash.
+	Stores a newly allocated string with the full path in result_out.
 */
-static char	*build_full_path(const char *dir, const char *cmd)
+static t_status	execute_external_path_join(
+	const char *dir, const char *cmd, char **result_out)
 {
 	size_t	dir_len;
 	size_t	cmd_len;
@@ -35,7 +37,8 @@ static char	*build_full_path(const char *dir, const char *cmd)
 	cmd_len = ft_strlen(cmd);
 	result = malloc(dir_len + cmd_len + 2);
 	if (!result)
-		return (NULL);
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
+	*result_out = result;
 	ft_strlcpy(result, dir, dir_len + 1);
 	if (dir_len > 0 && dir[dir_len - 1] != '/')
 	{
@@ -44,78 +47,80 @@ static char	*build_full_path(const char *dir, const char *cmd)
 	}
 	else
 		ft_strlcpy(result + dir_len, cmd, cmd_len + 1);
-	return (result);
+	return (S_OK);
 }
 
 /*
-	Tries to execute a command in a specific directory
-	Returns 1 if permission denied, 0 otherwise
-	Used to track if any permission errors occurred during path search
+	Try to execute a command in a specific candidate directory.
+	If execve fails for reason other than ENOENT, stores the fact that a
+	candidate was found and the resulting errno in the search struct.
 */
-static int	try_path_element(char *dir, char **argv, char **envp)
+static t_status	execute_external_path_candidate(
+	struct s_path_search *search, char **argv, char **envp)
 {
-	char	*full_path;
-	int		result;
+	t_status	status;
+	char		*full_path;
 
-	full_path = build_full_path(dir, argv[0]);
-	if (!full_path)
-		return (0);
+	status = execute_external_path_join(search->cand_dir, argv[0], &full_path);
+	if (status != S_OK)
+		return (status);
 	execve(full_path, argv, envp);
-	result = 0;
-	if (errno == EACCES)
-		result = 1;
+	if (errno != ENOENT)
+	{
+		search->found = true;
+		search->found_errno = errno;
+	}
 	free(full_path);
-	return (result);
+	return (S_OK);
 }
 
 /*
-	Executes a command by searching through PATH environment variable
-	Efficiently searches by modifying path_list in-place
-	Returns appropriate exit code:
-	- 0 on successful execution (never returns in this case)
-	- 126 if command was found but permission was denied
-	- 127 if command was not found in any PATH directory
+	Find and execute a command in path list.
+	Efficiently separates candidate paths by modifying path list in-place.
+	If execve fails for all candidates, prints appropriate error message and
+	returns status code.
 */
-static int	try_path_execve(char *path_list, char **argv, char **envp)
+static t_status	execute_external_path_search(
+	char *path_list, char **argv, char **envp)
 {
-	char	*elem_start;
-	char	*scan;
-	int		had_permission_error;
+	t_status				status;
+	char					*scan;
+	struct s_path_search	search;
 
-	if (!path_list || !argv || !argv[0] || !*argv[0])
-		return (127);
-	had_permission_error = 0;
-	elem_start = path_list;
 	scan = path_list;
+	search.cand_dir = path_list;
+	search.found = false;
 	while (*scan)
 	{
 		if (*scan == ':')
 		{
 			*scan = '\0';
-			had_permission_error |= try_path_element(elem_start, argv, envp);
-			elem_start = scan + 1;
+			status = execute_external_path_candidate(&search, argv, envp);
+			if (status != S_OK)
+				return (status);
+			search.cand_dir = scan + 1;
 		}
 		scan++;
 	}
-	had_permission_error |= try_path_element(elem_start, argv, envp);
-	if (had_permission_error)
-		return (126);
-	return (127);
+	status = execute_external_path_candidate(&search, argv, envp);
+	if (status != S_OK)
+		return (status);
+	if (search.found)
+		return (status_err(S_EXEC_ERR, argv[0], NULL, search.found_errno));
+	return (status_err(S_EXEC_NOTFOUND, argv[0], "command not found", 0));
 }
 
 /*
-	Executes a command with an absolute path
-	Sets exit_code to 126 for permission denied, 127 for other errors
-	Reports appropriate error message using status_err
+	Executs a command with an absolute path
+	If execve fails, prints appropriate error message and returns status code
 */
-void	handle_absolute_path(char **argv, t_shenv *env)
+static t_status	execute_external_absolute(char **argv, char **envp)
 {
-	execve(argv[0], argv, env->var_array);
-	if (errno == EACCES)
-		env->exit_code = 126;
+	execve(argv[0], argv, envp);
+	if (errno == ENOENT)
+		return (status_err(S_EXEC_NOTFOUND, argv[0], NULL, errno));
 	else
-		env->exit_code = 127;
-	status_err(S_COMM_ERR, argv[0], NULL, errno);
+		return (status_err(S_EXEC_ERR, argv[0], NULL, errno));
 }
 
 /*
@@ -123,31 +128,21 @@ void	handle_absolute_path(char **argv, t_shenv *env)
 	Sets exit_code to 126 for permission denied, 127 for command not found
 	Reports appropriate error message using status_err
 */
-void	handle_path_search(char **argv, t_shenv *env)
+t_status	execute_external_command(char **argv, t_shenv *env)
 {
-	char	*path_var;
-	char	*path_copy;
+	t_status	status;
+	char		*path_var;
+	char		*path_copy;
 
 	if (ft_strchr(argv[0], '/'))
-		return (handle_absolute_path(argv, env));
+		return (execute_external_absolute(argv, env->var_array));
 	path_var = shenv_var_get(env, "PATH");
 	if (!path_var)
-	{
-		status_err(S_COMM_ERR, argv[0], "command not found", 0);
-		env->exit_code = 127;
-		return ;
-	}
+		return (status_err(S_EXEC_NOTFOUND, argv[0], "command not found", 0));
 	path_copy = ft_strdup(path_var);
 	if (!path_copy)
-	{
-		status_err(S_COMM_ERR, "malloc", NULL, errno);
-		env->exit_code = 127;
-		return ;
-	}
-	env->exit_code = try_path_execve(path_copy, argv, env->var_array);
-	if (env->exit_code == 126)
-		status_err(S_COMM_ERR, argv[0], "Permission denied", 0);
-	else
-		status_err(S_COMM_ERR, argv[0], "command not found", 0);
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
+	status = execute_external_path_search(path_copy, argv, env->var_array);
 	free(path_copy);
+	return (status);
 }

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 18:49:02 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 22:46:09 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,6 @@
 # include "ast.h"
 # include "shenv.h"
 # include "status.h"
-
-/*
-	Internal functions for command execution
-	These functions handle the finding and executing external commands
-*/
-void		handle_absolute_path(char **argv, t_shenv *env);
-
-void		handle_path_search(char **argv, t_shenv *env);
 
 struct	s_pipeline_fds
 {
@@ -56,5 +48,14 @@ t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
 t_status	execute_redirect_prepare(struct s_redir_fds *fds,
 				struct s_ast_redirect *redirs, t_shenv *env);
 t_status	execute_redirect_finish(struct s_redir_fds *fds, bool apply);
+
+struct	s_path_search
+{
+	char	*cand_dir;
+	bool	found;
+	int		found_errno;
+};
+
+t_status	execute_external_command(char **argv, t_shenv *env);
 
 #endif

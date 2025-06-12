@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/11 22:38:14 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 15:50:14 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ t_status	parser_parse(char *line, struct s_ast_list_entry **root)
 	t_status				status;
 	struct s_parser_state	state;
 
+	state.group_level = 0;
 	state.tok_state.line_pos = line;
 	*root = NULL;
 	status = parser_next_token(&state);

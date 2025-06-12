@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 20:54:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:43:52 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 19:05:30 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,7 @@ t_status	builtin_cmd_pwd(char **argv, t_shenv *env, int stdout_fd)
 	env->exit_code = 0;
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
-	{
-		status_warn("pwd: getcwd failed", NULL, errno);
-		env->exit_code = 1;
-		return (S_OK);
-	}
+		return (status_err(S_BUILTIN_ERR, "pwd", "getcwd failed", errno));
 	status = write_cwd(cwd, stdout_fd);
 	free(cwd);
 	return (status);

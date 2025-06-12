@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:27:27 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 23:27:47 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 18:49:02 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
 				t_shenv *env);
 
 t_status	execute_simple_command(struct s_ast_simple_command *command,
-				t_shenv *env, bool is_child);
+				t_shenv *env);
 
 struct s_redir_fds
 {

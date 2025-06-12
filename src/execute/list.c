@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:35:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/11 21:16:01 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 18:47:06 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ t_status	execute_list(struct s_ast_list_entry *list_head, t_shenv *env)
 	if (!list_head)
 		return (S_OK);
 	status = execute_list_entry(list_head, env);
-	while (list_head->next && status == S_OK)
+	while (list_head->next && status == S_OK && !env->is_child)
 	{
 		exit_code = env->exit_code;
 		execute_next = (list_head->next_op == AST_LIST_AND && exit_code == 0)

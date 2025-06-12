@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 21:50:28 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:41:05 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 18:57:27 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,5 @@ void		status_warn(const char *msg, const char *extra, int errnum);
 	Set the appropriate exit code if the status implies one.
 */
 void		status_set_exit_code(t_status status, t_shenv *env);
-
-/*
-	Set the appropriate exit code if the status implies one, and replace the
-	status with S_EXIT_OK.
-*/
-t_status	status_force_exit(t_status status, t_shenv *env);
 
 #endif

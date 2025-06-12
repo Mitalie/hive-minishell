@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:10:22 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/13 00:28:14 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 01:11:38 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,10 +127,7 @@ t_status	execute_redirect_heredoc(struct s_ast_redirect *redirect,
 		return (status);
 	status = execute_heredoc_write(writefd, redirect->heredoc_quoted,
 			redirect->heredoc_lines, env);
-	if (close(writefd) < 0)
-		if (status == S_OK)
-			status = status_err(S_COMM_ERR, "execute_heredoc",
-					"Error closing the heredoc after writing", errno);
+	close(writefd);
 	if (status == S_OK)
 		fds->in = readfd;
 	else

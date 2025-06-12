@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 17:47:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 23:27:37 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 01:14:53 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,6 @@
 #include "shenv.h"
 #include "status.h"
 #include "word.h"
-
-/*
-	TODO: Does close error need handling? Store path with fds for
-	close error? Also applies to execute_redirect_heredoc.
-*/
 
 /*
 	Open a path for redirection and store the file descriptor in the correct

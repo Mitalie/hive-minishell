@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:18:16 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 21:35:10 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 01:11:13 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ t_status	word_scan(struct s_word_state *state)
 	Process the expansion following a `$` by scanning the replacement value
 	for special characters that need to be handled. Recognizes word splitting
 	characters when unquoted.
-
-	TODO: split using IFS instead of isblank.
 */
 t_status	word_scan_expansion(struct s_word_state *state, bool quoted)
 {

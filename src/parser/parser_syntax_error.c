@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:22:58 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:44:01 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 01:11:15 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 
 /*
 	Report a syntax error.
-
-	TODO: print expected and actual tokens, or position in input
 */
 t_status	parser_syntax_error(const char *message)
 {

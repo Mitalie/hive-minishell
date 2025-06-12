@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 22:44:04 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:38:14 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@
 #include "status.h"
 #include "tokenizer.h"
 
-void	parser_next_token(struct s_parser_state *state)
+t_status	parser_next_token(struct s_parser_state *state)
 {
-	state->curr_tok = tokenizer_get_next(&state->tok_state);
+	return (tokenizer_get_next(&state->tok_state, &state->curr_tok));
 }
 
 /*
@@ -34,10 +34,9 @@ t_status	parser_parse(char *line, struct s_ast_list_entry **root)
 	struct s_parser_state	state;
 
 	state.tok_state.line_pos = line;
-	parser_next_token(&state);
 	*root = NULL;
-	status = S_OK;
-	if (state.curr_tok.type != TOK_END)
+	status = parser_next_token(&state);
+	if (status == S_OK && state.curr_tok.type != TOK_END)
 		status = parser_list(&state, root);
 	if (status == S_OK && state.curr_tok.type != TOK_END)
 		return (parser_syntax_error("unexpected token"));

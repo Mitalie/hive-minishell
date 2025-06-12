@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 14:22:31 by josmanov          #+#    #+#             */
-/*   Updated: 2025/05/12 21:41:05 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:03:35 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@ t_status	parser_pipeline(
 			return (status);
 		if (state->curr_tok.type != TOK_PIPE)
 			break ;
-		parser_next_token(state);
+		status = parser_next_token(state);
+		if (status != S_OK)
+			return (status);
 		pipeline_append = &((*pipeline_append)->next);
 	}
 	return (S_OK);

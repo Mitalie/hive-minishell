@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 23:53:13 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:58:03 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,8 @@ static const t_operator_def	g_ops[] = {
 /*
 	Consume current character, and if it began a quotation, consume until end
 	of the quotation (including the closing quote).
-
-	TODO: End of line in quotes? Unbalanced quotes don't need to be supported,
-	but this runs off the end of the line and segfaults. Shoud either pass on
-	the unbalanced quotes within the word, or report error somehow.
 */
-static void	tok_consume_char_or_quoted(t_tokenizer_state *state)
+static t_status	tok_consume_char_or_quoted(t_tokenizer_state *state)
 {
 	char	maybe_quote;
 
@@ -49,9 +45,15 @@ static void	tok_consume_char_or_quoted(t_tokenizer_state *state)
 	if (maybe_quote == '"' || maybe_quote == '\'')
 	{
 		while (*state->line_pos != maybe_quote)
+		{
+			if (*state->line_pos == '\0')
+				return (status_err(S_RESET_SYNTAX, "syntax error",
+						"unbalanced quotes", 0));
 			state->line_pos++;
+		}
 		state->line_pos++;
 	}
+	return (S_OK);
 }
 
 /*
@@ -81,16 +83,19 @@ static bool	tok_is_operator(t_tokenizer_state *state, enum e_token *op_type)
 	return (false);
 }
 
-static char	*tok_build_word(t_tokenizer_state *state)
+static t_status	tok_build_word(t_tokenizer_state *state, char **word_out)
 {
-	char			*word_start;
-	size_t			word_len;
-	char			*word;
+	t_status	status;
+	char		*word_start;
+	size_t		word_len;
+	char		*word;
 
 	word_start = state->line_pos;
 	while (1)
 	{
-		tok_consume_char_or_quoted(state);
+		status = tok_consume_char_or_quoted(state);
+		if (status != S_OK)
+			return (status);
 		if (*state->line_pos == '\0' || util_isblank(*state->line_pos))
 			break ;
 		if (tok_is_operator(state, NULL))
@@ -98,21 +103,24 @@ static char	*tok_build_word(t_tokenizer_state *state)
 	}
 	word_len = state->line_pos - word_start;
 	word = malloc(word_len + 1);
+	*word_out = word;
+	if (!word)
+		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	ft_memcpy(word, word_start, word_len);
 	word[word_len] = '\0';
-	return (word);
+	return (S_OK);
 }
 
-t_token	tokenizer_get_next(t_tokenizer_state *state)
+t_status	tokenizer_get_next(t_tokenizer_state *state, t_token *token_out)
 {
-	enum e_token	op_type;
-
 	while (util_isblank(*state->line_pos))
 		state->line_pos++;
+	token_out->word_content = NULL;
+	token_out->type = TOK_END;
 	if (*state->line_pos == '\0')
-		return ((t_token){TOK_END, NULL});
-	else if (tok_is_operator(state, &op_type))
-		return ((t_token){op_type, NULL});
-	else
-		return ((t_token){TOK_WORD, tok_build_word(state)});
+		return (S_OK);
+	if (tok_is_operator(state, &token_out->type))
+		return (S_OK);
+	token_out->type = TOK_WORD;
+	return (tok_build_word(state, &token_out->word_content));
 }

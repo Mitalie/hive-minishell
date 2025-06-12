@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 16:42:39 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/07 16:26:16 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 22:53:19 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 
+#include "status.h"
 #include "tokenizer.h"
 
 static const char		*g_tok_names[] = {
@@ -40,6 +41,7 @@ void	debug_print_token(t_token token)
 
 int	main(void)
 {
+	t_status			status;
 	t_token				token;
 	t_tokenizer_state	ts;
 	char				*line;
@@ -56,7 +58,17 @@ int	main(void)
 				break ;
 			ts.line_pos = line;
 		}
-		token = tokenizer_get_next(&ts);
+		status = tokenizer_get_next(&ts, &token);
+		if (status == S_RESET_SYNTAX)
+		{
+			token.type = TOK_END;
+			continue ;
+		}
+		else if (status != S_OK)
+		{
+			free(line);
+			return (1);
+		}
 		debug_print_token(token);
 		free(token.word_content);
 	}

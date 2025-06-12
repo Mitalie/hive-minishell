@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/11 21:03:19 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 18:49:39 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static t_status	execute_expand_args(struct s_ast_command_word *args,
 	sets is_child and returns, while main process waits for child to exit and
 	stores its exit status in exit_code.
 */
-static t_status	execute_command_fork(bool *is_child, t_shenv *env)
+static t_status	execute_command_fork(t_shenv *env)
 {
 	pid_t	child_pid;
 	int		wait_status;
@@ -110,7 +110,7 @@ static t_status	execute_command_fork(bool *is_child, t_shenv *env)
 	if (child_pid == 0)
 	{
 		signals_clear_handlers();
-		*is_child = true;
+		env->is_child = true;
 		return (S_OK);
 	}
 	while (wait(&wait_status) < 0)
@@ -167,7 +167,7 @@ static t_status	execute_command_execute(struct s_ast_redirect *redirs,
 	process to exit instead of staying around as a duplicate shell instance.
 */
 t_status	execute_simple_command(struct s_ast_simple_command *command,
-	t_shenv *env, bool is_child)
+	t_shenv *env)
 {
 	t_status			status;
 	struct s_word_field	*arg_fields;
@@ -177,12 +177,10 @@ t_status	execute_simple_command(struct s_ast_simple_command *command,
 	status = execute_expand_args(command->args, &arg_fields, &argv, env);
 	if (status == S_OK)
 		need_child = argv && !builtin_get_func(argv[0]);
-	if (status == S_OK && need_child && !is_child)
-		status = execute_command_fork(&is_child, env);
-	if (status == S_OK && (!need_child || is_child))
+	if (status == S_OK && need_child && !env->is_child)
+		status = execute_command_fork(env);
+	if (status == S_OK && (!need_child || env->is_child))
 		status = execute_command_execute(command->redirs, argv, env);
-	if (is_child)
-		status = status_force_exit(status, env);
 	free(argv);
 	word_free(arg_fields);
 	return (status);

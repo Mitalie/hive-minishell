@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/11 21:02:49 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 18:58:51 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <errno.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -29,16 +30,14 @@
 	command, then fork a child process and store the result in fork_result.
 */
 static t_status	execute_pipeline_create_pipe_and_fork(
-	struct s_pipeline_fds *fds, bool first, bool last, pid_t *fork_result)
+	struct s_pipeline_fds *fds, bool has_next, pid_t *fork_result, t_shenv *env)
 {
 	int	pipe_fd[2];
 
-	fds->in = NO_PIPE;
-	if (!first)
-		fds->in = fds->next_in;
+	fds->in = fds->next_in;
 	fds->next_in = NO_PIPE;
 	fds->out = NO_PIPE;
-	if (!last)
+	if (has_next)
 	{
 		if (pipe(pipe_fd) < 0)
 			return (status_err(S_RESET_ERR, "execute_pipeline",
@@ -51,7 +50,10 @@ static t_status	execute_pipeline_create_pipe_and_fork(
 		return (status_err(S_RESET_ERR, "execute_pipeline",
 				"fork() failed", errno));
 	if (*fork_result == 0)
+	{
 		signals_clear_handlers();
+		env->is_child = true;
+	}
 	return (S_OK);
 }
 
@@ -89,7 +91,7 @@ static t_status	execute_pipeline_child(struct s_pipeline_fds *fds,
 		close(fds->out);
 	}
 	if (status == S_OK)
-		status = execute_simple_command(child_command, env, true);
+		status = execute_simple_command(child_command, env);
 	return (status);
 }
 
@@ -157,25 +159,23 @@ t_status	execute_pipeline(struct s_ast_simple_command *pipeline_head,
 {
 	t_status				status;
 	pid_t					child;
-	bool					first;
 	struct s_pipeline_fds	fds;
 
 	status = S_OK;
-	first = true;
+	fds.next_in = NO_PIPE;
 	child = 0;
 	if (pipeline_head && !pipeline_head->next)
-		return (execute_simple_command(pipeline_head, env, false));
+		return (execute_simple_command(pipeline_head, env));
 	while (pipeline_head)
 	{
 		status = execute_pipeline_create_pipe_and_fork(
-				&fds, first, !pipeline_head->next, &child);
+				&fds, pipeline_head->next != NULL, &child, env);
 		if (status == S_OK && child == 0)
 			return (execute_pipeline_child(&fds, pipeline_head, env));
 		execute_pipeline_cleanup(&fds, status != S_OK);
 		if (status != S_OK)
 			break ;
 		pipeline_head = pipeline_head->next;
-		first = false;
 	}
 	return (execute_pipeline_wait_for_children(status, child, env));
 }

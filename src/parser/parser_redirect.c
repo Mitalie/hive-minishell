@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/12 17:04:30 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:16:08 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "status.h"
 #include "tokenizer.h"
 
-static enum e_ast_redirect_op	redirect_token_to_op(enum e_token type)
+static enum e_ast_redirect_op	parser_redirect_token_to_op(enum e_token type)
 {
 	if (type == TOK_REDIR_IN)
 		return (AST_REDIR_IN);
@@ -48,7 +48,7 @@ t_status	parser_redirect(
 	new_redirect->word = NULL;
 	new_redirect->next = NULL;
 	new_redirect->heredoc_lines = NULL;
-	new_redirect->op = redirect_token_to_op(state->curr_tok.type);
+	new_redirect->op = parser_redirect_token_to_op(state->curr_tok.type);
 	status = parser_next_token(state);
 	if (status != S_OK)
 		return (status);
@@ -59,6 +59,6 @@ t_status	parser_redirect(
 	if (status != S_OK)
 		return (status);
 	if (new_redirect->op == AST_HEREDOC)
-		status = read_heredoc(new_redirect);
+		status = parser_read_heredoc(new_redirect);
 	return (status);
 }

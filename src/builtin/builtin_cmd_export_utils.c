@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd_export_utils.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 23:30:02 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:14:39 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:59:34 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@
 	Helper function to print a single export line. Escapes any double quotes in
 	the environment value. Surrounds value with double quotes.
 */
-static t_status	print_single_export(char *env_str, char *buffer, int stdout_fd)
+static t_status	bi_export_print_one(char *env_str, char *buffer,
+	int stdout_fd)
 {
 	size_t	out_pos;
 	char	c;
@@ -58,7 +59,7 @@ static t_status	print_single_export(char *env_str, char *buffer, int stdout_fd)
 /*
 	Ensures buffer is large enough, reallocates if needed
 */
-static t_status	ensure_buffer_size(char **buffer, size_t *buffer_size,
+static t_status	bi_export_ensure_buffer_size(char **buffer, size_t *buffer_size,
 	size_t needed_len)
 {
 	if (*buffer && needed_len <= *buffer_size)
@@ -78,7 +79,7 @@ static t_status	ensure_buffer_size(char **buffer, size_t *buffer_size,
 	quotes around the value. If variable is not valid (no equal sign/value),
 	just print it with prefix.
 */
-static t_status	process_export_entry(char *env_str, char **buffer,
+static t_status	bi_export_process_entry(char *env_str, char **buffer,
 	size_t *buffer_size, int stdout_fd)
 {
 	t_status	status;
@@ -96,17 +97,17 @@ static t_status	process_export_entry(char *env_str, char **buffer,
 	equal_sign = ft_strchr(env_str, '=');
 	if (equal_sign)
 		needed_len += 2;
-	status = ensure_buffer_size(buffer, buffer_size, needed_len);
+	status = bi_export_ensure_buffer_size(buffer, buffer_size, needed_len);
 	if (status != S_OK)
 		return (status);
-	return (print_single_export(env_str, *buffer, stdout_fd));
+	return (bi_export_print_one(env_str, *buffer, stdout_fd));
 }
 
 /*
 	Prints all environment variables in the format "declare -x KEY="VALUE""
 	For variables without values, prints just "declare -x KEY"
 */
-t_status	print_exports(t_shenv *env, int stdout_fd)
+t_status	bi_export_print_env(t_shenv *env, int stdout_fd)
 {
 	t_status	status;
 	size_t		i;
@@ -119,7 +120,7 @@ t_status	print_exports(t_shenv *env, int stdout_fd)
 	status = S_OK;
 	while (i < env->var_array_used && status == S_OK)
 	{
-		status = process_export_entry(env->var_array[i], &buffer,
+		status = bi_export_process_entry(env->var_array[i], &buffer,
 				&buffer_size, stdout_fd);
 		i++;
 	}
@@ -133,7 +134,7 @@ t_status	print_exports(t_shenv *env, int stdout_fd)
 	Can only contain letters, digits, or underscores
 	Cannot be empty
 */
-bool	is_valid_identifier(const char *str)
+bool	bi_export_validate_key(const char *str)
 {
 	if (!str || !*str)
 		return (false);

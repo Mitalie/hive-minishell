@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   shenv_init.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/12 18:58:19 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:21:15 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,7 @@
 
 extern char	**environ;
 
-static t_status	init_env_array(t_shenv *env, int size)
-{
-	if (size > 0)
-		env->var_array_size = size * 2;
-	else
-		env->var_array_size = 10;
-	env->var_array_used = 0;
-	env->var_array = malloc(sizeof(char *) * (env->var_array_size + 1));
-	if (!env->var_array)
-		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
-	env->var_array[0] = NULL;
-	return (S_OK);
-}
-
-static t_status	copy_environ_to_env(t_shenv *env)
+static t_status	shenv_var_copy_environ(t_shenv *env)
 {
 	int			i;
 	char		*value;
@@ -62,6 +48,20 @@ static t_status	copy_environ_to_env(t_shenv *env)
 	return (S_OK);
 }
 
+static t_status	shenv_var_init(t_shenv *env, int size)
+{
+	if (size > 0)
+		env->var_array_size = size * 2;
+	else
+		env->var_array_size = 10;
+	env->var_array_used = 0;
+	env->var_array = malloc(sizeof(char *) * (env->var_array_size + 1));
+	if (!env->var_array)
+		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
+	env->var_array[0] = NULL;
+	return (shenv_var_copy_environ(env));
+}
+
 t_status	shenv_init(t_shenv *env)
 {
 	t_status	status;
@@ -72,10 +72,7 @@ t_status	shenv_init(t_shenv *env)
 	count = 0;
 	while (environ && environ[count])
 		count++;
-	status = init_env_array(env, count);
-	if (status != S_OK)
-		return (status);
-	status = copy_environ_to_env(env);
+	status = shenv_var_init(env, count);
 	if (status != S_OK)
 	{
 		shenv_free(env);

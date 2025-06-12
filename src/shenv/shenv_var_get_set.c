@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_set.c                                          :+:      :+:    :+:   */
+/*   shenv_var_get_set.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 02:15:43 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/04 20:17:47 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:21:19 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,15 @@ char	*shenv_var_get(t_shenv *env, const char *key)
 	return (env->var_array[index] + key_len + 1);
 }
 
-static t_status	update_existing_entry(t_shenv *env, int index, char *new_entry)
+static t_status	shenv_var_update_existing(t_shenv *env, int index,
+	char *new_entry)
 {
 	free(env->var_array[index]);
 	env->var_array[index] = new_entry;
 	return (S_OK);
 }
 
-static t_status	add_new_entry(t_shenv *env, char *new_entry)
+static t_status	shenv_var_add_new(t_shenv *env, char *new_entry)
 {
 	t_status	status;
 
@@ -65,8 +66,8 @@ t_status	shenv_var_set(t_shenv *env, const char *key, const char *value)
 	if (!new_entry)
 		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
 	if (shenv_var_find_index(env, key, key_len, &index))
-		return (update_existing_entry(env, index, new_entry));
-	return (add_new_entry(env, new_entry));
+		return (shenv_var_update_existing(env, index, new_entry));
+	return (shenv_var_add_new(env, new_entry));
 }
 
 t_status	shenv_var_unset(t_shenv *env, const char *key)

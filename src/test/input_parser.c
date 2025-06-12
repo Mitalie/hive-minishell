@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input_parser.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 16:17:11 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/12 21:32:40 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 22:49:55 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int	main(void)
 			printf("empty command\n");
 		else
 			print_list(root, 0);
-		free_ast(root);
+		ast_free(root);
 		free(line);
 	}
 	printf("done\n");

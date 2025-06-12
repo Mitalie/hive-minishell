@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_heredoc.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/06 18:08:00 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:15:21 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@
 	Check if a line matches the delimiter
 	Returns true if the line is the delimiter
 */
-static bool	is_delimiter(char *line, char *delimiter, size_t delim_len)
+static bool	parser_heredoc_check_delimiter(
+	char *line, char *delimiter, size_t delim_len)
 {
 	if (!line)
 		return (true);
@@ -35,7 +36,7 @@ static bool	is_delimiter(char *line, char *delimiter, size_t delim_len)
 /*
 	Add a line to the heredoc lines list
 */
-static t_status	add_line_to_heredoc(
+static t_status	parser_heredoc_add_line(
 	struct s_ast_command_word ***lines_append,
 	char *line)
 {
@@ -55,7 +56,7 @@ static t_status	add_line_to_heredoc(
 	Read heredoc content from stdin until the delimiter is encountered.
 	Store the content as a linked list of lines in the redirect node.
 */
-t_status	read_heredoc(struct s_ast_redirect *redirect)
+t_status	parser_read_heredoc(struct s_ast_redirect *redirect)
 {
 	t_status					status;
 	struct s_ast_command_word	**lines_append;
@@ -74,9 +75,9 @@ t_status	read_heredoc(struct s_ast_redirect *redirect)
 		status = input_get_line(&line, "> ");
 		if (status != S_OK)
 			return (status);
-		if (is_delimiter(line, delimiter, delim_len))
+		if (parser_heredoc_check_delimiter(line, delimiter, delim_len))
 			break ;
-		status = add_line_to_heredoc(&lines_append, line);
+		status = parser_heredoc_add_line(&lines_append, line);
 	}
 	free(line);
 	return (status);

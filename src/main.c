@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 23:10:01 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 23:55:11 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static t_status	minishell_do_line(t_shenv *env)
 	free(line);
 	if (status == S_OK)
 		status = execute_list(ast, env);
-	free_ast(ast);
+	ast_free(ast);
 	status_set_exit_code(status, env);
 	return (status);
 }

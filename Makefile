@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
+#    By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/06/11 21:12:54 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/13 00:20:31 by josmanov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,9 +61,9 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	word/word_pattern.c \
 	word/word_scan.c \
 	word/word_unescape.c \
-	shenv/init.c \
-	shenv/get_set.c \
-	shenv/utils.c \
+	shenv/shenv_init.c \
+	shenv/shenv_var_get_set.c \
+	shenv/shenv_var_utils.c \
 )
 
 OBJS := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

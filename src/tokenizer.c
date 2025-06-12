@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:53:50 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/11 22:58:03 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:06:49 by josmanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 // processed from end to start
 // op that is prefix of another op must be listed first (processed last)
-static const t_operator_def	g_ops[] = {
+static const t_operator_def	g_tokenizer_ops[] = {
 {"<", TOK_REDIR_IN},
 {">", TOK_REDIR_OUT},
 {">>", TOK_REDIR_APP},
@@ -37,7 +37,7 @@ static const t_operator_def	g_ops[] = {
 	Consume current character, and if it began a quotation, consume until end
 	of the quotation (including the closing quote).
 */
-static t_status	tok_consume_char_or_quoted(t_tokenizer_state *state)
+static t_status	tokenizer_consume_char_or_quoted(t_tokenizer_state *state)
 {
 	char	maybe_quote;
 
@@ -61,20 +61,21 @@ static t_status	tok_consume_char_or_quoted(t_tokenizer_state *state)
 	not null, write the token type to the location it points to and consume
 	the characters making up the operator.
 */
-static bool	tok_is_operator(t_tokenizer_state *state, enum e_token *op_type)
+static bool	tokenizer_is_operator(t_tokenizer_state *state,
+			enum e_token *op_type)
 {
 	size_t	i;
 	size_t	op_len;
 
-	i = sizeof g_ops / sizeof g_ops[0];
+	i = sizeof g_tokenizer_ops / sizeof g_tokenizer_ops[0];
 	while (i--)
 	{
-		op_len = ft_strlen(g_ops[i].str);
-		if (ft_strncmp(state->line_pos, g_ops[i].str, op_len) == 0)
+		op_len = ft_strlen(g_tokenizer_ops[i].str);
+		if (ft_strncmp(state->line_pos, g_tokenizer_ops[i].str, op_len) == 0)
 		{
 			if (op_type)
 			{
-				*op_type = g_ops[i].type;
+				*op_type = g_tokenizer_ops[i].type;
 				state->line_pos += op_len;
 			}
 			return (true);
@@ -83,7 +84,7 @@ static bool	tok_is_operator(t_tokenizer_state *state, enum e_token *op_type)
 	return (false);
 }
 
-static t_status	tok_build_word(t_tokenizer_state *state, char **word_out)
+static t_status	tokenizer_build_word(t_tokenizer_state *state, char **word_out)
 {
 	t_status	status;
 	char		*word_start;
@@ -93,12 +94,12 @@ static t_status	tok_build_word(t_tokenizer_state *state, char **word_out)
 	word_start = state->line_pos;
 	while (1)
 	{
-		status = tok_consume_char_or_quoted(state);
+		status = tokenizer_consume_char_or_quoted(state);
 		if (status != S_OK)
 			return (status);
 		if (*state->line_pos == '\0' || util_isblank(*state->line_pos))
 			break ;
-		if (tok_is_operator(state, NULL))
+		if (tokenizer_is_operator(state, NULL))
 			break ;
 	}
 	word_len = state->line_pos - word_start;
@@ -119,8 +120,8 @@ t_status	tokenizer_get_next(t_tokenizer_state *state, t_token *token_out)
 	token_out->type = TOK_END;
 	if (*state->line_pos == '\0')
 		return (S_OK);
-	if (tok_is_operator(state, &token_out->type))
+	if (tokenizer_is_operator(state, &token_out->type))
 		return (S_OK);
 	token_out->type = TOK_WORD;
-	return (tok_build_word(state, &token_out->word_content));
+	return (tokenizer_build_word(state, &token_out->word_content));
 }

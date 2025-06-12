@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:48:35 by amakinen          #+#    #+#             */
-/*   Updated: 2025/05/22 15:28:44 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 16:39:42 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ static t_status	word_filename_scandir(DIR *dir, struct s_word_pattern *pattern,
 {
 	struct dirent	*dirent;
 	t_status		status;
+	bool			match;
 
 	while (true)
 	{
@@ -76,7 +77,10 @@ static t_status	word_filename_scandir(DIR *dir, struct s_word_pattern *pattern,
 			return (status_err(S_RESET_ERR, READDIR_ERRMSG, NULL, errno));
 		if (!dirent)
 			return (S_OK);
-		if (word_pattern_test_filename(pattern, dirent->d_name))
+		status = word_pattern_test_filename(pattern, dirent->d_name, &match);
+		if (status != S_OK)
+			return (status);
+		if (match)
 		{
 			status = word_filename_append(pattern->prefix, pattern->prefix_len,
 					dirent->d_name, matches_append);

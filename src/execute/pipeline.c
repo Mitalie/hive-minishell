@@ -6,22 +6,22 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 17:13:08 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 20:45:58 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 21:02:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "execute_internal.h"
-#include "execute.h"
 
 #include <errno.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include "ast.h"
+#include "signals.h"
 #include "shenv.h"
+#include "shutil.h"
 #include "status.h"
 
 /*
@@ -50,6 +50,8 @@ static t_status	execute_pipeline_create_pipe_and_fork(
 	if (*fork_result < 0)
 		return (status_err(S_RESET_ERR, "execute_pipeline",
 				"fork() failed", errno));
+	if (*fork_result == 0)
+		signals_clear_handlers();
 	return (S_OK);
 }
 
@@ -142,12 +144,7 @@ static t_status	execute_pipeline_wait_for_children(
 					"wait failed", errno));
 		}
 		if (waited_child == last_child)
-		{
-			if (WIFEXITED(wait_status))
-				env->exit_code = WEXITSTATUS(wait_status);
-			else if (WIFSIGNALED(wait_status))
-				env->exit_code = 128 + WTERMSIG(wait_status);
-		}
+			shutil_process_wstatus(wait_status, env);
 	}
 }
 

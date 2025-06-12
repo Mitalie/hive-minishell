@@ -6,11 +6,10 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:21:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 21:42:42 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/11 21:03:19 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "execute.h"
 #include "execute_internal.h"
 
 #include <errno.h>
@@ -22,7 +21,9 @@
 
 #include "ast.h"
 #include "builtin.h"
+#include "signals.h"
 #include "shenv.h"
+#include "shutil.h"
 #include "status.h"
 #include "word.h"
 
@@ -108,6 +109,7 @@ static t_status	execute_command_fork(bool *is_child, t_shenv *env)
 				"fork() failed", errno));
 	if (child_pid == 0)
 	{
+		signals_clear_handlers();
 		*is_child = true;
 		return (S_OK);
 	}
@@ -118,10 +120,7 @@ static t_status	execute_command_fork(bool *is_child, t_shenv *env)
 		return (status_err(S_EXIT_ERR, "execute_command: internal error",
 				"wait() failed", errno));
 	}
-	if (WIFEXITED(wait_status))
-		env->exit_code = WEXITSTATUS(wait_status);
-	else if (WIFSIGNALED(wait_status))
-		env->exit_code = 128 + WTERMSIG(wait_status);
+	shutil_process_wstatus(wait_status, env);
 	return (S_OK);
 }
 

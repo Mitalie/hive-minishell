@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:26:57 by amakinen          #+#    #+#             */
-/*   Updated: 2025/04/19 19:37:25 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 16:45:44 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,27 @@
 #include <stddef.h>
 
 #include "libft.h"
+#include "signals.h"
+#include "status.h"
 
 /*
 	The inner matching functions don't use the pattern struct because character
 	matching advances position in pattern and candidate, while wildcard matching
 	needs to be able backtrack and retry from a previous position. Using
 	recursion and keeping the pointers in parameters is an easy way to do that.
-
-	TODO: Limit recursion to avoid stack overflow, or switch to explicit stack.
 */
 
-static bool	word_pattern_match_characters(char *pattern, char *candidate,
-				size_t max_wildcard_len);
-static bool	word_pattern_match_wildcards(char *pattern, char *candidate,
-				size_t max_wildcard_len);
+static t_status	word_pattern_match_characters(char *pattern, char *candidate,
+					size_t max_wildcard_len, bool *match);
+static t_status	word_pattern_match_wildcards(char *pattern, char *candidate,
+					size_t max_wildcard_len, bool *match);
+
+/*
+	Helper function for initialization, see below.
+*/
+static void		word_pattern_init_skip_prefix(struct s_word_pattern *pattern);
+
+#define ERRMSG_NUMWILDCARD "warning: too many wildcards, not processing pattern"
 
 /*
 	Initialize a pattern for matching against the given pattern string `str`.
@@ -45,23 +52,28 @@ static bool	word_pattern_match_wildcards(char *pattern, char *candidate,
 	- If the pattern begins with dot-slash elements, possibly with repeated
 	slashes, they refer to current directory and can be skipped to allow
 	matching to happen normally. The prefix is prepended to matches afterwards.
+
+	We also apply a limit on the number of wildcards to prevent stack overflow
+	due to execessive recursion. While we could handle very large patterns, we
+	put the limit at "only" 100 wildcards as the execution time for checking
+	potential matches gets impractical anyway.
 */
 bool	word_pattern_init_filename(struct s_word_pattern *pattern, char *str)
 {
 	size_t	min_len;
+	size_t	max_wildcards;
 
-	pattern->prefix = str;
-	while (str[0] == '.' && str[1] == '/')
-	{
-		str += 2;
-		while (str[0] == '/')
-			str++;
-	}
-	pattern->prefix_len = str - pattern->prefix;
 	pattern->pattern = str;
+	word_pattern_init_skip_prefix(pattern);
 	min_len = 0;
+	max_wildcards = 100;
 	while (str[min_len])
 	{
+		if (str[min_len] == '*' && !max_wildcards--)
+		{
+			status_warn(ERRMSG_NUMWILDCARD, pattern->pattern, 0);
+			return (false);
+		}
 		while (str[min_len] == '*')
 			str++;
 		if (str[min_len] == INTERNAL_ESCAPE)
@@ -75,6 +87,22 @@ bool	word_pattern_init_filename(struct s_word_pattern *pattern, char *str)
 	return (true);
 }
 
+static void	word_pattern_init_skip_prefix(struct s_word_pattern *pattern)
+{
+	char	*str;
+
+	str = pattern->pattern;
+	pattern->prefix = str;
+	while (str[0] == '.' && str[1] == '/')
+	{
+		str += 2;
+		while (str[0] == '/')
+			str++;
+	}
+	pattern->prefix_len = str - pattern->prefix;
+	pattern->pattern = str;
+}
+
 /*
 	Test if the candidate `str` matches the pattern.
 
@@ -82,40 +110,53 @@ bool	word_pattern_init_filename(struct s_word_pattern *pattern, char *str)
 	- Filenames beginning with a period `.` are considered hidden. A wildcard at
 	the start of a pattern will not match the initial period.
 */
-bool	word_pattern_test_filename(struct s_word_pattern *pattern, char *str)
+t_status	word_pattern_test_filename(
+	struct s_word_pattern *pattern, char *str, bool *match)
 {
 	size_t	candidate_len;
 	size_t	excess_len;
 
+	*match = false;
 	if (str[0] == '.' && pattern->pattern[0] == '*')
-		return (false);
+		return (S_OK);
 	candidate_len = ft_strlen(str);
 	if (candidate_len < pattern->min_len)
-		return (false);
+		return (S_OK);
 	excess_len = candidate_len - pattern->min_len;
-	return (word_pattern_match_characters(pattern->pattern, str, excess_len));
+	return (word_pattern_match_characters(
+			pattern->pattern, str, excess_len, match));
 }
+
+#define ERRMSG_PMATCH_INT "interrupted pattern matching"
 
 /*
 	Attempt to match literal characters in candidate to the pattern. Wildcard
 	characters in pattern are skipped and a helper function tries different
 	wildcard lengths. If literal characters don't match, reject the candidate.
 	If end of the candidate and the pattern is reached, accept the candidate.
+
+	Check for SIGINT here as the matching can take a long time with patterns
+	with many wildcards if they can't be immediately rejected.
 */
-static bool	word_pattern_match_characters(char *pattern, char *candidate,
-	size_t max_wildcard_len)
+static t_status	word_pattern_match_characters(char *pattern, char *candidate,
+	size_t max_wildcard_len, bool *match)
 {
+	if (signals_check_sigint(false))
+		return (status_err(S_RESET_SIGINT, ERRMSG_PMATCH_INT, NULL, 0));
 	while (true)
 	{
 		if (*pattern == '*')
 			return (word_pattern_match_wildcards(pattern + 1, candidate,
-					max_wildcard_len));
+					max_wildcard_len, match));
 		if (*pattern == INTERNAL_ESCAPE)
 			pattern++;
 		if (*pattern != *candidate)
-			return (false);
+			return (S_OK);
 		if (!*pattern)
-			return (true);
+		{
+			*match = true;
+			return (S_OK);
+		}
 		pattern++;
 		candidate++;
 	}
@@ -131,17 +172,25 @@ static bool	word_pattern_match_characters(char *pattern, char *candidate,
 	don't affect the result and processing them individually would exponentially
 	ncrease the number of attempts before rejection.
 */
-static bool	word_pattern_match_wildcards(char *pattern, char *candidate,
-	size_t max_wildcard_len)
+static t_status	word_pattern_match_wildcards(char *pattern, char *candidate,
+	size_t max_wildcard_len, bool *match)
 {
-	size_t	wildcard_len;
+	t_status	status;
+	size_t		wildcard_len;
 
 	while (*pattern == '*')
 		pattern++;
 	wildcard_len = max_wildcard_len + 1;
 	while (wildcard_len--)
-		if (word_pattern_match_characters(pattern, candidate + wildcard_len,
-				max_wildcard_len - wildcard_len))
-			return (true);
-	return (false);
+	{
+		status = word_pattern_match_characters(pattern,
+				candidate + wildcard_len,
+				max_wildcard_len - wildcard_len,
+				match);
+		if (status != S_OK)
+			return (status);
+		if (*match)
+			return (S_OK);
+	}
+	return (S_OK);
 }

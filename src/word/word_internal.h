@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:24:21 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/04 21:37:19 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/12 16:22:12 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ t_status	word_out_split(struct s_word_state *state);
 
 bool		word_pattern_init_filename(
 				struct s_word_pattern *pattern, char *str);
-bool		word_pattern_test_filename(
-				struct s_word_pattern *pattern, char *str);
+t_status	word_pattern_test_filename(
+				struct s_word_pattern *pattern, char *str, bool *match);
 
 t_status	word_scan(struct s_word_state *state);
 

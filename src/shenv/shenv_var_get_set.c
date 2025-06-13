@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shenv_var_get_set.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 02:15:43 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/13 00:21:19 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/13 16:58:07 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,18 +29,18 @@ char	*shenv_var_get(t_shenv *env, const char *key)
 	return (env->var_array[index] + key_len + 1);
 }
 
-static t_status	shenv_var_update_existing(t_shenv *env, int index,
-	char *new_entry)
-{
-	free(env->var_array[index]);
-	env->var_array[index] = new_entry;
-	return (S_OK);
-}
-
-static t_status	shenv_var_add_new(t_shenv *env, char *new_entry)
+static t_status	shenv_var_store_entry(t_shenv *env, char *new_entry,
+	size_t key_len)
 {
 	t_status	status;
+	size_t		index;
 
+	if (shenv_var_find_index(env, new_entry, key_len, &index))
+	{
+		free(env->var_array[index]);
+		env->var_array[index] = new_entry;
+		return (S_OK);
+	}
 	status = shenv_var_array_resize(env);
 	if (status != S_OK)
 	{
@@ -53,9 +53,27 @@ static t_status	shenv_var_add_new(t_shenv *env, char *new_entry)
 	return (S_OK);
 }
 
+/*
+	Allocate a string for an environment value. Due to limit of four arguments,
+	returns a pointer (NULL on allocation failure) instead of t_status. Caller
+	must check the pointer and report allocation error if it is NULL.
+*/
+static char	*shenv_var_create_entry(const char *key, size_t key_len,
+		const char *value, size_t value_len)
+{
+	char	*env_str;
+
+	env_str = malloc(key_len + value_len + 2);
+	if (!env_str)
+		return (NULL);
+	ft_strlcpy(env_str, key, key_len + 1);
+	env_str[key_len] = '=';
+	ft_strlcpy(env_str + key_len + 1, value, value_len + 1);
+	return (env_str);
+}
+
 t_status	shenv_var_set(t_shenv *env, const char *key, const char *value)
 {
-	size_t	index;
 	char	*new_entry;
 	size_t	key_len;
 	size_t	value_len;
@@ -65,9 +83,7 @@ t_status	shenv_var_set(t_shenv *env, const char *key, const char *value)
 	new_entry = shenv_var_create_entry(key, key_len, value, value_len);
 	if (!new_entry)
 		return (status_err(S_EXIT_ERR, ERRMSG_MALLOC, NULL, 0));
-	if (shenv_var_find_index(env, key, key_len, &index))
-		return (shenv_var_update_existing(env, index, new_entry));
-	return (shenv_var_add_new(env, new_entry));
+	return (shenv_var_store_entry(env, new_entry, key_len));
 }
 
 t_status	shenv_var_unset(t_shenv *env, const char *key)

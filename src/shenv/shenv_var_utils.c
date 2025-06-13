@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shenv_var_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:54:36 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/13 00:21:25 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/13 16:57:38 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,25 +36,6 @@ bool	shenv_var_find_index(t_shenv *env, const char *key,
 		i++;
 	}
 	return (false);
-}
-
-/*
-	Allocate a string for an environment value. Due to limit of four arguments,
-	returns a pointer (NULL on allocation failure) instead of t_status. Caller
-	must check the pointer and report allocation error if it is NULL.
-*/
-char	*shenv_var_create_entry(const char *key, size_t key_len,
-		const char *value, size_t value_len)
-{
-	char	*env_str;
-
-	env_str = malloc(key_len + value_len + 2);
-	if (!env_str)
-		return (NULL);
-	ft_strlcpy(env_str, key, key_len + 1);
-	env_str[key_len] = '=';
-	ft_strlcpy(env_str + key_len + 1, value, value_len + 1);
-	return (env_str);
 }
 
 t_status	shenv_var_array_resize(t_shenv *env)

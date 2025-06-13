@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/06/13 18:50:47 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/13 20:07:56 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -102,8 +102,9 @@ all: tests
 # libft
 INCDIRS += libft
 # - Use recursive make for any targets with libft/ prefix
+#   Override _CFLAGS of the libft Makefile.
 libft/libft.a libft/clean libft/fclean: libft/%:
-	+make -C libft $*
+	+make -C libft _CFLAGS="$(_CFLAGS)" $*
 # - This Makefile doesn't know whether libft.a needs updating so use a phony
 #   target to ensure we always call recursive make. Don't set libft.a directly
 #   as phony because that would disable timestamp checks and always relink.

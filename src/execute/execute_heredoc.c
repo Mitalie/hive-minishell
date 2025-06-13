@@ -16,10 +16,13 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <unistd.h>
 
 #include "ast.h"
 #include "libft.h"
+#include "shenv.h"
 #include "status.h"
 #include "util.h"
 #include "word.h"

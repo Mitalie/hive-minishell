@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stddef.h>
 
 /*
 	The dst == source early return can hide errors if two NULL pointers are

@@ -13,10 +13,10 @@
 #include "shenv.h"
 #include "shenv_internal.h"
 
-#include <stdbool.h>
 #include <stdlib.h>
 
 #include "libft.h"
+#include "status.h"
 
 char	*shenv_var_get(t_shenv *env, const char *key)
 {

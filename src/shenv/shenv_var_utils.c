@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "libft.h"
+#include "status.h"
 
 bool	shenv_var_find_index(t_shenv *env, const char *key,
 	size_t key_len, size_t *idx_out)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shenv_init.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 01:34:15 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/13 00:21:15 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/13 16:45:45 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static t_status	shenv_var_init(t_shenv *env, int size)
 	env->var_array_used = 0;
 	env->var_array = malloc(sizeof(char *) * (env->var_array_size + 1));
 	if (!env->var_array)
-		return (status_err(S_RESET_ERR, "malloc", NULL, 0));
+		return (status_err(S_RESET_ERR, ERRMSG_MALLOC, NULL, 0));
 	env->var_array[0] = NULL;
 	return (shenv_var_copy_environ(env));
 }

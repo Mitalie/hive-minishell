@@ -12,8 +12,6 @@
 
 #include "parser_internal.h"
 
-#include <stdio.h>
-
 #include "status.h"
 
 /*

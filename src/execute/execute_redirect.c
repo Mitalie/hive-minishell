@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "execute.h"
 #include "execute_internal.h"
 
 #include <errno.h>

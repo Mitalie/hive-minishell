@@ -13,6 +13,8 @@
 #include "builtin_internal.h"
 
 #include <errno.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 #include "libft.h"
 #include "shenv.h"

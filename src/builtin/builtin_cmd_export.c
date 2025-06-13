@@ -13,6 +13,9 @@
 #include "builtin_internal.h"
 #include "builtin_cmd_export_utils.h"
 
+#include <stdbool.h>
+#include <stddef.h>
+
 #include "libft.h"
 #include "shenv.h"
 #include "status.h"

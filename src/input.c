@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 17:49:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/09 08:38:00 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 19:21:48 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <readline/history.h>
 #include <readline/readline.h>
@@ -51,6 +52,8 @@ t_status	input_get_line(char **line_out, const char *prompt)
 {
 	char	*line;
 
+	if (!isatty(STDIN_FILENO))
+		return (input_notty_get_line(line_out, prompt));
 	rl_startup_hook = input_rl_startup_hook;
 	rl_event_hook = input_rl_event_hook;
 	errno = 0;
@@ -69,7 +72,8 @@ t_status	input_get_line(char **line_out, const char *prompt)
 
 void	input_add_history(const char *line)
 {
-	add_history(line);
+	if (!isatty(STDIN_FILENO))
+		add_history(line);
 }
 
 void	input_clear_history(void)

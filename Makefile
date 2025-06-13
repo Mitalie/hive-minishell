@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/06/13 00:31:33 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/13 18:50:47 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ INCDIRS := include
 SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
 	input.c \
+	input_notty.c \
 	signals.c \
 	shutil.c \
 	status.c \

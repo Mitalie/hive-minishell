@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 23:55:11 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/13 19:39:47 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "ast.h"
 #include "execute.h"
@@ -26,6 +27,8 @@
 
 	Clear previously caught SIGINT before starting - user expects a fresh
 	prompt which we're going to do here anyway.
+
+	If not interactive, exit with a caught SIGINT or any S_RESET_* status.
 */
 static t_status	minishell_do_line(t_shenv *env)
 {
@@ -35,7 +38,8 @@ static t_status	minishell_do_line(t_shenv *env)
 
 	line = NULL;
 	ast = NULL;
-	signals_check_sigint(true);
+	if (signals_check_sigint(true) && !isatty(STDIN_FILENO))
+		return (S_EXIT_OK);
 	status = input_get_line(&line, "minishell> ");
 	if (status == S_OK && !line)
 		return (S_EXIT_OK);
@@ -48,6 +52,9 @@ static t_status	minishell_do_line(t_shenv *env)
 		status = execute_list(ast, env);
 	ast_free(ast);
 	status_set_exit_code(status, env);
+	if (!isatty(STDIN_FILENO) && (status == S_RESET_ERR
+			|| status == S_RESET_SIGINT || status == S_RESET_SYNTAX))
+		status = S_EXIT_OK;
 	return (status);
 }
 

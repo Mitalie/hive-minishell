@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 16:38:04 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/13 19:21:08 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/13 19:38:03 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <unistd.h>
 
 #include "libft.h"
+#include "signals.h"
 #include "status.h"
 #include "util.h"
 
@@ -73,7 +74,11 @@ static t_status	input_notty_read_char(char *buf_pos, bool *eof_read)
 	{
 		res = read(STDIN_FILENO, buf_pos, 1);
 		if (res < 0 && errno == EINTR)
+		{
+			if (signals_check_sigint(true))
+				return (S_RESET_SIGINT);
 			continue ;
+		}
 		if (res < 0)
 			return (status_err(S_EXIT_ERR, "input error",
 					"read() failed", errno));

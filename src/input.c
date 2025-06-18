@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 17:49:06 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/13 19:21:48 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/18 14:55:49 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ t_status	input_get_line(char **line_out, const char *prompt)
 
 void	input_add_history(const char *line)
 {
-	if (!isatty(STDIN_FILENO))
+	if (isatty(STDIN_FILENO))
 		add_history(line);
 }
 

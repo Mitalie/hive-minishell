@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 16:38:04 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/18 15:24:42 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/18 18:15:20 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,11 +138,6 @@ t_status	input_notty_get_line(char **line_out, const char *prompt)
 	*line_out = NULL;
 	read_any = false;
 	status = input_notty_read_line(line_out, &read_any);
-	if (status != S_OK || !read_any)
-	{
-		free(*line_out);
-		*line_out = NULL;
-	}
 	if (status == S_OK)
 	{
 		if (read_any)
@@ -153,6 +148,11 @@ t_status	input_notty_get_line(char **line_out, const char *prompt)
 			|| !util_write_all(STDOUT_FILENO, echo, ft_strlen(echo))
 			|| !util_write_all(STDOUT_FILENO, "\n", 1))
 			status = status_err(S_EXIT_ERR, ERRMSG_ECHO, NULL, errno);
+	}
+	if (status != S_OK || !read_any)
+	{
+		free(*line_out);
+		*line_out = NULL;
 	}
 	return (status);
 }

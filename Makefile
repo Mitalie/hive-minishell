@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/06/18 15:30:47 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/18 15:34:43 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ SRCS := $(addprefix $(SRCDIR)/,\
 	shutil.c \
 	status.c \
 	tokenizer.c \
+	input/input.c \
 	input/input_tty.c \
 	input/input_notty.c \
 	ast/ast_free.c \

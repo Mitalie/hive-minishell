@@ -6,7 +6,7 @@
 #    By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/11 15:47:17 by amakinen          #+#    #+#              #
-#    Updated: 2025/06/13 20:07:56 by amakinen         ###   ########.fr        #
+#    Updated: 2025/06/18 15:30:47 by amakinen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,12 +20,12 @@ INCDIRS := include
 # Project files and targets
 SRCS := $(addprefix $(SRCDIR)/,\
 	main.c \
-	input.c \
-	input_notty.c \
 	signals.c \
 	shutil.c \
 	status.c \
 	tokenizer.c \
+	input/input_tty.c \
+	input/input_notty.c \
 	ast/ast_free.c \
 	builtin/builtin.c \
 	builtin/builtin_cmd_exit.c \

@@ -1,24 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   input.h                                            :+:      :+:    :+:   */
+/*   input_internal.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/06 17:45:47 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/18 15:24:35 by amakinen         ###   ########.fr       */
+/*   Created: 2025/06/18 15:23:45 by amakinen          #+#    #+#             */
+/*   Updated: 2025/06/18 15:24:30 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INPUT_H
-# define INPUT_H
+#ifndef INPUT_INTERNAL_H
+# define INPUT_INTERNAL_H
 
 # include "status.h"
 
-t_status	input_get_line(char **line_out, const char *prompt);
-
-void		input_add_history(const char *line);
-
-void		input_clear_history(void);
+t_status	input_notty_get_line(char **line_out, const char *prompt);
 
 #endif

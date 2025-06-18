@@ -6,11 +6,11 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 16:38:04 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/13 19:38:03 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/18 15:24:42 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "input.h"
+#include "input_internal.h"
 
 #include <errno.h>
 #include <stdbool.h>

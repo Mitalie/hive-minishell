@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_heredoc.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:32 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/13 00:15:21 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/18 17:05:38 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,9 @@ static t_status	parser_heredoc_add_line(
 	Read heredoc content from stdin until the delimiter is encountered.
 	Store the content as a linked list of lines in the redirect node.
 */
-t_status	parser_read_heredoc(struct s_ast_redirect *redirect)
+t_status	parser_read_heredoc(
+	struct s_parser_state *state,
+	struct s_ast_redirect *redirect)
 {
 	t_status					status;
 	struct s_ast_command_word	**lines_append;
@@ -72,7 +74,7 @@ t_status	parser_read_heredoc(struct s_ast_redirect *redirect)
 	status = S_OK;
 	while (status == S_OK)
 	{
-		status = input_get_line(&line, "> ");
+		status = input_get_line(state->input, &line, "> ");
 		if (status != S_OK)
 			return (status);
 		if (parser_heredoc_check_delimiter(line, delimiter, delim_len))

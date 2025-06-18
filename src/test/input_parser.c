@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input_parser.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 16:17:11 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/12 22:49:55 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/18 18:23:37 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <readline/readline.h>
 
 #include "ast.h"
+#include "input.h"
 #include "status.h"
 #include "parser.h"
 
@@ -103,15 +104,17 @@ static void	print_list(struct s_ast_list_entry *list, int indent)
 int	main(void)
 {
 	t_status				status;
+	t_input					input;
 	struct s_ast_list_entry	*root;
 	char					*line;
 
+	input_init(&input);
 	while (1)
 	{
 		line = readline("input parser> ");
 		if (!line)
 			break ;
-		status = parser_parse(line, &root);
+		status = parser_parse(&input, line, &root);
 		if (status == S_RESET_SYNTAX || status == S_RESET_SIGINT)
 			printf("try again\n");
 		else if (status != S_OK)

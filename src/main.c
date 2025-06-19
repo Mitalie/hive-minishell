@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:55:33 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/18 18:23:48 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/20 02:41:40 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,5 +75,6 @@ int	main(void)
 	if (!env.is_child)
 		status_warn("exiting", NULL, 0);
 	shenv_free(&env);
+	input_free(&input);
 	return (env.exit_code);
 }

@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 16:17:11 by amakinen          #+#    #+#             */
-/*   Updated: 2025/06/18 18:23:37 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/20 02:41:55 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,5 +126,6 @@ int	main(void)
 		ast_free(root);
 		free(line);
 	}
+	input_free(&input);
 	printf("done\n");
 }

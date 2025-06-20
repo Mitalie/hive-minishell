@@ -6,7 +6,7 @@
 /*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 01:58:09 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/12 15:50:14 by amakinen         ###   ########.fr       */
+/*   Updated: 2025/06/18 18:21:29 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stddef.h>
 
 #include "ast.h"
+#include "input.h"
 #include "status.h"
 #include "tokenizer.h"
 
@@ -28,11 +29,13 @@ t_status	parser_next_token(struct s_parser_state *state)
 	Top-level parsing function. Parses a complete command line.
 	Stores the created AST in the pointer pointed to by `root`.
 */
-t_status	parser_parse(char *line, struct s_ast_list_entry **root)
+t_status	parser_parse(t_input *input,
+	char *line, struct s_ast_list_entry **root)
 {
 	t_status				status;
 	struct s_parser_state	state;
 
+	state.input = input;
 	state.group_level = 0;
 	state.tok_state.line_pos = line;
 	*root = NULL;

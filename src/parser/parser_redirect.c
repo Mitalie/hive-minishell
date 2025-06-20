@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josmanov <josmanov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: amakinen <amakinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 11:22:25 by josmanov          #+#    #+#             */
-/*   Updated: 2025/06/13 00:16:08 by josmanov         ###   ########.fr       */
+/*   Updated: 2025/06/18 17:05:45 by amakinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,6 @@ t_status	parser_redirect(
 	if (status != S_OK)
 		return (status);
 	if (new_redirect->op == AST_HEREDOC)
-		status = parser_read_heredoc(new_redirect);
+		status = parser_read_heredoc(state, new_redirect);
 	return (status);
 }
